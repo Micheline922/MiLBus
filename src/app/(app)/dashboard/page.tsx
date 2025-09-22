@@ -3,12 +3,14 @@
 import StatCard from '@/components/dashboard/stat-card';
 import RecentSales from '@/components/dashboard/recent-sales';
 import AiInsights from '@/components/dashboard/ai-insights';
-import { DollarSign, Package, ShoppingCart, TrendingUp, TrendingDown } from 'lucide-react';
+import { DollarSign, Package, ShoppingCart, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { products } from '@/lib/data';
 
 
 const initialChartData = [
@@ -109,10 +111,41 @@ export default function DashboardPage() {
       </div>
        <div className="grid gap-4 md:grid-cols-1">
         <Tabs defaultValue="inventory">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="assets">Actifs</TabsTrigger>
             <TabsTrigger value="inventory">Recommandations de Stock</TabsTrigger>
             <TabsTrigger value="weekly">Analyse Hebdomadaire</TabsTrigger>
           </TabsList>
+          <TabsContent value="assets">
+            <Card>
+              <CardHeader>
+                <CardTitle>Avoirs en Stock</CardTitle>
+                <CardDescription>
+                  Liste de vos marchandises actuellement en stock.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Produit</TableHead>
+                      <TableHead>Prix d'Achat</TableHead>
+                      <TableHead>Quantité en Stock</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {products.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'}€</TableCell>
+                        <TableCell>{product.stock}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
           <TabsContent value="inventory">
             <AiInsights />
           </TabsContent>
