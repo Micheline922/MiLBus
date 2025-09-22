@@ -95,7 +95,7 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
         </div>
         
-        <div className="relative group grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="relative group grid gap-4 md:grid-cols-2 lg:grid-cols-2">
             <Dialog open={dialogOpen['stats']} onOpenChange={(isOpen) => handleOpenDialog('stats', isOpen)}>
               <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="absolute -top-3 right-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -112,12 +112,6 @@ export default function DashboardPage() {
                 <EditStatsForm initialValues={stats} onSubmit={handleStatsSubmit} />
               </DialogContent>
             </Dialog>
-          <StatCard 
-            title="Revenus totaux" 
-            value={stats.totalRevenue.value}
-            change={stats.totalRevenue.change}
-            icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
-          />
           <StatCard
             title="Ventes"
             value={stats.sales.value}
@@ -316,10 +310,20 @@ export default function DashboardPage() {
               <AiChat />
               <WeeklyAiAnalysis />
             </div>
+
+            <div className="pt-4">
+               <StatCard 
+                title="Revenus totaux" 
+                value={stats.totalRevenue.value}
+                change={stats.totalRevenue.change}
+                icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
+              />
+            </div>
         </div>
       </div>
     </ScrollArea>
   );
 }
 
+    
     
