@@ -30,6 +30,12 @@ const initialChartData = [
 
 export default function DashboardPage() {
   const [chartData, setChartData] = useState(initialChartData);
+  const [stats, setStats] = useState({
+    totalRevenue: { value: '45 231,89 €', change: '+20.1% depuis le mois dernier' },
+    sales: { value: '+12,234', change: '+19% depuis le mois dernier' },
+    dailySales: { value: '+12', change: '+1 depuis la dernière heure' },
+    stock: { value: '105', change: '2 articles en faible stock' },
+  });
 
   useEffect(() => {
     // This should run only on the client
@@ -57,26 +63,26 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard 
           title="Revenus totaux" 
-          value="45 231,89 €" 
-          change="+20.1% depuis le mois dernier"
+          value={stats.totalRevenue.value}
+          change={stats.totalRevenue.change}
           icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
         />
         <StatCard
           title="Ventes"
-          value="+12,234"
-          change="+19% depuis le mois dernier"
+          value={stats.sales.value}
+          change={stats.sales.change}
           icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
         />
         <StatCard 
           title="Ventes du jour" 
-          value="+12" 
-          change="+1 depuis la dernière heure"
+          value={stats.dailySales.value}
+          change={stats.dailySales.change}
           icon={<ShoppingCart className="h-4 w-4 text-muted-foreground" />} 
         />
         <StatCard 
           title="Articles en stock" 
-          value="105" 
-          change="2 articles en faible stock"
+          value={stats.stock.value}
+          change={stats.stock.change}
           icon={<Package className="h-4 w-4 text-muted-foreground" />} 
         />
       </div>
