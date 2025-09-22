@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -33,8 +34,9 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
   const { toast } = useToast();
+  const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast({
@@ -44,13 +46,22 @@ export default function SignUpPage() {
       });
       return;
     }
-    // In a real app, you would handle user creation here.
-    // For this simulation, we'll just show a success message and redirect.
-    toast({
-      title: 'Inscription réussie',
-      description: 'Bienvenue chez MiLBus !',
-    });
-    router.push('/');
+    
+    try {
+      // Since this is a simulation, we auto-login with the default credentials
+      await login('Entrepreneuse', 'password');
+      toast({
+        title: 'Inscription réussie !',
+        description: 'Bienvenue ! Vous êtes maintenant connecté(e).',
+      });
+      router.push('/dashboard');
+    } catch (err) {
+       toast({
+        title: 'Erreur',
+        description: 'Une erreur est survenue lors de la connexion automatique.',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (

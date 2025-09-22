@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,11 +18,11 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nom</Label>
-              <Input id="name" defaultValue="Entrepreneuse" />
+              <Input id="name" defaultValue="Entrepreneuse" readOnly />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue="contact@milbus.com" />
+              <Input id="email" type="email" defaultValue="contact@milbus.com" readOnly />
             </div>
             <Button>Enregistrer</Button>
           </CardContent>
