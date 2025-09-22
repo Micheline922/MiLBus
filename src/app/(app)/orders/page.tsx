@@ -48,9 +48,9 @@ export default function OrdersPage() {
                   <TableCell className="font-medium">{order.customerName}</TableCell>
                   <TableCell>{order.customerAddress}</TableCell>
                   <TableCell>{order.products.join(', ')}</TableCell>
-                  <TableCell>{order.totalAmount.toFixed(2)}€</TableCell>
-                  <TableCell>{order.paidAmount.toFixed(2)}€</TableCell>
-                  <TableCell className="font-medium">{order.remainingAmount.toFixed(2)}€</TableCell>
+                  <TableCell>{order.totalAmount.toFixed(2)} FC</TableCell>
+                  <TableCell>{order.paidAmount.toFixed(2)} FC</TableCell>
+                  <TableCell className="font-medium">{order.remainingAmount.toFixed(2)} FC</TableCell>
                   <TableCell>
                     <Badge variant={order.status === 'Payée' ? 'secondary' : 'outline'}>
                       {order.status}

@@ -47,7 +47,7 @@ export default function SalesPage() {
                   <TableCell>{sale.productName}</TableCell>
                   <TableCell>{sale.quantity}</TableCell>
                   <TableCell>{new Date(sale.date).toLocaleDateString()}</TableCell>
-                  <TableCell className="text-right">{sale.amount.toFixed(2)}€</TableCell>
+                  <TableCell className="text-right">{sale.amount.toFixed(2)} FC</TableCell>
                 </TableRow>
               ))}
             </TableBody>

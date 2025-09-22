@@ -47,6 +47,14 @@ const formSchema = z.object({
       purchasePrice: z.coerce.number().optional(),
       stock: z.coerce.number(),
     })
+  ),
+  recentSales: z.array(
+    z.object({
+      id: z.string(),
+      customerName: z.string(),
+      productName: z.string(),
+      amount: z.coerce.number(),
+    })
   )
 });
 
@@ -71,6 +79,11 @@ export default function EditDashboardForm({ initialValues, onSubmit }: EditDashb
   const { fields: productFields, append: appendProduct, remove: removeProduct } = useFieldArray({
     control: form.control,
     name: 'products'
+  });
+
+  const { fields: salesFields, append: appendSale, remove: removeSale } = useFieldArray({
+    control: form.control,
+    name: 'sales'
   });
 
   return (
@@ -290,6 +303,61 @@ export default function EditDashboardForm({ initialValues, onSubmit }: EditDashb
             </div>
              <Button type="button" variant="outline" size="sm" onClick={() => appendProduct({ id: `p${productFields.length + 1}`, name: 'Nouveau Produit', purchasePrice: 0, stock: 0 })}>
               Ajouter un produit
+            </Button>
+
+            <Separator className="my-6" />
+
+            <h3 className="text-lg font-medium">Ventes Récentes</h3>
+             <div className='space-y-4'>
+                {salesFields.map((field, index) => (
+                    <div key={field.id} className="grid grid-cols-3 md:grid-cols-4 items-end gap-2">
+                    <FormField
+                        control={form.control}
+                        name={`sales.${index}.customerName`}
+                        render={({ field }) => (
+                        <FormItem className="col-span-2 md:col-span-1">
+                            <FormLabel>Nom du client</FormLabel>
+                            <FormControl>
+                            <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`sales.${index}.productName`}
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Produit</FormLabel>
+                            <FormControl>
+                            <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                     <FormField
+                        control={form.control}
+                        name={`sales.${index}.amount`}
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Montant</FormLabel>
+                            <FormControl>
+                            <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <Button type="button" variant="destructive" size="icon" onClick={() => removeSale(index)}>
+                        <Trash2 />
+                    </Button>
+                    </div>
+                ))}
+            </div>
+             <Button type="button" variant="outline" size="sm" onClick={() => appendSale({ id: `s${salesFields.length + 1}`, customerName: 'Nouveau Client', productName: 'Nouveau Produit', amount: 0, quantity: 1, date: new Date().toISOString() })}>
+              Ajouter une vente
             </Button>
           </div>
         </ScrollArea>

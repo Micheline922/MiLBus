@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { products as initialProducts } from '@/lib/data';
+import { products as initialProducts, sales as initialSales, customers as initialCustomers } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -41,8 +41,10 @@ const initialChartData = [
 export default function DashboardPage() {
   const [chartData, setChartData] = useState(initialChartData);
   const [products, setProducts] = useState(initialProducts);
+  const [sales, setSales] = useState(initialSales);
+  const [customers, setCustomers] = useState(initialCustomers);
   const [stats, setStats] = useState({
-    totalRevenue: { value: '45 231,89 €', change: '+20.1% depuis le mois dernier' },
+    totalRevenue: { value: '45 231,89 FC', change: '+20.1% depuis le mois dernier' },
     sales: { value: '+12,234', change: '+19% depuis le mois dernier' },
     dailySales: { value: '+12', change: '+1 depuis la dernière heure' },
     stock: { value: '105', change: '2 articles en faible stock' },
@@ -58,6 +60,7 @@ export default function DashboardPage() {
     });
     setChartData(values.chartData);
     setProducts(values.products);
+    setSales(values.sales);
     setIsEditDialogOpen(false);
   };
 
@@ -80,7 +83,7 @@ export default function DashboardPage() {
               </DialogDescription>
             </DialogHeader>
             <EditDashboardForm
-              initialValues={{ ...stats, chartData, products }}
+              initialValues={{ ...stats, chartData, products, sales }}
               onSubmit={handleFormSubmit}
             />
           </DialogContent>
@@ -132,14 +135,14 @@ export default function DashboardPage() {
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(value) => `${value}€`}
+                  tickFormatter={(value) => `${value} FC`}
                 />
                 <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
-        <RecentSales />
+        <RecentSales sales={sales} />
       </div>
        <div className="grid gap-4 md:grid-cols-1">
         <Tabs defaultValue="assets">
@@ -169,7 +172,7 @@ export default function DashboardPage() {
                     {products.map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'}€</TableCell>
+                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
                         <TableCell>{product.stock}</TableCell>
                       </TableRow>
                     ))}

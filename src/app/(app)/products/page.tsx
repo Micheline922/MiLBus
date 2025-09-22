@@ -47,10 +47,10 @@ export default function ProductsPage() {
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
-                  <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'}€</TableCell>
-                  <TableCell>{product.price.toFixed(2)}€</TableCell>
+                  <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
+                  <TableCell>{product.price.toFixed(2)} FC</TableCell>
                   <TableCell>{product.stock}</TableCell>
-                  <TableCell>{product.profit?.toFixed(2) ?? 'N/A'}€</TableCell>
+                  <TableCell>{product.profit?.toFixed(2) ?? 'N/A'} FC</TableCell>
                   <TableCell>
                     <Badge variant={product.stock > 5 ? 'secondary' : product.stock > 0 ? 'outline' : 'destructive'} 
                            className={product.stock > 5 ? 'text-green-700 border-green-300' : product.stock > 0 ? 'text-orange-600 border-orange-300' : ''}>

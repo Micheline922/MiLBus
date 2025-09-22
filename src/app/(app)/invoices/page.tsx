@@ -47,7 +47,7 @@ export default function InvoicesPage() {
                   <TableCell className="font-medium">{invoice.id}</TableCell>
                   <TableCell>{invoice.customerName}</TableCell>
                   <TableCell>{new Date(invoice.date).toLocaleDateString()}</TableCell>
-                  <TableCell>{invoice.amount.toFixed(2)}€</TableCell>
+                  <TableCell>{invoice.amount.toFixed(2)} FC</TableCell>
                   <TableCell>
                     <Badge variant={invoice.status === 'Payée' ? 'secondary' : 'outline'}>
                       {invoice.status}
