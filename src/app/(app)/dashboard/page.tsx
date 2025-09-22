@@ -28,6 +28,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import EditSalesForm from '@/components/dashboard/edit-sales-form';
 import PastryExpensesTable from '@/components/dashboard/pastry-expenses-table';
 import EditPastryExpensesForm from '@/components/dashboard/edit-pastry-expenses-form';
+import ThemeSwitcher from '@/components/settings/theme-switcher';
 
 
 const initialChartData = [
@@ -105,6 +106,7 @@ export default function DashboardPage() {
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
+          <ThemeSwitcher />
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
