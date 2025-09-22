@@ -13,19 +13,35 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { orders as initialOrders } from "@/lib/data";
+import { Order } from "@/lib/data";
 import { MoreHorizontal, PlusCircle, Pencil } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditOrdersForm from "@/components/dashboard/edit-orders-form";
+import { useAuth } from '@/hooks/use-auth';
+import { loadData, saveData } from '@/lib/storage';
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState(initialOrders);
+  const { username } = useAuth();
+  const [orders, setOrders] = useState<Order[] | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleOrdersSubmit = (values: { orders: typeof initialOrders }) => {
+  useEffect(() => {
+    if (username) {
+      const data = loadData(username);
+      setOrders(data.orders);
+    }
+  }, [username]);
+
+  const handleOrdersSubmit = (values: { orders: Order[] }) => {
+    if (!username) return;
     setOrders(values.orders);
+    saveData(username, 'orders', values.orders);
     setDialogOpen(false);
   };
+  
+  if (!orders) {
+    return <div>Chargement...</div>;
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

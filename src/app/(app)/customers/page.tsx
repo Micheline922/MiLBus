@@ -4,16 +4,28 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { customers } from "@/lib/data";
+import { Customer } from "@/lib/data";
 import { PlusCircle, MessageSquare } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from '@/hooks/use-auth';
+import { loadData, saveData } from '@/lib/storage';
 
 export default function CustomersPage() {
+  const { username } = useAuth();
+  const [customers, setCustomers] = useState<Customer[] | null>(null);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    if (username) {
+      const data = loadData(username);
+      setCustomers(data.customers);
+    }
+  }, [username]);
+
+  if (!customers) {
+    return <div>Chargement...</div>;
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

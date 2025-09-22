@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Trash2 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
+import { Product } from '@/lib/data';
 
 const formSchema = z.object({
   products: z.array(
@@ -23,9 +24,11 @@ const formSchema = z.object({
       id: z.string(),
       name: z.string().min(1, 'Le nom est requis'),
       purchasePrice: z.coerce.number().optional(),
+      price: z.coerce.number(),
       stock: z.coerce.number(),
       sold: z.coerce.number(),
       remaining: z.coerce.number(),
+      profit: z.coerce.number().optional(),
     })
   ),
 });
@@ -33,7 +36,7 @@ const formSchema = z.object({
 type EditProductsFormValues = z.infer<typeof formSchema>;
 
 type EditProductsFormProps = {
-  initialValues: EditProductsFormValues;
+  initialValues: { products: Product[] };
   onSubmit: (values: EditProductsFormValues) => void;
 };
 
@@ -130,7 +133,7 @@ export default function EditProductsForm({ initialValues, onSubmit }: EditProduc
                     </div>
                 ))}
             </div>
-             <Button type="button" variant="outline" size="sm" onClick={() => appendProduct({ id: `p${productFields.length + 1}`, name: 'Nouveau Produit', purchasePrice: 0, stock: 0, sold: 0, remaining: 0 })}>
+             <Button type="button" variant="outline" size="sm" onClick={() => appendProduct({ id: `p${productFields.length + 1}`, name: 'Nouveau Produit', category: 'Bijoux & Accessoires', purchasePrice: 0, price: 0, stock: 0, sold: 0, remaining: 0, profit: 0 })}>
               Ajouter un produit
             </Button>
           </div>
@@ -142,5 +145,3 @@ export default function EditProductsForm({ initialValues, onSubmit }: EditProduc
     </Form>
   );
 }
-
-    

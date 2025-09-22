@@ -17,25 +17,33 @@ import {
 } from '@/components/ui/dialog';
 import EditInvoicesForm from "@/components/dashboard/edit-invoices-form";
 import { Invoice } from "@/lib/data";
-
-const initialInvoices: Invoice[] = [
-  { id: 'INV001', orderId: 'o1', customerName: 'Sophie Dubois', date: '2023-10-28', amount: 30.75, status: 'En attente' },
-  { id: 'INV002', orderId: 'o2', customerName: 'Marie Claire', date: '2023-10-27', amount: 25.00, status: 'Payée' },
-];
+import { useAuth } from '@/hooks/use-auth';
+import { loadData, saveData } from '@/lib/storage';
 
 export default function InvoicesPage() {
-  const [invoices, setInvoices] = useState(initialInvoices);
+  const { username } = useAuth();
+  const [invoices, setInvoices] = useState<Invoice[] | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    if (username) {
+      const data = loadData(username);
+      setInvoices(data.invoices);
+    }
+  }, [username]);
 
   const handleInvoicesSubmit = (values: { invoices: Invoice[] }) => {
+    if (!username) return;
     setInvoices(values.invoices);
+    saveData(username, 'invoices', values.invoices);
     setDialogOpen(false);
   };
+  
+  if (!invoices) {
+    return <div>Chargement...</div>;
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

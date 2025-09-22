@@ -11,39 +11,61 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { products as initialProducts, wigs as initialWigs, pastries as initialPastries, Pastry } from "@/lib/data";
+import { Product, Wig, Pastry } from "@/lib/data";
 import { MoreHorizontal, PlusCircle, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditProductsForm from "@/components/dashboard/edit-products-form";
 import EditWigsForm from "@/components/dashboard/edit-wigs-form";
 import EditPastriesForm from "@/components/dashboard/edit-pastries-form";
+import { useAuth } from '@/hooks/use-auth';
+import { loadData, saveData } from '@/lib/storage';
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState(initialProducts);
-  const [wigs, setWigs] = useState(initialWigs);
-  const [pastries, setPastries] = useState(initialPastries);
+  const { username } = useAuth();
+  const [products, setProducts] = useState<Product[] | null>(null);
+  const [wigs, setWigs] = useState<Wig[] | null>(null);
+  const [pastries, setPastries] = useState<Pastry[] | null>(null);
 
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (username) {
+      const data = loadData(username);
+      setProducts(data.products);
+      setWigs(data.wigs);
+      setPastries(data.pastries);
+    }
+  }, [username]);
 
   const handleOpenDialog = (id: string, isOpen: boolean) => {
     setDialogOpen(prev => ({ ...prev, [id]: isOpen }));
   };
 
-  const handleProductsSubmit = (values: any) => {
+  const handleProductsSubmit = (values: { products: Product[] }) => {
+    if (!username) return;
     setProducts(values.products);
+    saveData(username, 'products', values.products);
     handleOpenDialog('products', false);
   };
   
-  const handleWigsSubmit = (values: any) => {
+  const handleWigsSubmit = (values: { wigs: Wig[] }) => {
+    if (!username) return;
     setWigs(values.wigs);
+    saveData(username, 'wigs', values.wigs);
     handleOpenDialog('wigs', false);
   };
 
   const handlePastriesSubmit = (values: { pastries: Pastry[] }) => {
+    if (!username) return;
     setPastries(values.pastries);
+    saveData(username, 'pastries', values.pastries);
     handleOpenDialog('pastries', false);
   };
+
+  if (!products || !wigs || !pastries) {
+    return <div>Chargement...</div>;
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -245,5 +267,3 @@ export default function ProductsPage() {
     </div>
   );
 }
-
-    

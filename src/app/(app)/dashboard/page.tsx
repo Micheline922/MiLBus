@@ -7,10 +7,9 @@ import AiChat from '@/components/dashboard/ai-chat';
 import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { products as initialProducts, sales as initialSales, customers as initialCustomers, wigs as initialWigs, pastries as initialPastries, pastryExpenses as initialPastryExpenses } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -29,6 +28,9 @@ import EditSalesForm from '@/components/dashboard/edit-sales-form';
 import PastryExpensesTable from '@/components/dashboard/pastry-expenses-table';
 import EditPastryExpensesForm from '@/components/dashboard/edit-pastry-expenses-form';
 import ThemeSwitcher from '@/components/settings/theme-switcher';
+import { useAuth } from '@/hooks/use-auth';
+import { AppData, Product, Wig, Pastry, PastryExpense, Sale } from '@/lib/data';
+import { loadData, saveData } from '@/lib/storage';
 
 
 const initialChartData = [
@@ -47,13 +49,11 @@ const initialChartData = [
 ];
 
 export default function DashboardPage() {
+  const { username } = useAuth();
+  const [appData, setAppData] = useState<AppData | null>(null);
+
   const [chartData, setChartData] = useState(initialChartData);
-  const [products, setProducts] = useState(initialProducts);
-  const [wigs, setWigs] = useState(initialWigs);
-  const [pastries, setPastries] = useState(initialPastries);
-  const [pastryExpenses, setPastryExpenses] = useState(initialPastryExpenses);
-  const [sales, setSales] = useState(initialSales);
-  const [customers, setCustomers] = useState(initialCustomers);
+  
   const [stats, setStats] = useState({
     totalRevenue: { value: '45 231,89 FC', change: '+20.1% depuis le mois dernier' },
     sales: { value: '+12,234', change: '+19% depuis le mois dernier' },
@@ -62,6 +62,21 @@ export default function DashboardPage() {
 
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({});
 
+  useEffect(() => {
+    if (username) {
+      const data = loadData(username);
+      setAppData(data);
+    }
+  }, [username]);
+
+  const updateData = <K extends keyof AppData>(key: K, value: AppData[K]) => {
+    if (!username || !appData) return;
+    const updatedData = { ...appData, [key]: value };
+    setAppData(updatedData);
+    saveData(username, key, value);
+    handleOpenDialog(key, false);
+  };
+  
   const handleOpenDialog = (id: string, isOpen: boolean) => {
     setDialogOpen(prev => ({ ...prev, [id]: isOpen }));
   };
@@ -74,32 +89,12 @@ export default function DashboardPage() {
     }));
     handleOpenDialog('stats', false);
   };
-  
-  const handleProductsSubmit = (values: any) => {
-    setProducts(values.products);
-    handleOpenDialog('products', false);
-  };
-  
-  const handleWigsSubmit = (values: any) => {
-    setWigs(values.wigs);
-    handleOpenDialog('wigs', false);
-  };
 
-  const handlePastriesSubmit = (values: any) => {
-    setPastries(values.pastries);
-    handleOpenDialog('pastries', false);
-  };
-
-  const handlePastryExpensesSubmit = (values: any) => {
-    setPastryExpenses(values.pastryExpenses);
-    handleOpenDialog('pastryExpenses', false);
+  if (!appData) {
+    return <div>Chargement des données...</div>;
   }
 
-  const handleSalesSubmit = (values: any) => {
-    setSales(values.sales);
-    handleOpenDialog('sales', false);
-  }
-
+  const { products, wigs, pastries, pastryExpenses, sales } = appData;
 
   return (
     <ScrollArea className="h-full">
@@ -189,7 +184,7 @@ export default function DashboardPage() {
                 <DialogHeader>
                   <DialogTitle>Modifier les Ventes Récentes</DialogTitle>
                 </DialogHeader>
-                <EditSalesForm initialValues={{ sales }} onSubmit={handleSalesSubmit} />
+                <EditSalesForm initialValues={{ sales }} onSubmit={(v) => updateData('sales', v.sales)} />
               </DialogContent>
             </Dialog>
             <RecentSales sales={sales} />
@@ -207,7 +202,7 @@ export default function DashboardPage() {
                   <DialogHeader>
                     <DialogTitle>Modifier les Avoirs - Bijoux & Accessoires</DialogTitle>
                   </DialogHeader>
-                  <EditProductsForm initialValues={{ products }} onSubmit={handleProductsSubmit} />
+                  <EditProductsForm initialValues={{ products }} onSubmit={(v) => updateData('products', v.products)} />
                 </DialogContent>
               </Dialog>
               <CardHeader>
@@ -253,7 +248,7 @@ export default function DashboardPage() {
                   <DialogHeader>
                     <DialogTitle>Modifier les Avoirs - Perruques</DialogTitle>
                   </DialogHeader>
-                  <EditWigsForm initialValues={{ wigs }} onSubmit={handleWigsSubmit} />
+                  <EditWigsForm initialValues={{ wigs }} onSubmit={(v) => updateData('wigs', v.wigs)} />
                 </DialogContent>
               </Dialog>
               <CardHeader>
@@ -305,7 +300,7 @@ export default function DashboardPage() {
                     <DialogHeader>
                       <DialogTitle>Modifier la Gestion des Pâtisseries</DialogTitle>
                     </DialogHeader>
-                    <EditPastriesForm initialValues={{ pastries }} onSubmit={handlePastriesSubmit} />
+                    <EditPastriesForm initialValues={{ pastries }} onSubmit={(v) => updateData('pastries', v.pastries)} />
                   </DialogContent>
                 </Dialog>
                 <CardHeader>
@@ -355,7 +350,7 @@ export default function DashboardPage() {
                     <DialogHeader>
                       <DialogTitle>Modifier les Dépenses des Pâtisseries</DialogTitle>
                     </DialogHeader>
-                    <EditPastryExpensesForm initialValues={{ pastryExpenses }} onSubmit={handlePastryExpensesSubmit} />
+                    <EditPastryExpensesForm initialValues={{ pastryExpenses }} onSubmit={(v) => updateData('pastryExpenses', v.pastryExpenses)} />
                   </DialogContent>
                 </Dialog>
                 <PastryExpensesTable expenses={pastryExpenses} />

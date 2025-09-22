@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { debts as initialDebts, Debt } from "@/lib/data";
+import { Debt } from "@/lib/data";
 import { MoreHorizontal, PlusCircle, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -18,20 +18,34 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import EditDebtsForm from "@/components/dashboard/edit-debts-form";
+import { useAuth } from '@/hooks/use-auth';
+import { loadData, saveData } from '@/lib/storage';
+
 
 export default function DebtsPage() {
-  const [debts, setDebts] = useState(initialDebts);
+  const { username } = useAuth();
+  const [debts, setDebts] = useState<Debt[] | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
-  
+    if (username) {
+      const data = loadData(username);
+      setDebts(data.debts);
+    }
+  }, [username]);
+
   const handleDebtsSubmit = (values: { debts: Debt[] }) => {
+    if (!username) return;
     setDebts(values.debts);
+    saveData(username, 'debts', values.debts);
     setDialogOpen(false);
   };
+  
+  if (!debts) {
+    return <div>Chargement...</div>;
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

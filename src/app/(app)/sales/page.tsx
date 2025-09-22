@@ -4,25 +4,38 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { sales as initialSales } from "@/lib/data";
+import { Sale } from "@/lib/data";
 import { PlusCircle, FileText, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import EditSalesForm from "@/components/dashboard/edit-sales-form";
+import { useAuth } from '@/hooks/use-auth';
+import { loadData, saveData } from '@/lib/storage';
 
 export default function SalesPage() {
-  const [sales, setSales] = useState(initialSales);
+  const { username } = useAuth();
+  const [sales, setSales] = useState<Sale[] | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    if (username) {
+      const data = loadData(username);
+      setSales(data.sales);
+    }
+  }, [username]);
 
-  const handleSalesSubmit = (values: { sales: typeof initialSales }) => {
+  const handleSalesSubmit = (values: { sales: Sale[] }) => {
+    if (!username) return;
     setSales(values.sales);
+    saveData(username, 'sales', values.sales);
     setDialogOpen(false);
   };
+
+  if (!sales) {
+    return <div>Chargement...</div>;
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
