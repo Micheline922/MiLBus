@@ -1,11 +1,21 @@
 export type Product = {
   id: string;
   name: string;
-  category: 'Bijoux & Accessoires' | 'Perruques';
+  category: 'Bijoux & Accessoires';
   purchasePrice?: number;
   price: number;
   stock: number;
   profit?: number;
+};
+
+export type Wig = {
+  id: string;
+  purchasedBundles: string;
+  brand: string;
+  colors: string;
+  wigDetails: string;
+  bundlesPrice: number;
+  sellingPrice: number;
 };
 
 export type Sale = {
@@ -43,8 +53,11 @@ export const products: Product[] = [
   { id: 'p3', name: 'Gloss "Crystal"', category: 'Bijoux & Accessoires', purchasePrice: 7.00, price: 12.00, stock: 3, profit: 5.00 },
   { id: 'p4', name: 'Pendentif lune', category: 'Bijoux & Accessoires', purchasePrice: 10.00, price: 18.75, stock: 22, profit: 8.75 },
   { id: 'p5', name: 'Parfum "Essence"', category: 'Bijoux & Accessoires', purchasePrice: 25.00, price: 45.00, stock: 8, profit: 20.00 },
-  { id: 'p6', name: 'Perruque "Lisse 18 pouces"', category: 'Perruques', purchasePrice: 100.00, price: 150.00, stock: 5, profit: 50.00 },
-  { id: 'p7', name: 'Perruque "Bouclée 24 pouces"', category: 'Perruques', purchasePrice: 150.00, price: 220.00, stock: 2, profit: 70.00 },
+];
+
+export const wigs: Wig[] = [
+    { id: 'w1', purchasedBundles: '3 paquets de mèches lisses', brand: 'Brazilian Hair', colors: 'Noir naturel (1B)', wigDetails: 'Perruque Lace Frontal 18 pouces', bundlesPrice: 100.00, sellingPrice: 150.00 },
+    { id: 'w2', purchasedBundles: '4 paquets de mèches bouclées', brand: 'Peruvian Hair', colors: 'Blond miel', wigDetails: 'Perruque Full Lace 24 pouces avec baby hairs', bundlesPrice: 150.00, sellingPrice: 220.00 },
 ];
 
 export const sales: Sale[] = [

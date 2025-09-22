@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { products as initialProducts, sales as initialSales, customers as initialCustomers } from '@/lib/data';
+import { products as initialProducts, sales as initialSales, customers as initialCustomers, wigs as initialWigs } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -41,6 +41,7 @@ const initialChartData = [
 export default function DashboardPage() {
   const [chartData, setChartData] = useState(initialChartData);
   const [products, setProducts] = useState(initialProducts);
+  const [wigs, setWigs] = useState(initialWigs);
   const [sales, setSales] = useState(initialSales);
   const [customers, setCustomers] = useState(initialCustomers);
   const [stats, setStats] = useState({
@@ -145,16 +146,17 @@ export default function DashboardPage() {
         <RecentSales sales={sales} />
       </div>
        <div className="grid gap-4 md:grid-cols-1">
-        <Tabs defaultValue="assets">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="assets">Actifs</TabsTrigger>
+        <Tabs defaultValue="assets" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="assets">Bijoux & Accessoires</TabsTrigger>
+            <TabsTrigger value="wigs">Perruques</TabsTrigger>
             <TabsTrigger value="inventory">Recommandations de Stock</TabsTrigger>
             <TabsTrigger value="weekly">Analyse Hebdomadaire</TabsTrigger>
           </TabsList>
           <TabsContent value="assets">
             <Card>
               <CardHeader>
-                <CardTitle>Avoirs en Stock</CardTitle>
+                <CardTitle>Avoirs en Stock - Bijoux & Accessoires</CardTitle>
                 <CardDescription>
                   Liste de vos marchandises actuellement en stock.
                 </CardDescription>
@@ -174,6 +176,42 @@ export default function DashboardPage() {
                         <TableCell className="font-medium">{product.name}</TableCell>
                         <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
                         <TableCell>{product.stock}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="wigs">
+            <Card>
+              <CardHeader>
+                <CardTitle>Avoirs en Stock - Perruques</CardTitle>
+                <CardDescription>
+                  Détails de vos perruques confectionnées.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Mèches Achetées</TableHead>
+                      <TableHead>Marque</TableHead>
+                      <TableHead>Couleurs</TableHead>
+                      <TableHead>Détails Perruque</TableHead>
+                      <TableHead>Prix des Mèches</TableHead>
+                      <TableHead>Prix de Vente</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {wigs.map((wig) => (
+                      <TableRow key={wig.id}>
+                        <TableCell>{wig.purchasedBundles}</TableCell>
+                        <TableCell>{wig.brand}</TableCell>
+                        <TableCell>{wig.colors}</TableCell>
+                        <TableCell>{wig.wigDetails}</TableCell>
+                        <TableCell>{wig.bundlesPrice.toFixed(2)} FC</TableCell>
+                        <TableCell>{wig.sellingPrice.toFixed(2)} FC</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

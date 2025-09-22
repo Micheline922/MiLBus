@@ -2,11 +2,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { products } from "@/lib/data";
+import { products, wigs } from "@/lib/data";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function ProductsPage() {
+  const allProducts = [
+    ...products,
+    ...wigs.map(w => ({
+      id: w.id,
+      name: w.wigDetails,
+      category: 'Perruques' as const,
+      purchasePrice: w.bundlesPrice,
+      price: w.sellingPrice,
+      stock: 1, // Assuming each wig is a unique item for now
+      profit: w.sellingPrice - w.bundlesPrice,
+    }))
+  ];
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -43,7 +56,7 @@ export default function ProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
+              {allProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
