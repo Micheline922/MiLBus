@@ -52,26 +52,26 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard 
           title="Revenus totaux" 
-          value="$45,231.89" 
-          change="+20.1% from last month"
+          value="45 231,89 €" 
+          change="+20.1% depuis le mois dernier"
           icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
         />
         <StatCard 
           title="Dépenses totales" 
-          value="$12,120.45" 
-          change="+1.2% from last month"
+          value="12 120,45 €" 
+          change="+1.2% depuis le mois dernier"
           icon={<TrendingDown className="h-4 w-4 text-muted-foreground" />} 
         />
         <StatCard 
           title="Ventes du jour" 
           value="+12" 
-          change="+1 since last hour"
+          change="+1 depuis la dernière heure"
           icon={<ShoppingCart className="h-4 w-4 text-muted-foreground" />} 
         />
         <StatCard 
           title="Articles en stock" 
           value="105" 
-          change="2 items low"
+          change="2 articles en faible stock"
           icon={<Package className="h-4 w-4 text-muted-foreground" />} 
         />
       </div>
@@ -95,7 +95,7 @@ export default function DashboardPage() {
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(value) => `$${value}`}
+                  tickFormatter={(value) => `${value}€`}
                 />
                 <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               </BarChart>

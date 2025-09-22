@@ -4,6 +4,7 @@ export type Product = {
   category: 'Bijoux & Accessoires' | 'Perruques';
   price: number;
   stock: number;
+  profit?: number;
 };
 
 export type Sale = {
@@ -24,13 +25,13 @@ export type Customer = {
 };
 
 export const products: Product[] = [
-  { id: 'p1', name: 'Chaînette en or', category: 'Bijoux & Accessoires', price: 25.00, stock: 15 },
-  { id: 'p2', name: 'Chouchou en satin', category: 'Bijoux & Accessoires', price: 5.50, stock: 50 },
-  { id: 'p3', name: 'Gloss "Crystal"', category: 'Bijoux & Accessoires', price: 12.00, stock: 3 },
-  { id: 'p4', name: 'Pendentif lune', category: 'Bijoux & Accessoires', price: 18.75, stock: 22 },
-  { id: 'p5', name: 'Parfum "Essence"', category: 'Bijoux & Accessoires', price: 45.00, stock: 8 },
-  { id: 'p6', name: 'Perruque "Lisse 18 pouces"', category: 'Perruques', price: 150.00, stock: 5 },
-  { id: 'p7', name: 'Perruque "Bouclée 24 pouces"', category: 'Perruques', price: 220.00, stock: 2 },
+  { id: 'p1', name: 'Chaînette en or', category: 'Bijoux & Accessoires', price: 25.00, stock: 15, profit: 10.00 },
+  { id: 'p2', name: 'Chouchou en satin', category: 'Bijoux & Accessoires', price: 5.50, stock: 50, profit: 2.50 },
+  { id: 'p3', name: 'Gloss "Crystal"', category: 'Bijoux & Accessoires', price: 12.00, stock: 3, profit: 5.00 },
+  { id: 'p4', name: 'Pendentif lune', category: 'Bijoux & Accessoires', price: 18.75, stock: 22, profit: 8.75 },
+  { id: 'p5', name: 'Parfum "Essence"', category: 'Bijoux & Accessoires', price: 45.00, stock: 8, profit: 20.00 },
+  { id: 'p6', name: 'Perruque "Lisse 18 pouces"', category: 'Perruques', price: 150.00, stock: 5, profit: 50.00 },
+  { id: 'p7', name: 'Perruque "Bouclée 24 pouces"', category: 'Perruques', price: 220.00, stock: 2, profit: 70.00 },
 ];
 
 export const sales: Sale[] = [

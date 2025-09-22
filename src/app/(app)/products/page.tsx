@@ -11,8 +11,8 @@ export default function ProductsPage() {
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h1 className="text-3xl font-headline font-bold tracking-tight">Produits</h1>
-          <p className="text-muted-foreground">Gérez vos produits et inventaire.</p>
+          <h1 className="text-3xl font-headline font-bold tracking-tight">Marchandises</h1>
+          <p className="text-muted-foreground">Gérez vos marchandises et inventaire.</p>
         </div>
         <Button>
           <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit
@@ -23,7 +23,7 @@ export default function ProductsPage() {
         <CardHeader>
           <CardTitle>Inventaire des Produits</CardTitle>
           <CardDescription>
-            Liste de tous les produits disponibles.
+            Liste de toutes les marchandises disponibles.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -34,6 +34,7 @@ export default function ProductsPage() {
                 <TableHead>Catégorie</TableHead>
                 <TableHead>Prix</TableHead>
                 <TableHead>Stock</TableHead>
+                <TableHead>Bénéfice</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
@@ -45,8 +46,9 @@ export default function ProductsPage() {
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
-                  <TableCell>${product.price.toFixed(2)}</TableCell>
+                  <TableCell>{product.price.toFixed(2)}€</TableCell>
                   <TableCell>{product.stock}</TableCell>
+                  <TableCell>{product.profit?.toFixed(2) ?? 'N/A'}€</TableCell>
                   <TableCell>
                     <Badge variant={product.stock > 5 ? 'secondary' : product.stock > 0 ? 'outline' : 'destructive'} 
                            className={product.stock > 5 ? 'text-green-700 border-green-300' : product.stock > 0 ? 'text-orange-600 border-orange-300' : ''}>
@@ -64,6 +66,7 @@ export default function ProductsPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem>Modifier</DropdownMenuItem>
+                        <DropdownMenuItem>Enregistrer Vente</DropdownMenuItem>
                         <DropdownMenuItem>Supprimer</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
