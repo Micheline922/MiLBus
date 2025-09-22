@@ -3,30 +3,40 @@
 import StatCard from '@/components/dashboard/stat-card';
 import RecentSales from '@/components/dashboard/recent-sales';
 import AiInsights from '@/components/dashboard/ai-insights';
-import { DollarSign, Package, ShoppingCart, TrendingUp } from 'lucide-react';
+import { DollarSign, Package, Pencil, ShoppingCart, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { products } from '@/lib/data';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import EditDashboardForm from '@/components/dashboard/edit-dashboard-form';
 
 
 const initialChartData = [
-  { name: 'Jan', total: 0 },
-  { name: 'Fev', total: 0 },
-  { name: 'Mar', total: 0 },
-  { name: 'Avr', total: 0 },
-  { name: 'Mai', total: 0 },
-  { name: 'Jui', total: 0 },
-  { name: 'Jui', total: 0 },
-  { name: 'Aoû', total: 0 },
-  { name: 'Sep', total: 0 },
-  { name: 'Oct', total: 0 },
-  { name: 'Nov', total: 0 },
-  { name: 'Déc', total: 0 },
-]
+  { name: 'Jan', total: 1200 },
+  { name: 'Fev', total: 1800 },
+  { name: 'Mar', total: 1500 },
+  { name: 'Avr', total: 2200 },
+  { name: 'Mai', total: 2500 },
+  { name: 'Jui', total: 2100 },
+  { name: 'Jui', total: 2800 },
+  { name: 'Aoû', total: 3200 },
+  { name: 'Sep', total: 3000 },
+  { name: 'Oct', total: 3500 },
+  { name: 'Nov', total: 4000 },
+  { name: 'Déc', total: 4500 },
+];
 
 export default function DashboardPage() {
   const [chartData, setChartData] = useState(initialChartData);
@@ -36,29 +46,38 @@ export default function DashboardPage() {
     dailySales: { value: '+12', change: '+1 depuis la dernière heure' },
     stock: { value: '105', change: '2 articles en faible stock' },
   });
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  useEffect(() => {
-    // This should run only on the client
-    setChartData([
-      { name: 'Jan', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Fev', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Mar', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Avr', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Mai', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Jui', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Jui', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Aoû', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Sep', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Oct', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Nov', total: Math.floor(Math.random() * 5000) + 1000 },
-      { name: 'Déc', total: Math.floor(Math.random() * 5000) + 1000 },
-    ]);
-  }, []);
+  const handleFormSubmit = (values: any) => {
+    setStats(values);
+    setChartData(values.chartData);
+    setIsEditDialogOpen(false);
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
+         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              <Pencil className="mr-2 h-4 w-4" />
+              Modifier le tableau de bord
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Personnaliser le tableau de bord</DialogTitle>
+              <DialogDescription>
+                Modifiez les statistiques et les données du graphique ci-dessous.
+              </DialogDescription>
+            </DialogHeader>
+            <EditDashboardForm
+              initialValues={{ ...stats, chartData }}
+              onSubmit={handleFormSubmit}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard 
