@@ -76,7 +76,7 @@ export default function DashboardPage() {
             <DialogHeader>
               <DialogTitle>Personnaliser le tableau de bord</DialogTitle>
               <DialogDescription>
-                Modifiez les statistiques et les données du graphique ci-dessous.
+                Modifiez les statistiques, le graphique et les avoirs ci-dessous.
               </DialogDescription>
             </DialogHeader>
             <EditDashboardForm
