@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "login-art",
+      "description": "Artistic depiction of beauty products for login screen",
+      "imageUrl": "https://picsum.photos/seed/loginArt/1000/1200",
+      "imageHint": "beauty accessories"
+    },
+    {
+      "id": "product-bijoux",
+      "description": "Placeholder for jewelry products",
+      "imageUrl": "https://picsum.photos/seed/bijoux/200/200",
+      "imageHint": "jewelry"
+    },
+    {
+      "id": "product-chouchous",
+      "description": "Placeholder for scrunchies",
+      "imageUrl": "https://picsum.photos/seed/chouchous/200/200",
+      "imageHint": "hair accessories"
+    },
+    {
+      "id": "product-gloss",
+      "description": "Placeholder for lip gloss",
+      "imageUrl": "https://picsum.photos/seed/gloss/200/200",
+      "imageHint": "makeup"
+    },
+    {
+      "id": "product-perruques",
+      "description": "Placeholder for wigs",
+      "imageUrl": "https://picsum.photos/seed/perruques/200/200",
+      "imageHint": "wig"
+    }
+  ]
 }
