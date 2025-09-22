@@ -56,5 +56,6 @@ function WelcomePageContent() {
 }
 
 export default function WelcomePage() {
+    // This is now wrapped in a layout that provides the AuthContext
     return <WelcomePageContent />;
 }

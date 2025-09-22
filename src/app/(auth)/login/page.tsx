@@ -68,7 +68,7 @@ export default function LoginPage() {
       await login(email, password);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Une erreur est survenue.');
     }
   };
 
@@ -160,4 +160,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

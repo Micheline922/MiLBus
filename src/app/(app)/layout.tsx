@@ -8,7 +8,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from '@/components/ui/sidebar';
-import { AuthProvider, useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -52,8 +52,6 @@ function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-        <ProtectedAppLayout>{children}</ProtectedAppLayout>
-    </AuthProvider>
+      <ProtectedAppLayout>{children}</ProtectedAppLayout>
   );
 }
