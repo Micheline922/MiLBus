@@ -1,3 +1,6 @@
+
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -6,6 +9,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -47,6 +55,22 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export default function LoginPage() {
   const loginImage = PlaceHolderImages.find((img) => img.id === 'login-art');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const { login } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    try {
+      await login(email, password);
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
 
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
@@ -62,10 +86,24 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4">
+            <form onSubmit={handleSubmit} className="grid gap-4">
+               {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Erreur de connexion</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@exemple.com" required />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="m@exemple.com" 
+                  required 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
@@ -74,10 +112,16 @@ export default function LoginPage() {
                     Oublié?
                   </Link>
                 </div>
-                <Input id="password" type="password" required />
+                <Input 
+                    id="password" 
+                    type="password" 
+                    required 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" asChild>
-                <Link href="/dashboard">Connexion</Link>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
+                Connexion
               </Button>
               <div className="relative my-2">
                 <div className="absolute inset-0 flex items-center">
@@ -91,7 +135,7 @@ export default function LoginPage() {
                 <GoogleIcon className="mr-2 h-5 w-5" />
                 Google
               </Button>
-            </div>
+            </form>
             <div className="mt-4 text-center text-sm">
               Pas de compte?{' '}
               <Link href="#" className="underline" prefetch={false}>
@@ -116,3 +160,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

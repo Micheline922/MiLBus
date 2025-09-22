@@ -1,5 +1,11 @@
+
+'use client';
+    
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -15,7 +21,22 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     );
 }
 
-export default function WelcomePage() {
+function WelcomePageContent() {
+    const { isAuthenticated, isLoading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!isLoading && isAuthenticated) {
+            router.replace('/dashboard');
+        }
+    }, [isLoading, isAuthenticated, router]);
+    
+    if (isLoading || isAuthenticated) {
+        return <div className="flex items-center justify-center min-h-screen">
+            <p>Loading...</p>
+        </div>
+    }
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background text-center p-4">
             <div className="bg-primary text-primary-foreground rounded-full p-3 mb-4">
@@ -32,4 +53,8 @@ export default function WelcomePage() {
             </Button>
         </div>
     );
+}
+
+export default function WelcomePage() {
+    return <WelcomePageContent />;
 }

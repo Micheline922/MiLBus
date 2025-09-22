@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -18,6 +19,7 @@ import {
   SidebarMenuSubButton,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
+import { useAuth } from '@/hooks/use-auth';
 import {
   BarChart3,
   ChevronDown,
@@ -29,10 +31,11 @@ import {
   Users,
   Home,
   FileText,
-  CreditCard
+  CreditCard,
+  LogOut
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
@@ -52,6 +55,13 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 export default function AppSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = React.useState({ products: false });
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   const isActive = (path: string) => pathname === path;
 
@@ -127,7 +137,7 @@ export default function AppSidebar() {
                   <SidebarMenuSub>
                       <SidebarMenuSubItem>
                           <Link href="/products" className="w-full">
-                              <SidebarMenuSubButton asChild isActive={isActive('/products')}>
+                              <SidebarMenuSubButton isActive={isActive('/products')}>
                                   Gérer les produits
                               </SidebarMenuSubButton>
                           </Link>
@@ -186,8 +196,14 @@ export default function AppSidebar() {
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
+           <SidebarMenuItem>
+              <SidebarMenuButton onClick={handleLogout} icon={<LogOut />}>
+                Déconnexion
+              </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </>
   );
 }
+
