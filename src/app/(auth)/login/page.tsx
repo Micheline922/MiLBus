@@ -7,6 +7,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
+function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg
+            {...props}
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="4"
+        >
+            <path d="M20 80 Q50 20 80 80" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M35 80 Q50 50 65 80" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="50" cy="50" r="3" fill="currentColor" stroke="none" />
+        </svg>
+    );
+}
+
+
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 48 48" {...props}>
@@ -37,7 +55,10 @@ export default function LoginPage() {
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       <div className="flex items-center justify-center p-6 sm:p-12">
         <Card className="mx-auto max-w-sm w-full">
-          <CardHeader className="text-center">
+          <CardHeader className="flex flex-col items-center text-center">
+            <div className="bg-primary text-primary-foreground rounded-full p-2 mb-2">
+                <MilbusLogo className="h-8 w-8" />
+            </div>
             <CardTitle className="text-3xl font-headline">MiLBus</CardTitle>
             <CardDescription>
               Connectez-vous à votre espace pour gérer votre business.
