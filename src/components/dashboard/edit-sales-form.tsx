@@ -50,8 +50,8 @@ export default function EditSalesForm({ initialValues, onSubmit }: EditSalesForm
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <ScrollArea className="h-[65vh] pr-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex flex-col h-[70vh]">
+        <ScrollArea className="flex-1 pr-4">
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Ventes Récentes</h3>
              <div className='space-y-4'>
@@ -119,4 +119,3 @@ export default function EditSalesForm({ initialValues, onSubmit }: EditSalesForm
     </Form>
   );
 }
-
