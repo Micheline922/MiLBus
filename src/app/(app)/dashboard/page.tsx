@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { products } from '@/lib/data';
+import { products as initialProducts } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -40,6 +40,7 @@ const initialChartData = [
 
 export default function DashboardPage() {
   const [chartData, setChartData] = useState(initialChartData);
+  const [products, setProducts] = useState(initialProducts);
   const [stats, setStats] = useState({
     totalRevenue: { value: '45 231,89 €', change: '+20.1% depuis le mois dernier' },
     sales: { value: '+12,234', change: '+19% depuis le mois dernier' },
@@ -49,8 +50,14 @@ export default function DashboardPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const handleFormSubmit = (values: any) => {
-    setStats(values);
+    setStats({
+      totalRevenue: values.totalRevenue,
+      sales: values.sales,
+      dailySales: values.dailySales,
+      stock: values.stock,
+    });
     setChartData(values.chartData);
+    setProducts(values.products);
     setIsEditDialogOpen(false);
   };
 
@@ -73,7 +80,7 @@ export default function DashboardPage() {
               </DialogDescription>
             </DialogHeader>
             <EditDashboardForm
-              initialValues={{ ...stats, chartData }}
+              initialValues={{ ...stats, chartData, products }}
               onSubmit={handleFormSubmit}
             />
           </DialogContent>

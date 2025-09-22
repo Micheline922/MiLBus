@@ -40,6 +40,14 @@ const formSchema = z.object({
       total: z.coerce.number(),
     })
   ),
+  products: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      purchasePrice: z.coerce.number().optional(),
+      stock: z.coerce.number(),
+    })
+  )
 });
 
 type EditDashboardFormValues = z.infer<typeof formSchema>;
@@ -55,9 +63,14 @@ export default function EditDashboardForm({ initialValues, onSubmit }: EditDashb
     defaultValues: initialValues,
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields: chartFields, append: appendChart, remove: removeChart } = useFieldArray({
     control: form.control,
     name: 'chartData',
+  });
+
+  const { fields: productFields, append: appendProduct, remove: removeProduct } = useFieldArray({
+    control: form.control,
+    name: 'products'
   });
 
   return (
@@ -186,7 +199,7 @@ export default function EditDashboardForm({ initialValues, onSubmit }: EditDashb
 
             <h3 className="text-lg font-medium">Données du Graphique</h3>
             <div className='space-y-4'>
-                {fields.map((field, index) => (
+                {chartFields.map((field, index) => (
                     <div key={field.id} className="flex items-end gap-2">
                     <FormField
                         control={form.control}
@@ -214,15 +227,69 @@ export default function EditDashboardForm({ initialValues, onSubmit }: EditDashb
                         </FormItem>
                         )}
                     />
-                    <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                    <Button type="button" variant="destructive" size="icon" onClick={() => removeChart(index)}>
                         <Trash2 />
                     </Button>
                     </div>
                 ))}
             </div>
-
-            <Button type="button" variant="outline" size="sm" onClick={() => append({ name: 'Nouveau', total: 0 })}>
+            <Button type="button" variant="outline" size="sm" onClick={() => appendChart({ name: 'Nouveau', total: 0 })}>
               Ajouter un mois
+            </Button>
+            
+            <Separator className="my-6" />
+
+            <h3 className="text-lg font-medium">Avoirs en Stock</h3>
+             <div className='space-y-4'>
+                {productFields.map((field, index) => (
+                    <div key={field.id} className="grid grid-cols-3 md:grid-cols-4 items-end gap-2">
+                    <FormField
+                        control={form.control}
+                        name={`products.${index}.name`}
+                        render={({ field }) => (
+                        <FormItem className="col-span-2 md:col-span-1">
+                            <FormLabel>Produit</FormLabel>
+                            <FormControl>
+                            <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`products.${index}.purchasePrice`}
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Prix d'Achat</FormLabel>
+                            <FormControl>
+                            <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                     <FormField
+                        control={form.control}
+                        name={`products.${index}.stock`}
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Quantité</FormLabel>
+                            <FormControl>
+                            <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <Button type="button" variant="destructive" size="icon" onClick={() => removeProduct(index)}>
+                        <Trash2 />
+                    </Button>
+                    </div>
+                ))}
+            </div>
+             <Button type="button" variant="outline" size="sm" onClick={() => appendProduct({ id: `p${productFields.length + 1}`, name: 'Nouveau Produit', purchasePrice: 0, stock: 0 })}>
+              Ajouter un produit
             </Button>
           </div>
         </ScrollArea>
