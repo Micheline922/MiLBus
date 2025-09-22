@@ -105,19 +105,24 @@ export default function AppSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <div className="flex flex-col">
-              <Link href="/products" className="w-full">
                 <SidebarMenuButton
+                  asChild
                   icon={<Package />}
-                  rightIcon={<ChevronDown size={16} className={`transition-transform duration-150 ${open.products ? 'rotate-180' : ''}`} />}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setOpen(prev => ({...prev, products: !prev.products}));
-                  }}
+                  rightIcon={
+                    <button onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setOpen(prev => ({...prev, products: !prev.products}));
+                    }}>
+                      <ChevronDown size={16} className={`transition-transform duration-150 ${open.products ? 'rotate-180' : ''}`} />
+                    </button>
+                  }
                   isActive={pathname.startsWith('/products')}
                 >
-                  Produits
+                  <Link href="/products" className="w-full">
+                    Produits
+                  </Link>
                 </SidebarMenuButton>
-              </Link>
               {open.products && (
                   <SidebarMenuSub>
                       <SidebarMenuSubItem>
