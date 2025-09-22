@@ -138,7 +138,7 @@ export default function LoginPage() {
             </form>
             <div className="mt-4 text-center text-sm">
               Pas de compte?{' '}
-              <Link href="#" className="underline" prefetch={false}>
+              <Link href="/signup" className="underline" prefetch={false}>
                 S'inscrire
               </Link>
             </div>
