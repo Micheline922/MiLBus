@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,16 @@ export default function AiChat() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isPending, startTransition] = useTransition();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTo({
+        top: scrollAreaRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [messages, isPending]);
 
   const handleSendMessage = () => {
     if (inputValue.trim() === '') return;
@@ -53,8 +63,8 @@ export default function AiChat() {
                 Dialoguez avec l'IA pour obtenir des conseils personnalisés.
             </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col gap-4 p-0">
-            <ScrollArea className="flex-1 p-4">
+        <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden">
+            <ScrollArea className="flex-1 pr-4" viewportRef={scrollAreaRef}>
               <div className="flex flex-col gap-3">
                 {messages.map((message, index) => (
                   <div

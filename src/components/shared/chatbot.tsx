@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,17 @@ export default function Chatbot() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isPending, startTransition] = useTransition();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen && scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTo({
+        top: scrollAreaRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [messages, isPending, isOpen]);
+
 
   const handleSendMessage = () => {
     if (inputValue.trim() === '') return;
@@ -65,8 +76,8 @@ export default function Chatbot() {
               <X className="h-5 w-5" />
             </Button>
           </CardHeader>
-          <CardContent className="flex-1 p-0">
-            <ScrollArea className="h-full p-4">
+          <CardContent className="flex-1 p-0 overflow-hidden">
+            <ScrollArea className="h-full p-4" viewportRef={scrollAreaRef}>
               <div className="flex flex-col gap-3">
                 {messages.map((message, index) => (
                   <div
