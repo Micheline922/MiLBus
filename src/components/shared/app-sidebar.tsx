@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -13,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import {
@@ -52,6 +53,16 @@ export default function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
+          <SidebarMenuItem>
+            <Link href="/" className="w-full">
+              <SidebarMenuButton
+                isActive={isActive('/')}
+                icon={<Home />}
+              >
+                Accueil
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <Link href="/dashboard" className="w-full">
               <SidebarMenuButton
@@ -145,3 +156,5 @@ export default function AppSidebar() {
     </>
   );
 }
+
+    
