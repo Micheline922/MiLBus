@@ -1,3 +1,4 @@
+
 import AppSidebar from '@/components/shared/app-sidebar';
 import Chatbot from '@/components/shared/chatbot';
 import {
@@ -13,7 +14,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <AppSidebar />
       </Sidebar>
       <SidebarInset>
-        {children}
+        <div className="flex-1">
+          {children}
+        </div>
+        <footer className="text-center p-4 text-muted-foreground text-sm border-t">
+          Conçu par Micheline Ntale
+        </footer>
         <Chatbot />
       </SidebarInset>
     </SidebarProvider>
