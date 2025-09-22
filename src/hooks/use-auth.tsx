@@ -26,6 +26,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const loggedIn = sessionStorage.getItem('isMilbusAuthenticated') === 'true';
       setIsAuthenticated(loggedIn);
     } catch (error) {
+        // sessionStorage is not available
         setIsAuthenticated(false);
     }
     setIsLoading(false);
