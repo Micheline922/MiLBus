@@ -25,6 +25,7 @@ import EditProductsForm from '@/components/dashboard/edit-products-form';
 import EditWigsForm from '@/components/dashboard/edit-wigs-form';
 import EditPastriesForm from '@/components/dashboard/edit-pastries-form';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import EditSalesForm from '@/components/dashboard/edit-sales-form';
 
 
 const initialChartData = [
@@ -81,6 +82,11 @@ export default function DashboardPage() {
     setPastries(values.pastries);
     handleOpenDialog('pastries', false);
   };
+
+  const handleSalesSubmit = (values: any) => {
+    setSales(values.sales);
+    handleOpenDialog('sales', false);
+  }
 
 
   return (
@@ -159,7 +165,22 @@ export default function DashboardPage() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-          <RecentSales sales={sales} />
+          <div className='col-span-4 lg:col-span-3 relative group'>
+            <Dialog open={dialogOpen['sales']} onOpenChange={(isOpen) => handleOpenDialog('sales', isOpen)}>
+              <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="mr-2 h-4 w-4" /> Modifier
+                  </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                  <DialogTitle>Modifier les Ventes Récentes</DialogTitle>
+                </DialogHeader>
+                <EditSalesForm initialValues={{ sales }} onSubmit={handleSalesSubmit} />
+              </DialogContent>
+            </Dialog>
+            <RecentSales sales={sales} />
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-y-4">
             <Card className="relative group">

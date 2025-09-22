@@ -4,7 +4,7 @@ import { Sale } from '@/lib/data';
 
 export default function RecentSales({ sales }: { sales: Sale[] }) {
   return (
-    <Card className="col-span-4 lg:col-span-3">
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Ventes Récentes</CardTitle>
         <CardDescription>Vous avez fait {sales.length} ventes ce mois-ci.</CardDescription>
