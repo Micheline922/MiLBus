@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -32,35 +34,29 @@ export default function SignUpPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
   const router = useRouter();
   const { toast } = useToast();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
     if (password !== confirmPassword) {
-      toast({
-        title: 'Erreur',
-        description: 'Les mots de passe ne correspondent pas.',
-        variant: 'destructive',
-      });
+      setError('Les mots de passe ne correspondent pas.');
       return;
     }
     
     try {
-      // Since this is a simulation, we auto-login with the default credentials
-      await login('Entrepreneuse', 'password');
+      await login(username, password);
       toast({
         title: 'Inscription réussie !',
-        description: 'Bienvenue ! Vous êtes maintenant connecté(e).',
+        description: "Bienvenue ! Vous êtes maintenant connecté(e) et vos informations sont enregistrées pour les prochaines visites.",
       });
       router.push('/dashboard');
-    } catch (err) {
-       toast({
-        title: 'Erreur',
-        description: 'Une erreur est survenue lors de la connexion automatique.',
-        variant: 'destructive',
-      });
+    } catch (err: any) {
+       setError(err.message || "Une erreur est survenue lors de l'inscription.");
     }
   };
 
@@ -79,6 +75,13 @@ export default function SignUpPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="grid gap-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Erreur d'inscription</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
               <div className="grid gap-2">
                 <Label htmlFor="username">Nom d'utilisateur</Label>
                 <Input 
