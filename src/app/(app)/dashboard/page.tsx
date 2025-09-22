@@ -53,7 +53,6 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({
     totalRevenue: { value: '45 231,89 FC', change: '+20.1% depuis le mois dernier' },
     sales: { value: '+12,234', change: '+19% depuis le mois dernier' },
-    dailySales: { value: '+12', change: '+1 depuis la dernière heure' },
     stock: { value: '105', change: '2 articles en faible stock' },
   });
 
@@ -96,7 +95,7 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
         </div>
         
-        <div className="relative group grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="relative group grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Dialog open={dialogOpen['stats']} onOpenChange={(isOpen) => handleOpenDialog('stats', isOpen)}>
               <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="absolute -top-3 right-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -124,12 +123,6 @@ export default function DashboardPage() {
             value={stats.sales.value}
             change={stats.sales.change}
             icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-          />
-          <StatCard 
-            title="Ventes du jour" 
-            value={stats.dailySales.value}
-            change={stats.dailySales.change}
-            icon={<ShoppingCart className="h-4 w-4 text-muted-foreground" />} 
           />
           <StatCard 
             title="Articles en stock" 
@@ -328,3 +321,5 @@ export default function DashboardPage() {
     </ScrollArea>
   );
 }
+
+    

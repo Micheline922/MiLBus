@@ -24,10 +24,6 @@ const formSchema = z.object({
     value: z.string(),
     change: z.string(),
   }),
-  dailySales: z.object({
-    value: z.string(),
-    change: z.string(),
-  }),
   stock: z.object({
     value: z.string(),
     change: z.string(),
@@ -113,35 +109,6 @@ export default function EditStatsForm({ initialValues, onSubmit }: EditStatsForm
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                     control={form.control}
-                    name="dailySales.value"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Ventes du jour (Valeur)</FormLabel>
-                        <FormControl>
-                        <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="dailySales.change"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Ventes du jour (Changement)</FormLabel>
-                        <FormControl>
-                        <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                    control={form.control}
                     name="stock.value"
                     render={({ field }) => (
                     <FormItem>
@@ -175,5 +142,7 @@ export default function EditStatsForm({ initialValues, onSubmit }: EditStatsForm
     </Form>
   );
 }
+
+    
 
     
