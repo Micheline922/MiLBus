@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Trash2 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { PastryExpense } from '@/lib/data';
 
 const formSchema = z.object({
   pastryExpenses: z.array(
@@ -24,7 +25,7 @@ const formSchema = z.object({
       id: z.string(),
       item: z.string().min(1, "Le nom de l'article est requis"),
       cost: z.coerce.number(),
-      category: z.enum(['Beignets', 'Crêpes', 'Gâteaux', 'Général']),
+      category: z.enum(['Beignets', 'Crêpes', 'Gâteaux', 'Gaufres', 'Général']),
       purchaseDate: z.string().min(1, 'La date est requise'),
     })
   ),
@@ -33,7 +34,7 @@ const formSchema = z.object({
 type EditPastryExpensesFormValues = z.infer<typeof formSchema>;
 
 type EditPastryExpensesFormProps = {
-  initialValues: EditPastryExpensesFormValues;
+  initialValues: { pastryExpenses: PastryExpense[] };
   onSubmit: (values: EditPastryExpensesFormValues) => void;
 };
 
@@ -99,6 +100,7 @@ export default function EditPastryExpensesForm({ initialValues, onSubmit }: Edit
                                       <SelectItem value="Beignets">Beignets</SelectItem>
                                       <SelectItem value="Crêpes">Crêpes</SelectItem>
                                       <SelectItem value="Gâteaux">Gâteaux</SelectItem>
+                                      <SelectItem value="Gaufres">Gaufres</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -131,3 +133,5 @@ export default function EditPastryExpensesForm({ initialValues, onSubmit }: Edit
     </Form>
   );
 }
+
+    

@@ -17,12 +17,13 @@ import { Input } from '@/components/ui/input';
 import { Trash2 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Pastry } from '@/lib/data';
 
 const formSchema = z.object({
   pastries: z.array(
     z.object({
       id: z.string(),
-      name: z.enum(['Beignets', 'Crêpes', 'Gâteaux']),
+      name: z.enum(['Beignets', 'Crêpes', 'Gâteaux', 'Gaufres']),
       quantity: z.coerce.number(),
       unitPrice: z.coerce.number(),
       totalPrice: z.coerce.number(),
@@ -36,7 +37,7 @@ const formSchema = z.object({
 type EditPastriesFormValues = z.infer<typeof formSchema>;
 
 type EditPastriesFormProps = {
-  initialValues: EditPastriesFormValues;
+  initialValues: { pastries: Pastry[] };
   onSubmit: (values: EditPastriesFormValues) => void;
 };
 
@@ -79,6 +80,7 @@ export default function EditPastriesForm({ initialValues, onSubmit }: EditPastri
                                     <SelectItem value="Beignets">Beignets</SelectItem>
                                     <SelectItem value="Crêpes">Crêpes</SelectItem>
                                     <SelectItem value="Gâteaux">Gâteaux</SelectItem>
+                                    <SelectItem value="Gaufres">Gaufres</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -167,4 +169,5 @@ export default function EditPastriesForm({ initialValues, onSubmit }: EditPastri
   );
 }
 
+    
     

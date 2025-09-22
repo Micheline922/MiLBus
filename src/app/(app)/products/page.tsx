@@ -11,16 +11,19 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { products as initialProducts, wigs as initialWigs } from "@/lib/data";
+import { products as initialProducts, wigs as initialWigs, pastries as initialPastries, Pastry } from "@/lib/data";
 import { MoreHorizontal, PlusCircle, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import EditProductsForm from "@/components/dashboard/edit-products-form";
 import EditWigsForm from "@/components/dashboard/edit-wigs-form";
+import EditPastriesForm from "@/components/dashboard/edit-pastries-form";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState(initialProducts);
   const [wigs, setWigs] = useState(initialWigs);
+  const [pastries, setPastries] = useState(initialPastries);
+
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({});
 
   const handleOpenDialog = (id: string, isOpen: boolean) => {
@@ -35,6 +38,11 @@ export default function ProductsPage() {
   const handleWigsSubmit = (values: any) => {
     setWigs(values.wigs);
     handleOpenDialog('wigs', false);
+  };
+
+  const handlePastriesSubmit = (values: { pastries: Pastry[] }) => {
+    setPastries(values.pastries);
+    handleOpenDialog('pastries', false);
   };
 
   return (
@@ -172,8 +180,70 @@ export default function ProductsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <Card className="relative group">
+          <Dialog open={dialogOpen['pastries']} onOpenChange={(isOpen) => handleOpenDialog('pastries', isOpen)}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Pencil className="mr-2 h-4 w-4" /> Modifier
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl">
+              <DialogHeader>
+                <DialogTitle>Modifier la Gestion des Pâtisseries</DialogTitle>
+              </DialogHeader>
+              <EditPastriesForm initialValues={{ pastries }} onSubmit={handlePastriesSubmit} />
+            </DialogContent>
+          </Dialog>
+        <CardHeader>
+          <CardTitle>Pâtisseries</CardTitle>
+          <CardDescription>
+            Suivi des ventes de beignets, crêpes, gâteaux et gaufres.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Produit</TableHead>
+                <TableHead>Quantité Initiale</TableHead>
+                <TableHead>Prix Unitaire</TableHead>
+                <TableHead>Quantités Vendues</TableHead>
+                <TableHead>Quantités Restantes</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pastries.map((pastry) => (
+                <TableRow key={pastry.id}>
+                  <TableCell className="font-medium">{pastry.name}</TableCell>
+                  <TableCell>{pastry.quantity}</TableCell>
+                  <TableCell>{pastry.unitPrice.toFixed(2)} FC</TableCell>
+                  <TableCell>{pastry.sold}</TableCell>
+                  <TableCell>{pastry.remaining}</TableCell>
+                   <TableCell>
+                    <Badge variant={pastry.remaining > 5 ? 'secondary' : pastry.remaining > 0 ? 'outline' : 'destructive'} 
+                           className={pastry.remaining > 5 ? 'text-green-700 border-green-300' : pastry.remaining > 0 ? 'text-orange-600 border-orange-300' : ''}>
+                      {pastry.remaining > 5 ? 'En stock' : pastry.remaining > 0 ? 'Stock faible' : 'En rupture'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Toggle menu</span>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
-
+    

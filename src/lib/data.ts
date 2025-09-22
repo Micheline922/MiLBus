@@ -26,7 +26,7 @@ export type Wig = {
 
 export type Pastry = {
   id: string;
-  name: 'Beignets' | 'Crêpes' | 'Gâteaux';
+  name: 'Beignets' | 'Crêpes' | 'Gâteaux' | 'Gaufres';
   quantity: number;
   unitPrice: number;
   totalPrice: number;
@@ -39,7 +39,7 @@ export type PastryExpense = {
   id: string;
   item: string;
   cost: number;
-  category: 'Beignets' | 'Crêpes' | 'Gâteaux' | 'Général';
+  category: 'Beignets' | 'Crêpes' | 'Gâteaux' | 'Gaufres' | 'Général';
   purchaseDate: string;
 };
 
@@ -107,6 +107,7 @@ export const pastries: Pastry[] = [
   { id: 'pa1', name: 'Beignets', quantity: 50, unitPrice: 0.5, totalPrice: 25, expenses: 10, sold: 40, remaining: 10 },
   { id: 'pa2', name: 'Crêpes', quantity: 30, unitPrice: 1, totalPrice: 30, expenses: 12, sold: 25, remaining: 5 },
   { id: 'pa3', name: 'Gâteaux', quantity: 10, unitPrice: 2, totalPrice: 20, expenses: 8, sold: 8, remaining: 2 },
+  { id: 'pa4', name: 'Gaufres', quantity: 20, unitPrice: 1.5, totalPrice: 30, expenses: 10, sold: 15, remaining: 5 },
 ];
 
 export const pastryExpenses: PastryExpense[] = [
@@ -146,3 +147,6 @@ export const debts: Debt[] = [
 ];
 
 
+
+
+    
