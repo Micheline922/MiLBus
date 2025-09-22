@@ -1,8 +1,12 @@
+
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Download, PlusCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const invoices = [
   { id: 'INV001', orderId: 'o1', customerName: 'Sophie Dubois', date: '2023-10-28', amount: 30.75, status: 'En attente' },
@@ -10,6 +14,12 @@ const invoices = [
 ];
 
 export default function InvoicesPage() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -46,7 +56,7 @@ export default function InvoicesPage() {
                 <TableRow key={invoice.id}>
                   <TableCell className="font-medium">{invoice.id}</TableCell>
                   <TableCell>{invoice.customerName}</TableCell>
-                  <TableCell>{new Date(invoice.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{isClient ? new Date(invoice.date).toLocaleDateString() : ''}</TableCell>
                   <TableCell>{invoice.amount.toFixed(2)} FC</TableCell>
                   <TableCell>
                     <Badge variant={invoice.status === 'Payée' ? 'secondary' : 'outline'}>

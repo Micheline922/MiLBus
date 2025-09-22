@@ -4,12 +4,19 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PastryExpense } from '@/lib/data';
+import { useEffect, useState } from 'react';
 
 type PastryExpensesTableProps = {
   expenses: PastryExpense[];
 };
 
 export default function PastryExpensesTable({ expenses }: PastryExpensesTableProps) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -32,7 +39,7 @@ export default function PastryExpensesTable({ expenses }: PastryExpensesTablePro
                 <TableCell className="font-medium">{expense.item}</TableCell>
                 <TableCell>{expense.cost.toFixed(2)} FC</TableCell>
                 <TableCell>{expense.category}</TableCell>
-                <TableCell>{new Date(expense.purchaseDate).toLocaleDateString()}</TableCell>
+                <TableCell>{isClient ? new Date(expense.purchaseDate).toLocaleDateString() : ''}</TableCell>
               </TableRow>
             ))}
           </TableBody>

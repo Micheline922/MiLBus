@@ -1,10 +1,20 @@
+
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { customers } from "@/lib/data";
 import { PlusCircle, MessageSquare } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function CustomersPage() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -43,7 +53,7 @@ export default function CustomersPage() {
                   <TableCell className="font-medium">{customer.name}</TableCell>
                   <TableCell>{customer.contact}</TableCell>
                   <TableCell>{customer.purchaseHistory}</TableCell>
-                  <TableCell>{new Date(customer.lastPurchase).toLocaleDateString()}</TableCell>
+                  <TableCell>{isClient ? new Date(customer.lastPurchase).toLocaleDateString() : ''}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon">
                       <MessageSquare className="h-4 w-4" />

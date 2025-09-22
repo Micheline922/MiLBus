@@ -1,3 +1,6 @@
+
+'use client';
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,8 +8,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { debts } from "@/lib/data";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function DebtsPage() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -45,8 +55,8 @@ export default function DebtsPage() {
                 <TableRow key={debt.id}>
                   <TableCell className="font-medium">{debt.debtorName}</TableCell>
                   <TableCell>{debt.amount.toFixed(2)} FC</TableCell>
-                  <TableCell>{new Date(debt.debtDate).toLocaleDateString()}</TableCell>
-                  <TableCell>{new Date(debt.paymentDate).toLocaleDateString()}</TableCell>
+                  <TableCell>{isClient ? new Date(debt.debtDate).toLocaleDateString() : ''}</TableCell>
+                  <TableCell>{isClient ? new Date(debt.paymentDate).toLocaleDateString() : ''}</TableCell>
                   <TableCell>
                     <Badge variant={debt.status === 'Remboursée' ? 'secondary' : 'outline'}>
                       {debt.status}

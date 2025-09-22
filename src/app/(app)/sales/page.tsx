@@ -6,13 +6,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { sales as initialSales } from "@/lib/data";
 import { PlusCircle, FileText, Pencil } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import EditSalesForm from "@/components/dashboard/edit-sales-form";
 
 export default function SalesPage() {
   const [sales, setSales] = useState(initialSales);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleSalesSubmit = (values: { sales: typeof initialSales }) => {
     setSales(values.sales);
@@ -74,7 +79,7 @@ export default function SalesPage() {
                   <TableCell className="font-medium">{sale.customerName}</TableCell>
                   <TableCell>{sale.productName}</TableCell>
                   <TableCell>{sale.quantity}</TableCell>
-                  <TableCell>{new Date(sale.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{isClient ? new Date(sale.date).toLocaleDateString() : ''}</TableCell>
                   <TableCell className="text-right">{sale.amount.toFixed(2)} FC</TableCell>
                 </TableRow>
               ))}
