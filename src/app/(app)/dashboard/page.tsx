@@ -106,7 +106,9 @@ export default function DashboardPage() {
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
-          <ThemeSwitcher />
+          <div className="flex items-center space-x-2">
+            <ThemeSwitcher />
+          </div>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

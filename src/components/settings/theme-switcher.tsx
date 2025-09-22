@@ -2,8 +2,8 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
+import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function ThemeSwitcher() {
@@ -15,28 +15,18 @@ export default function ThemeSwitcher() {
   }, []);
 
   if (!isMounted) {
-    return null;
+    return <div className="h-9 w-9" />;
   }
 
-  const isDarkMode = theme === 'dark';
-
-  const toggleTheme = () => {
-    setTheme(isDarkMode ? 'light' : 'dark');
-  };
-
   return (
-    <div className="flex items-center justify-between">
-        <Label htmlFor="theme-switch" className="flex flex-col space-y-1">
-            <span>Mode Sombre</span>
-            <span className="font-normal leading-snug text-muted-foreground">
-                Activez pour une interface plus sombre et plus confortable pour les yeux.
-            </span>
-        </Label>
-        <Switch 
-            id="theme-switch" 
-            checked={isDarkMode}
-            onCheckedChange={toggleTheme}
-        />
-    </div>
+    <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+    >
+        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <span className="sr-only">Toggle theme</span>
+    </Button>
   );
 }
