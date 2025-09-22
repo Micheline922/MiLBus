@@ -55,3 +55,4 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <ProtectedAppLayout>{children}</ProtectedAppLayout>
   );
 }
+

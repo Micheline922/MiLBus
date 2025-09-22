@@ -6,14 +6,14 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, pass: string) => Promise<void>;
+  login: (username: string, pass: string) => Promise<void>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const FAKE_USER = {
-  email: 'contact@milbus.com',
+  username: 'Entrepreneuse',
   password: 'password', // In a real app, never store plain text passwords
 };
 
@@ -33,11 +33,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, pass: string) => {
+  const login = async (username: string, pass: string) => {
     setIsLoading(true);
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
-        if (email.toLowerCase() === FAKE_USER.email && pass === FAKE_USER.password) {
+        if (username.toLowerCase() === FAKE_USER.username.toLowerCase() && pass === FAKE_USER.password) {
           setIsAuthenticated(true);
           try {
             sessionStorage.setItem('isMilbusAuthenticated', 'true');
@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } else {
           setIsAuthenticated(false);
           setIsLoading(false);
-          reject(new Error('Email ou mot de passe incorrect.'));
+          reject(new Error('Nom d\'utilisateur ou mot de passe incorrect.'));
         }
       }, 500); // Simulate network delay
     });

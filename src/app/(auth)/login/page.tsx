@@ -55,7 +55,7 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export default function LoginPage() {
   const loginImage = PlaceHolderImages.find((img) => img.id === 'login-art');
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
@@ -65,7 +65,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     try {
-      await login(email, password);
+      await login(username, password);
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Une erreur est survenue.');
@@ -95,14 +95,14 @@ export default function LoginPage() {
                 </Alert>
               )}
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Nom d'utilisateur</Label>
                 <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="m@exemple.com" 
+                  id="username" 
+                  type="text" 
+                  placeholder="Entrepreneuse" 
                   required 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
               <div className="grid gap-2">
@@ -160,3 +160,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
