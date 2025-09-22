@@ -104,25 +104,32 @@ export default function AppSidebar() {
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-             <SidebarMenuButton
-              icon={<Package />}
-              rightIcon={<ChevronDown size={16} className={`transition-transform duration-150 ${open.products ? 'rotate-180' : ''}`} />}
-              onClick={() => setOpen(prev => ({...prev, products: !prev.products}))}
-              isActive={pathname.startsWith('/products')}
-            >
-              Produits
-            </SidebarMenuButton>
-            {open.products && (
-                <SidebarMenuSub>
-                    <SidebarMenuSubItem>
-                        <Link href="/products" className="w-full">
-                            <SidebarMenuSubButton asChild isActive={isActive('/products')}>
-                                Gérer les produits
-                            </SidebarMenuSubButton>
-                        </Link>
-                    </SidebarMenuSubItem>
-                </SidebarMenuSub>
-            )}
+            <div className="flex flex-col">
+              <Link href="/products" className="w-full">
+                <SidebarMenuButton
+                  icon={<Package />}
+                  rightIcon={<ChevronDown size={16} className={`transition-transform duration-150 ${open.products ? 'rotate-180' : ''}`} />}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setOpen(prev => ({...prev, products: !prev.products}));
+                  }}
+                  isActive={pathname.startsWith('/products')}
+                >
+                  Produits
+                </SidebarMenuButton>
+              </Link>
+              {open.products && (
+                  <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                          <Link href="/products" className="w-full">
+                              <SidebarMenuSubButton asChild isActive={isActive('/products')}>
+                                  Gérer les produits
+                              </SidebarMenuSubButton>
+                          </Link>
+                      </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+              )}
+            </div>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <Link href="/customers" className="w-full">
