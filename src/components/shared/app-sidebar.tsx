@@ -106,7 +106,7 @@ export default function AppSidebar() {
           <SidebarMenuItem>
              <SidebarMenuButton
               icon={<Package />}
-              rightIcon={<ChevronDown size={16} className={`transition-transform duration-200 ${open.products ? 'rotate-180' : ''}`} />}
+              rightIcon={<ChevronDown size={16} className={`transition-transform duration-150 ${open.products ? 'rotate-180' : ''}`} />}
               onClick={() => setOpen(prev => ({...prev, products: !prev.products}))}
               isActive={pathname.startsWith('/products')}
             >
