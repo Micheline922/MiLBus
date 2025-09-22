@@ -84,6 +84,17 @@ export default function EditSalesForm({ initialValues, onSubmit }: EditSalesForm
                         />
                         <FormField
                             control={form.control}
+                            name={`sales.${index}.quantity`}
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantité</FormLabel>
+                                <FormControl><Input type="number" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
                             name={`sales.${index}.amount`}
                             render={({ field }) => (
                             <FormItem>

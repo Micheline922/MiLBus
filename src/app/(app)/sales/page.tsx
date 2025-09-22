@@ -1,10 +1,24 @@
+
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { sales } from "@/lib/data";
-import { PlusCircle, FileText } from "lucide-react";
+import { sales as initialSales } from "@/lib/data";
+import { PlusCircle, FileText, Pencil } from "lucide-react";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import EditSalesForm from "@/components/dashboard/edit-sales-form";
 
 export default function SalesPage() {
+  const [sales, setSales] = useState(initialSales);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleSalesSubmit = (values: { sales: typeof initialSales }) => {
+    setSales(values.sales);
+    setDialogOpen(false);
+  };
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -22,7 +36,21 @@ export default function SalesPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="relative group">
+         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Pencil className="mr-2 h-4 w-4" /> Modifier
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Modifier l'Historique des Ventes</DialogTitle>
+            </DialogHeader>
+            <EditSalesForm initialValues={{ sales }} onSubmit={handleSalesSubmit} />
+          </DialogContent>
+        </Dialog>
+
         <CardHeader>
           <CardTitle>Historique des Ventes</CardTitle>
           <CardDescription>
