@@ -99,41 +99,43 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
         </div>
         
-        <div className="relative group grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Dialog open={dialogOpen['stats']} onOpenChange={(isOpen) => handleOpenDialog('stats', isOpen)}>
-              <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="absolute -top-3 right-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Pencil className="mr-2 h-4 w-4" /> Modifier
-                  </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Modifier les Statistiques</DialogTitle>
-                  <DialogDescription>
-                    Mettez à jour les cartes de statistiques principales.
-                  </DialogDescription>
-                </DialogHeader>
-                <EditStatsForm initialValues={stats} onSubmit={handleStatsSubmit} />
-              </DialogContent>
-            </Dialog>
-           <StatCard 
-            title="Revenus totaux" 
-            value={stats.totalRevenue.value}
-            change={stats.totalRevenue.change}
-            icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
-          />
-          <StatCard
-            title="Ventes"
-            value={stats.sales.value}
-            change={stats.sales.change}
-            icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-          />
-          <StatCard 
-            title="Articles en stock" 
-            value={stats.stock.value}
-            change={stats.stock.change}
-            icon={<Package className="h-4 w-4 text-muted-foreground" />} 
-          />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="relative group">
+              <Dialog open={dialogOpen['stats']} onOpenChange={(isOpen) => handleOpenDialog('stats', isOpen)}>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Pencil className="mr-2 h-4 w-4" /> Modifier
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Modifier les Statistiques</DialogTitle>
+                    <DialogDescription>
+                      Mettez à jour les cartes de statistiques principales.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <EditStatsForm initialValues={stats} onSubmit={handleStatsSubmit} />
+                </DialogContent>
+              </Dialog>
+               <StatCard 
+                title="Revenus totaux" 
+                value={stats.totalRevenue.value}
+                change={stats.totalRevenue.change}
+                icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
+              />
+              <StatCard
+                title="Ventes"
+                value={stats.sales.value}
+                change={stats.sales.change}
+                icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
+              />
+              <StatCard 
+                title="Articles en stock" 
+                value={stats.stock.value}
+                change={stats.stock.change}
+                icon={<Package className="h-4 w-4 text-muted-foreground" />} 
+              />
+            </Card>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-4">
@@ -207,6 +209,8 @@ export default function DashboardPage() {
                       <TableHead>Produit</TableHead>
                       <TableHead>Prix d'Achat</TableHead>
                       <TableHead>Quantité en Stock</TableHead>
+                      <TableHead>Quantités Vendues</TableHead>
+                      <TableHead>Quantités Restantes</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -215,6 +219,8 @@ export default function DashboardPage() {
                         <TableCell className="font-medium">{product.name}</TableCell>
                         <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
                         <TableCell>{product.stock}</TableCell>
+                        <TableCell>{product.sold}</TableCell>
+                        <TableCell>{product.remaining}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -252,6 +258,8 @@ export default function DashboardPage() {
                       <TableHead>Détails Perruque</TableHead>
                       <TableHead>Prix des Mèches</TableHead>
                       <TableHead>Prix de Vente</TableHead>
+                       <TableHead>Quantités Vendues</TableHead>
+                      <TableHead>Quantités Restantes</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -263,6 +271,8 @@ export default function DashboardPage() {
                         <TableCell>{wig.wigDetails}</TableCell>
                         <TableCell>{wig.bundlesPrice.toFixed(2)} FC</TableCell>
                         <TableCell>{wig.sellingPrice.toFixed(2)} FC</TableCell>
+                        <TableCell>{wig.sold}</TableCell>
+                        <TableCell>{wig.remaining}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -295,10 +305,12 @@ export default function DashboardPage() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Produit</TableHead>
-                        <TableHead>Quantité</TableHead>
+                        <TableHead>Quantité Initiale</TableHead>
                         <TableHead>Prix Unitaire</TableHead>
                         <TableHead>Prix Total</TableHead>
                         <TableHead>Dépenses</TableHead>
+                         <TableHead>Quantités Vendues</TableHead>
+                        <TableHead>Quantités Restantes</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -309,6 +321,8 @@ export default function DashboardPage() {
                           <TableCell>{pastry.unitPrice.toFixed(2)} FC</TableCell>
                           <TableCell>{pastry.totalPrice.toFixed(2)} FC</TableCell>
                           <TableCell>{pastry.expenses.toFixed(2)} FC</TableCell>
+                           <TableCell>{pastry.sold}</TableCell>
+                          <TableCell>{pastry.remaining}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -326,5 +340,7 @@ export default function DashboardPage() {
     </ScrollArea>
   );
 }
+
+    
 
     

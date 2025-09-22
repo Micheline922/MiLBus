@@ -5,6 +5,8 @@ export type Product = {
   purchasePrice?: number;
   price: number;
   stock: number;
+  sold: number;
+  remaining: number;
   profit?: number;
 };
 
@@ -16,6 +18,8 @@ export type Wig = {
   wigDetails: string;
   bundlesPrice: number;
   sellingPrice: number;
+  sold: number;
+  remaining: number;
 };
 
 export type Pastry = {
@@ -25,6 +29,8 @@ export type Pastry = {
   unitPrice: number;
   totalPrice: number;
   expenses: number;
+  sold: number;
+  remaining: number;
 };
 
 export type Sale = {
@@ -57,22 +63,22 @@ export type Order = {
 };
 
 export const products: Product[] = [
-  { id: 'p1', name: 'Chaînette en or', category: 'Bijoux & Accessoires', purchasePrice: 15.00, price: 25.00, stock: 15, profit: 10.00 },
-  { id: 'p2', name: 'Chouchou en satin', category: 'Bijoux & Accessoires', purchasePrice: 3.00, price: 5.50, stock: 50, profit: 2.50 },
-  { id: 'p3', name: 'Gloss "Crystal"', category: 'Bijoux & Accessoires', purchasePrice: 7.00, price: 12.00, stock: 3, profit: 5.00 },
-  { id: 'p4', name: 'Pendentif lune', category: 'Bijoux & Accessoires', purchasePrice: 10.00, price: 18.75, stock: 22, profit: 8.75 },
-  { id: 'p5', name: 'Parfum "Essence"', category: 'Bijoux & Accessoires', purchasePrice: 25.00, price: 45.00, stock: 8, profit: 20.00 },
+  { id: 'p1', name: 'Chaînette en or', category: 'Bijoux & Accessoires', purchasePrice: 15.00, price: 25.00, stock: 15, sold: 5, remaining: 10, profit: 10.00 },
+  { id: 'p2', name: 'Chouchou en satin', category: 'Bijoux & Accessoires', purchasePrice: 3.00, price: 5.50, stock: 50, sold: 20, remaining: 30, profit: 2.50 },
+  { id: 'p3', name: 'Gloss "Crystal"', category: 'Bijoux & Accessoires', purchasePrice: 7.00, price: 12.00, stock: 10, sold: 7, remaining: 3, profit: 5.00 },
+  { id: 'p4', name: 'Pendentif lune', category: 'Bijoux & Accessoires', purchasePrice: 10.00, price: 18.75, stock: 22, sold: 10, remaining: 12, profit: 8.75 },
+  { id: 'p5', name: 'Parfum "Essence"', category: 'Bijoux & Accessoires', purchasePrice: 25.00, price: 45.00, stock: 8, sold: 2, remaining: 6, profit: 20.00 },
 ];
 
 export const wigs: Wig[] = [
-    { id: 'w1', purchasedBundles: '3 paquets de mèches lisses', brand: 'Brazilian Hair', colors: 'Noir naturel (1B)', wigDetails: 'Perruque Lace Frontal 18 pouces', bundlesPrice: 100.00, sellingPrice: 150.00 },
-    { id: 'w2', purchasedBundles: '4 paquets de mèches bouclées', brand: 'Peruvian Hair', colors: 'Blond miel', wigDetails: 'Perruque Full Lace 24 pouces avec baby hairs', bundlesPrice: 150.00, sellingPrice: 220.00 },
+    { id: 'w1', purchasedBundles: '3 paquets de mèches lisses', brand: 'Brazilian Hair', colors: 'Noir naturel (1B)', wigDetails: 'Perruque Lace Frontal 18 pouces', bundlesPrice: 100.00, sellingPrice: 150.00, sold: 1, remaining: 1 },
+    { id: 'w2', purchasedBundles: '4 paquets de mèches bouclées', brand: 'Peruvian Hair', colors: 'Blond miel', wigDetails: 'Perruque Full Lace 24 pouces avec baby hairs', bundlesPrice: 150.00, sellingPrice: 220.00, sold: 0, remaining: 1 },
 ];
 
 export const pastries: Pastry[] = [
-  { id: 'pa1', name: 'Beignets', quantity: 50, unitPrice: 0.5, totalPrice: 25, expenses: 10 },
-  { id: 'pa2', name: 'Crêpes', quantity: 30, unitPrice: 1, totalPrice: 30, expenses: 12 },
-  { id: 'pa3', name: 'Gâteaux', quantity: 10, unitPrice: 2, totalPrice: 20, expenses: 8 },
+  { id: 'pa1', name: 'Beignets', quantity: 50, unitPrice: 0.5, totalPrice: 25, expenses: 10, sold: 40, remaining: 10 },
+  { id: 'pa2', name: 'Crêpes', quantity: 30, unitPrice: 1, totalPrice: 30, expenses: 12, sold: 25, remaining: 5 },
+  { id: 'pa3', name: 'Gâteaux', quantity: 10, unitPrice: 2, totalPrice: 20, expenses: 8, sold: 8, remaining: 2 },
 ];
 
 export const sales: Sale[] = [
@@ -96,3 +102,5 @@ export const orders: Order[] = [
   { id: 'o2', customerName: 'Marie Claire', customerAddress: '45 Avenue des Champs, Lyon', products: ['Chaînette en or'], totalAmount: 25.00, paidAmount: 25.00, remainingAmount: 0.00, status: 'Payée', date: '2023-10-27'},
   { id: 'o3', customerName: 'Amina Diallo', customerAddress: '78 Boulevard Voltaire, Marseille', products: ['Chouchou en satin'], totalAmount: 5.50, paidAmount: 0.00, remainingAmount: 5.50, status: 'En attente', date: '2023-10-26'},
 ];
+
+    

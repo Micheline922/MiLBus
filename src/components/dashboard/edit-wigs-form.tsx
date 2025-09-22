@@ -27,6 +27,8 @@ const formSchema = z.object({
       wigDetails: z.string().min(1, 'Ce champ est requis'),
       bundlesPrice: z.coerce.number(),
       sellingPrice: z.coerce.number(),
+      sold: z.coerce.number(),
+      remaining: z.coerce.number(),
     })
   ),
 });
@@ -127,18 +129,42 @@ export default function EditWigsForm({ initialValues, onSubmit }: EditWigsFormPr
                             </FormItem>
                             )}
                         />
+                        <FormField
+                            control={form.control}
+                            name={`wigs.${index}.sold`}
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantités Vendues</FormLabel>
+                                <FormControl><Input type="number" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name={`wigs.${index}.remaining`}
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantités Restantes</FormLabel>
+                                <FormControl><Input type="number" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
                     </div>
                 ))}
             </div>
-             <Button type="button" variant="outline" size="sm" onClick={() => appendWig({ id: `w${wigFields.length + 1}`, purchasedBundles: '', brand: '', colors: '', wigDetails: '', bundlesPrice: 0, sellingPrice: 0 })}>
+             <Button type="button" variant="outline" size="sm" onClick={() => appendWig({ id: `w${wigFields.length + 1}`, purchasedBundles: '', brand: '', colors: '', wigDetails: '', bundlesPrice: 0, sellingPrice: 0, sold: 0, remaining: 0 })}>
               Ajouter une perruque
             </Button>
           </div>
         </ScrollArea>
-        <div className="flex justify-end pt-4 border-t">
+        <div className="flex justify-end pt-4 border-t sticky bottom-0 bg-background pb-4">
             <Button type="submit">Enregistrer les modifications</Button>
         </div>
       </form>
     </Form>
   );
 }
+
+    

@@ -27,6 +27,8 @@ const formSchema = z.object({
       unitPrice: z.coerce.number(),
       totalPrice: z.coerce.number(),
       expenses: z.coerce.number(),
+      sold: z.coerce.number(),
+      remaining: z.coerce.number(),
     })
   ),
 });
@@ -88,7 +90,7 @@ export default function EditPastriesForm({ initialValues, onSubmit }: EditPastri
                             name={`pastries.${index}.quantity`}
                             render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Quantité</FormLabel>
+                                <FormLabel>Quantité Initiale</FormLabel>
                                 <FormControl><Input type="number" {...field} /></FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -120,8 +122,30 @@ export default function EditPastriesForm({ initialValues, onSubmit }: EditPastri
                             control={form.control}
                             name={`pastries.${index}.expenses`}
                             render={({ field }) => (
-                            <FormItem className="col-span-2">
+                            <FormItem>
                                 <FormLabel>Dépenses</FormLabel>
+                                <FormControl><Input type="number" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name={`pastries.${index}.sold`}
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantités Vendues</FormLabel>
+                                <FormControl><Input type="number" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name={`pastries.${index}.remaining`}
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantités Restantes</FormLabel>
                                 <FormControl><Input type="number" {...field} /></FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -130,15 +154,17 @@ export default function EditPastriesForm({ initialValues, onSubmit }: EditPastri
                     </div>
                 ))}
             </div>
-             <Button type="button" variant="outline" size="sm" onClick={() => append({ id: `pa${fields.length + 1}`, name: 'Beignets', quantity: 0, unitPrice: 0, totalPrice: 0, expenses: 0 })}>
+             <Button type="button" variant="outline" size="sm" onClick={() => append({ id: `pa${fields.length + 1}`, name: 'Beignets', quantity: 0, unitPrice: 0, totalPrice: 0, expenses: 0, sold: 0, remaining: 0 })}>
               Ajouter une pâtisserie
             </Button>
           </div>
         </ScrollArea>
-        <div className="flex justify-end pt-4 border-t">
+        <div className="flex justify-end pt-4 border-t sticky bottom-0 bg-background pb-4">
             <Button type="submit">Enregistrer les modifications</Button>
         </div>
       </form>
     </Form>
   );
 }
+
+    
