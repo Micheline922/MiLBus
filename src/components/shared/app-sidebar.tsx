@@ -14,8 +14,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import {
@@ -115,9 +115,9 @@ export default function AppSidebar() {
             {open.products && (
                 <SidebarMenuSub>
                     <SidebarMenuSubItem>
-                        <Link href="/products" className="w-full">
-                            <SidebarMenuSubButton isActive={isActive('/products')}>
-                                Gérer les produits
+                        <Link href="/products" className="w-full" legacyBehavior passHref>
+                            <SidebarMenuSubButton asChild isActive={isActive('/products')}>
+                                <a>Gérer les produits</a>
                             </SidebarMenuSubButton>
                         </Link>
                     </SidebarMenuSubItem>
