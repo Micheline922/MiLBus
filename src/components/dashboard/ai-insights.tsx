@@ -1,3 +1,4 @@
+
 'use client';
 
 import { getAiSalesInsights } from '@/app/actions';
@@ -84,3 +85,5 @@ export default function AiInsights() {
     </Card>
   );
 }
+
+    

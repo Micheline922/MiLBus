@@ -1,8 +1,9 @@
+
 'use client';
 
 import StatCard from '@/components/dashboard/stat-card';
 import RecentSales from '@/components/dashboard/recent-sales';
-import AiInsights from '@/components/dashboard/ai-insights';
+import AiChat from '@/components/dashboard/ai-chat';
 import { DollarSign, Package, Pencil, ShoppingCart, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
@@ -19,7 +20,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import EditDashboardForm from '@/components/dashboard/edit-dashboard-form';
+import EditStatsForm from '@/components/dashboard/edit-stats-form';
+import EditProductsForm from '@/components/dashboard/edit-products-form';
+import EditWigsForm from '@/components/dashboard/edit-wigs-form';
+import EditPastriesForm from '@/components/dashboard/edit-pastries-form';
 
 
 const initialChartData = [
@@ -50,47 +54,57 @@ export default function DashboardPage() {
     dailySales: { value: '+12', change: '+1 depuis la dernière heure' },
     stock: { value: '105', change: '2 articles en faible stock' },
   });
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const handleFormSubmit = (values: any) => {
-    setStats({
-      totalRevenue: values.totalRevenue,
-      sales: values.sales,
-      dailySales: values.dailySales,
-      stock: values.stock,
-    });
-    setChartData(values.chartData);
-    setProducts(values.products);
-    setSales(values.sales);
-    setIsEditDialogOpen(false);
+  const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({});
+
+  const handleOpenDialog = (id: string, isOpen: boolean) => {
+    setDialogOpen(prev => ({ ...prev, [id]: isOpen }));
   };
+
+  const handleStatsSubmit = (values: any) => {
+    setStats(values);
+    handleOpenDialog('stats', false);
+  };
+  
+  const handleProductsSubmit = (values: any) => {
+    setProducts(values.products);
+    handleOpenDialog('products', false);
+  };
+  
+  const handleWigsSubmit = (values: any) => {
+    setWigs(values.wigs);
+    handleOpenDialog('wigs', false);
+  };
+
+  const handlePastriesSubmit = (values: any) => {
+    setPastries(values.pastries);
+    handleOpenDialog('pastries', false);
+  };
+
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
-         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline">
-              <Pencil className="mr-2 h-4 w-4" />
-              Modifier le tableau de bord
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl">
-            <DialogHeader>
-              <DialogTitle>Personnaliser le tableau de bord</DialogTitle>
-              <DialogDescription>
-                Modifiez les statistiques, le graphique et les avoirs ci-dessous.
-              </DialogDescription>
-            </DialogHeader>
-            <EditDashboardForm
-              initialValues={{ ...stats, chartData, products, sales }}
-              onSubmit={handleFormSubmit}
-            />
-          </DialogContent>
-        </Dialog>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 relative group">
+          <Dialog open={dialogOpen['stats']} onOpenChange={(isOpen) => handleOpenDialog('stats', isOpen)}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="absolute -top-2 right-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Pencil className="mr-2 h-4 w-4" /> Modifier
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Modifier les Statistiques</DialogTitle>
+                <DialogDescription>
+                  Mettez à jour les cartes de statistiques principales.
+                </DialogDescription>
+              </DialogHeader>
+              <EditStatsForm initialValues={stats} onSubmit={handleStatsSubmit} />
+            </DialogContent>
+          </Dialog>
         <StatCard 
           title="Revenus totaux" 
           value={stats.totalRevenue.value}
@@ -146,7 +160,20 @@ export default function DashboardPage() {
         <RecentSales sales={sales} />
       </div>
        <div className="grid grid-cols-1 gap-y-4">
-          <Card>
+          <Card className="relative group">
+            <Dialog open={dialogOpen['products']} onOpenChange={(isOpen) => handleOpenDialog('products', isOpen)}>
+              <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="mr-2 h-4 w-4" /> Modifier
+                  </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                  <DialogTitle>Modifier les Avoirs - Bijoux & Accessoires</DialogTitle>
+                </DialogHeader>
+                <EditProductsForm initialValues={{ products }} onSubmit={handleProductsSubmit} />
+              </DialogContent>
+            </Dialog>
             <CardHeader>
               <CardTitle className="text-xl">Avoirs en Stock - Bijoux & Accessoires</CardTitle>
               <CardDescription>
@@ -175,7 +202,20 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="relative group">
+             <Dialog open={dialogOpen['wigs']} onOpenChange={(isOpen) => handleOpenDialog('wigs', isOpen)}>
+              <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="mr-2 h-4 w-4" /> Modifier
+                  </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                  <DialogTitle>Modifier les Avoirs - Perruques</DialogTitle>
+                </DialogHeader>
+                <EditWigsForm initialValues={{ wigs }} onSubmit={handleWigsSubmit} />
+              </DialogContent>
+            </Dialog>
             <CardHeader>
               <CardTitle  className="text-xl">Avoirs en Stock - Perruques</CardTitle>
               <CardDescription>
@@ -210,7 +250,20 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-           <Card>
+           <Card className="relative group">
+              <Dialog open={dialogOpen['pastries']} onOpenChange={(isOpen) => handleOpenDialog('pastries', isOpen)}>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Pencil className="mr-2 h-4 w-4" /> Modifier
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl">
+                  <DialogHeader>
+                    <DialogTitle>Modifier la Gestion des Pâtisseries</DialogTitle>
+                  </DialogHeader>
+                  <EditPastriesForm initialValues={{ pastries }} onSubmit={handlePastriesSubmit} />
+                </DialogContent>
+              </Dialog>
               <CardHeader>
                 <CardTitle className="text-xl">Gestion des Pâtisseries</CardTitle>
                 <CardDescription>
@@ -244,10 +297,12 @@ export default function DashboardPage() {
             </Card>
           
           <div className="grid gap-4 md:grid-cols-2">
-            <AiInsights />
+            <AiChat />
             <WeeklyAiAnalysis />
           </div>
       </div>
     </div>
   );
 }
+
+    
