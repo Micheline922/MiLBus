@@ -1,13 +1,32 @@
 
+'use client';
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { orders } from "@/lib/data";
+import { orders as initialOrders } from "@/lib/data";
 import { MoreHorizontal, PlusCircle, Pencil } from "lucide-react";
+import { useState } from "react";
+import EditOrdersForm from "@/components/dashboard/edit-orders-form";
 
 export default function OrdersPage() {
+  const [orders, setOrders] = useState(initialOrders);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleOrdersSubmit = (values: { orders: typeof initialOrders }) => {
+    setOrders(values.orders);
+    setDialogOpen(false);
+  };
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -20,7 +39,23 @@ export default function OrdersPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="relative group">
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Pencil className="mr-2 h-4 w-4" /> Modifier
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Modifier les Commandes</DialogTitle>
+              <DialogDescription>
+                Mettez à jour les détails des commandes de vos clients.
+              </DialogDescription>
+            </DialogHeader>
+            <EditOrdersForm initialValues={{ orders }} onSubmit={handleOrdersSubmit} />
+          </DialogContent>
+        </Dialog>
         <CardHeader>
           <CardTitle>Liste des Commandes</CardTitle>
           <CardDescription>
@@ -58,20 +93,10 @@ export default function OrdersPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Marquer comme payée</DropdownMenuItem>
-                        <DropdownMenuItem>Modifier</DropdownMenuItem>
-                        <DropdownMenuItem>Supprimer</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Actions</span>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

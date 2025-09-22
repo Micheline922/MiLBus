@@ -1,3 +1,4 @@
+
 export type Product = {
   id: string;
   name: string;
@@ -133,3 +134,4 @@ export const debts: Debt[] = [
   { id: 'd2', debtorName: 'Elodie Martin', amount: 120.50, debtDate: '2023-09-01', paymentDate: '2023-10-01', status: 'Remboursée' },
   { id: 'd3', debtorName: 'Lucas Bernard', amount: 75.00, debtDate: '2023-10-20', paymentDate: '2023-11-20', status: 'En cours' },
 ];
+
