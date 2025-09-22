@@ -1,24 +1,40 @@
+
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { products, wigs } from "@/lib/data";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { products as initialProducts, wigs as initialWigs } from "@/lib/data";
+import { MoreHorizontal, PlusCircle, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import EditProductsForm from "@/components/dashboard/edit-products-form";
+import EditWigsForm from "@/components/dashboard/edit-wigs-form";
 
 export default function ProductsPage() {
-  const allProducts = [
-    ...products,
-    ...wigs.map(w => ({
-      id: w.id,
-      name: w.wigDetails,
-      category: 'Perruques' as const,
-      purchasePrice: w.bundlesPrice,
-      price: w.sellingPrice,
-      stock: 1, // Assuming each wig is a unique item for now
-      profit: w.sellingPrice - w.bundlesPrice,
-    }))
-  ];
+  const [products, setProducts] = useState(initialProducts);
+  const [wigs, setWigs] = useState(initialWigs);
+  const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({});
+
+  const handleOpenDialog = (id: string, isOpen: boolean) => {
+    setDialogOpen(prev => ({ ...prev, [id]: isOpen }));
+  };
+
+  const handleProductsSubmit = (values: any) => {
+    setProducts(values.products);
+    handleOpenDialog('products', false);
+  };
+  
+  const handleWigsSubmit = (values: any) => {
+    setWigs(values.wigs);
+    handleOpenDialog('wigs', false);
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -32,11 +48,24 @@ export default function ProductsPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="relative group">
+        <Dialog open={dialogOpen['products']} onOpenChange={(isOpen) => handleOpenDialog('products', isOpen)}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Pencil className="mr-2 h-4 w-4" /> Modifier
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl">
+              <DialogHeader>
+                <DialogTitle>Modifier les Avoirs - Bijoux & Accessoires</DialogTitle>
+              </DialogHeader>
+              <EditProductsForm initialValues={{ products }} onSubmit={handleProductsSubmit} />
+            </DialogContent>
+        </Dialog>
         <CardHeader>
-          <CardTitle>Inventaire des Produits</CardTitle>
+          <CardTitle>Bijoux & Accessoires</CardTitle>
           <CardDescription>
-            Liste de toutes les marchandises disponibles.
+            Liste de vos bijoux et accessoires en stock.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -44,7 +73,6 @@ export default function ProductsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Produit</TableHead>
-                <TableHead>Catégorie</TableHead>
                 <TableHead>Prix d'Achat</TableHead>
                 <TableHead>Prix de Vente</TableHead>
                 <TableHead>Stock</TableHead>
@@ -56,10 +84,9 @@ export default function ProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allProducts.map((product) => (
+              {products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
                   <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
                   <TableCell>{product.price.toFixed(2)} FC</TableCell>
                   <TableCell>{product.stock}</TableCell>
@@ -71,20 +98,72 @@ export default function ProductsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Modifier</DropdownMenuItem>
-                        <DropdownMenuItem>Enregistrer Vente</DropdownMenuItem>
-                        <DropdownMenuItem>Supprimer</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Toggle menu</span>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      
+      <Card className="relative group">
+         <Dialog open={dialogOpen['wigs']} onOpenChange={(isOpen) => handleOpenDialog('wigs', isOpen)}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Pencil className="mr-2 h-4 w-4" /> Modifier
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                <DialogTitle>Modifier les Avoirs - Perruques</DialogTitle>
+              </DialogHeader>
+              <EditWigsForm initialValues={{ wigs }} onSubmit={handleWigsSubmit} />
+            </DialogContent>
+          </Dialog>
+        <CardHeader>
+          <CardTitle>Perruques</CardTitle>
+          <CardDescription>
+            Liste de vos perruques confectionnées.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Détails Perruque</TableHead>
+                <TableHead>Prix d'Achat</TableHead>
+                <TableHead>Prix de Vente</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Bénéfice</TableHead>
+                 <TableHead>Statut</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {wigs.map((wig) => (
+                <TableRow key={wig.id}>
+                  <TableCell className="font-medium">{wig.wigDetails}</TableCell>
+                  <TableCell>{wig.bundlesPrice.toFixed(2)} FC</TableCell>
+                  <TableCell>{wig.sellingPrice.toFixed(2)} FC</TableCell>
+                  <TableCell>{wig.remaining}</TableCell>
+                   <TableCell>{(wig.sellingPrice - wig.bundlesPrice).toFixed(2)} FC</TableCell>
+                  <TableCell>
+                    <Badge variant={wig.remaining > 0 ? 'secondary' : 'destructive'} 
+                           className={wig.remaining > 0 ? 'text-green-700 border-green-300' : ''}>
+                      {wig.remaining > 0 ? 'En stock' : 'En rupture'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Toggle menu</span>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -95,3 +174,4 @@ export default function ProductsPage() {
     </div>
   );
 }
+
