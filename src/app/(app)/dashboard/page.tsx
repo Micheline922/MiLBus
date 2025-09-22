@@ -3,7 +3,7 @@
 import StatCard from '@/components/dashboard/stat-card';
 import RecentSales from '@/components/dashboard/recent-sales';
 import AiInsights from '@/components/dashboard/ai-insights';
-import { DollarSign, Package, ShoppingCart, TrendingDown } from 'lucide-react';
+import { DollarSign, Package, ShoppingCart, TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { useEffect, useState } from 'react';
@@ -59,11 +59,11 @@ export default function DashboardPage() {
           change="+20.1% depuis le mois dernier"
           icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
         />
-        <StatCard 
-          title="Dépenses totales" 
-          value="12 120,45 €" 
-          change="+1.2% depuis le mois dernier"
-          icon={<TrendingDown className="h-4 w-4 text-muted-foreground" />} 
+        <StatCard
+          title="Ventes"
+          value="+12,234"
+          change="+19% depuis le mois dernier"
+          icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
         />
         <StatCard 
           title="Ventes du jour" 

@@ -32,7 +32,8 @@ export default function ProductsPage() {
               <TableRow>
                 <TableHead>Produit</TableHead>
                 <TableHead>Catégorie</TableHead>
-                <TableHead>Prix</TableHead>
+                <TableHead>Prix d'Achat</TableHead>
+                <TableHead>Prix de Vente</TableHead>
                 <TableHead>Stock</TableHead>
                 <TableHead>Bénéfice</TableHead>
                 <TableHead>Statut</TableHead>
@@ -46,6 +47,7 @@ export default function ProductsPage() {
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
+                  <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'}€</TableCell>
                   <TableCell>{product.price.toFixed(2)}€</TableCell>
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>{product.profit?.toFixed(2) ?? 'N/A'}€</TableCell>

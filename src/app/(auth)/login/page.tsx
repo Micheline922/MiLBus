@@ -58,8 +58,8 @@ export default function LoginPage() {
                 </div>
                 <Input id="password" type="password" required />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-                Connexion
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" asChild>
+                <Link href="/dashboard">Connexion</Link>
               </Button>
               <div className="relative my-2">
                 <div className="absolute inset-0 flex items-center">

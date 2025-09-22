@@ -26,6 +26,8 @@ import {
   Settings,
   ShoppingCart,
   Users,
+  Home,
+  FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -41,10 +43,12 @@ export default function AppSidebar() {
     <>
       <SidebarHeader>
         <div className="flex items-center gap-2">
-            <div className="p-2 bg-primary rounded-md flex items-center justify-center">
-                <span className="font-bold text-primary-foreground">M</span>
-            </div>
-          <span className="font-headline text-xl">MiLBus</span>
+            <Link href="/" className="flex items-center gap-2">
+              <div className="p-2 bg-primary rounded-md flex items-center justify-center">
+                  <span className="font-bold text-primary-foreground">M</span>
+              </div>
+              <span className="font-headline text-xl">MiLBus</span>
+            </Link>
         </div>
       </SidebarHeader>
       <SidebarContent className="p-2">
@@ -91,13 +95,6 @@ export default function AppSidebar() {
                             </SidebarMenuSubButton>
                         </Link>
                     </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <Link href="/products/categories" className="w-full">
-                            <SidebarMenuSubButton isActive={isActive('/products/categories')}>
-                                Catégories
-                            </SidebarMenuSubButton>
-                        </Link>
-                    </SidebarMenuSubItem>
                 </SidebarMenuSub>
             )}
           </SidebarMenuItem>
@@ -112,6 +109,13 @@ export default function AppSidebar() {
             <Link href="/reports" className="w-full">
               <SidebarMenuButton isActive={isActive('/reports')} icon={<BarChart3 />}>
                 Rapports
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link href="/invoices" className="w-full">
+              <SidebarMenuButton isActive={isActive('/invoices')} icon={<FileText />}>
+                Factures
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
