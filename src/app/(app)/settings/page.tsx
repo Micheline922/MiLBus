@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import ThemeSwitcher from "@/components/settings/theme-switcher";
 
 export default function SettingsPage() {
   return (
@@ -25,6 +26,18 @@ export default function SettingsPage() {
             </div>
             <Button>Enregistrer</Button>
           </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Apparence</CardTitle>
+                <CardDescription>
+                    Personnalisez l'apparence de l'application.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ThemeSwitcher />
+            </CardContent>
         </Card>
 
         <Card>
