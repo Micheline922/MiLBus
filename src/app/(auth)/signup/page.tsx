@@ -48,9 +48,9 @@ export default function SignUpPage() {
     // For this simulation, we'll just show a success message and redirect.
     toast({
       title: 'Inscription réussie',
-      description: 'Vous pouvez maintenant vous connecter.',
+      description: 'Bienvenue chez MiLBus !',
     });
-    router.push('/login');
+    router.push('/');
   };
 
   return (
