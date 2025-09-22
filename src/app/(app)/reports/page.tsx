@@ -1,7 +1,9 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AiInsights from "@/components/dashboard/ai-insights";
 import WeeklyAiAnalysis from "@/components/dashboard/weekly-ai-analysis";
+import MonthlyEvolutionAnalysis from "@/components/dashboard/monthly-evolution-analysis";
 
 export default function ReportsPage() {
   return (
@@ -22,20 +24,7 @@ export default function ReportsPage() {
           <TabsTrigger value="weekly">Analyse Hebdomadaire</TabsTrigger>
         </TabsList>
         <TabsContent value="monthly_evolution">
-          <Card>
-            <CardHeader>
-              <CardTitle>Évolution des Ventes par Mois</CardTitle>
-              <CardDescription>
-                L'IA analyse vos données pour vous montrer l'évolution mensuelle de vos ventes.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* AI component for monthly evolution will go here */}
-              <div className="text-center text-muted-foreground py-8">
-                <p>La fonctionnalité d'analyse mensuelle est en cours de développement.</p>
-              </div>
-            </CardContent>
-          </Card>
+          <MonthlyEvolutionAnalysis />
         </TabsContent>
         <TabsContent value="inventory">
           <AiInsights />
