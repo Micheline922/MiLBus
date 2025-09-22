@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Bot, Send, X } from 'lucide-react';
+import { Bot, Send, X } from 'lucide-react';
+import { getMenuSuggestion } from '@/app/actions';
 
 type Message = {
   text: string;
@@ -18,20 +19,27 @@ export default function Chatbot() {
     { text: "Bonjour ! Comment puis-je vous aider à développer votre entreprise aujourd'hui ?", sender: 'bot' },
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [isPending, startTransition] = useTransition();
 
   const handleSendMessage = () => {
     if (inputValue.trim() === '') return;
 
     const userMessage: Message = { text: inputValue, sender: 'user' };
     setMessages((prev) => [...prev, userMessage]);
-
-    // Simple bot response logic
-    setTimeout(() => {
-      const botResponse: Message = { text: `Je traite votre demande : "${inputValue}". Pour l'instant, je suis en phase d'apprentissage, mais bientôt je pourrai vous donner des conseils sur vos produits, vos ventes et vos stratégies de croissance !`, sender: 'bot' };
-      setMessages((prev) => [...prev, botResponse]);
-    }, 1000);
-
+    const currentInput = inputValue;
     setInputValue('');
+
+    startTransition(async () => {
+      const result = await getMenuSuggestion(currentInput);
+      let botResponse: Message;
+
+      if (result.error || !result.data) {
+        botResponse = { text: "Désolé, je n'ai pas pu traiter votre demande. Veuillez réessayer.", sender: 'bot' };
+      } else {
+        botResponse = { text: result.data.suggestion, sender: 'bot' };
+      }
+      setMessages((prev) => [...prev, botResponse]);
+    });
   };
 
   return (
@@ -67,6 +75,7 @@ export default function Chatbot() {
                       message.sender === 'user' ? 'justify-end' : 'justify-start'
                     }`}
                   >
+                     {message.sender === 'bot' && <Bot className="h-5 w-5 text-primary shrink-0" />}
                     <div
                       className={`max-w-[80%] rounded-lg px-3 py-2 ${
                         message.sender === 'user'
@@ -78,6 +87,14 @@ export default function Chatbot() {
                     </div>
                   </div>
                 ))}
+                {isPending && (
+                    <div className="flex gap-2 text-sm justify-start">
+                        <Bot className="h-5 w-5 text-primary shrink-0 animate-pulse" />
+                        <div className="max-w-[85%] rounded-lg px-3 py-2 bg-muted">
+                           <div className="h-2 w-16 bg-slate-300 rounded animate-pulse"></div>
+                        </div>
+                    </div>
+                )}
               </div>
             </ScrollArea>
           </CardContent>
@@ -87,8 +104,9 @@ export default function Chatbot() {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Posez une question..."
+              disabled={isPending}
             />
-            <Button onClick={handleSendMessage} size="icon" disabled={!inputValue.trim()}>
+            <Button onClick={handleSendMessage} size="icon" disabled={!inputValue.trim() || isPending}>
               <Send className="h-5 w-5" />
             </Button>
           </div>

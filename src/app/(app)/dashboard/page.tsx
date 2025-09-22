@@ -24,6 +24,7 @@ import EditStatsForm from '@/components/dashboard/edit-stats-form';
 import EditProductsForm from '@/components/dashboard/edit-products-form';
 import EditWigsForm from '@/components/dashboard/edit-wigs-form';
 import EditPastriesForm from '@/components/dashboard/edit-pastries-form';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 const initialChartData = [
@@ -83,175 +84,86 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
-      </div>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 relative group">
-          <Dialog open={dialogOpen['stats']} onOpenChange={(isOpen) => handleOpenDialog('stats', isOpen)}>
-            <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="absolute -top-2 right-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Pencil className="mr-2 h-4 w-4" /> Modifier
-                </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Modifier les Statistiques</DialogTitle>
-                <DialogDescription>
-                  Mettez à jour les cartes de statistiques principales.
-                </DialogDescription>
-              </DialogHeader>
-              <EditStatsForm initialValues={stats} onSubmit={handleStatsSubmit} />
-            </DialogContent>
-          </Dialog>
-        <StatCard 
-          title="Revenus totaux" 
-          value={stats.totalRevenue.value}
-          change={stats.totalRevenue.change}
-          icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
-        />
-        <StatCard
-          title="Ventes"
-          value={stats.sales.value}
-          change={stats.sales.change}
-          icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-        />
-        <StatCard 
-          title="Ventes du jour" 
-          value={stats.dailySales.value}
-          change={stats.dailySales.change}
-          icon={<ShoppingCart className="h-4 w-4 text-muted-foreground" />} 
-        />
-        <StatCard 
-          title="Articles en stock" 
-          value={stats.stock.value}
-          change={stats.stock.change}
-          icon={<Package className="h-4 w-4 text-muted-foreground" />} 
-        />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Aperçu des ventes</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-             <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={chartData}>
-                <XAxis
-                  dataKey="name"
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `${value} FC`}
-                />
-                <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        <RecentSales sales={sales} />
-      </div>
-       <div className="grid grid-cols-1 gap-y-4">
-          <Card className="relative group">
-            <Dialog open={dialogOpen['products']} onOpenChange={(isOpen) => handleOpenDialog('products', isOpen)}>
+    <ScrollArea className="h-[calc(100vh-52px)]">
+      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
+        </div>
+        
+        <div className="relative group grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Dialog open={dialogOpen['stats']} onOpenChange={(isOpen) => handleOpenDialog('stats', isOpen)}>
               <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button variant="outline" size="sm" className="absolute -top-3 right-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Pencil className="mr-2 h-4 w-4" /> Modifier
                   </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Modifier les Avoirs - Bijoux & Accessoires</DialogTitle>
+                  <DialogTitle>Modifier les Statistiques</DialogTitle>
+                  <DialogDescription>
+                    Mettez à jour les cartes de statistiques principales.
+                  </DialogDescription>
                 </DialogHeader>
-                <EditProductsForm initialValues={{ products }} onSubmit={handleProductsSubmit} />
+                <EditStatsForm initialValues={stats} onSubmit={handleStatsSubmit} />
               </DialogContent>
             </Dialog>
+          <StatCard 
+            title="Revenus totaux" 
+            value={stats.totalRevenue.value}
+            change={stats.totalRevenue.change}
+            icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
+          />
+          <StatCard
+            title="Ventes"
+            value={stats.sales.value}
+            change={stats.sales.change}
+            icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
+          />
+          <StatCard 
+            title="Ventes du jour" 
+            value={stats.dailySales.value}
+            change={stats.dailySales.change}
+            icon={<ShoppingCart className="h-4 w-4 text-muted-foreground" />} 
+          />
+          <StatCard 
+            title="Articles en stock" 
+            value={stats.stock.value}
+            change={stats.stock.change}
+            icon={<Package className="h-4 w-4 text-muted-foreground" />} 
+          />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <Card className="col-span-4">
             <CardHeader>
-              <CardTitle className="text-xl">Avoirs en Stock - Bijoux & Accessoires</CardTitle>
-              <CardDescription>
-                Liste de vos marchandises actuellement en stock.
-              </CardDescription>
+              <CardTitle>Aperçu des ventes</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Produit</TableHead>
-                    <TableHead>Prix d'Achat</TableHead>
-                    <TableHead>Quantité en Stock</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
-                      <TableCell>{product.stock}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <CardContent className="pl-2">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={chartData}>
+                  <XAxis
+                    dataKey="name"
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value} FC`}
+                  />
+                  <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
-
-          <Card className="relative group">
-             <Dialog open={dialogOpen['wigs']} onOpenChange={(isOpen) => handleOpenDialog('wigs', isOpen)}>
-              <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Pencil className="mr-2 h-4 w-4" /> Modifier
-                  </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl">
-                <DialogHeader>
-                  <DialogTitle>Modifier les Avoirs - Perruques</DialogTitle>
-                </DialogHeader>
-                <EditWigsForm initialValues={{ wigs }} onSubmit={handleWigsSubmit} />
-              </DialogContent>
-            </Dialog>
-            <CardHeader>
-              <CardTitle  className="text-xl">Avoirs en Stock - Perruques</CardTitle>
-              <CardDescription>
-                Détails de vos perruques confectionnées.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Mèches Achetées</TableHead>
-                    <TableHead>Marque</TableHead>
-                    <TableHead>Couleurs</TableHead>
-                    <TableHead>Détails Perruque</TableHead>
-                    <TableHead>Prix des Mèches</TableHead>
-                    <TableHead>Prix de Vente</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {wigs.map((wig) => (
-                    <TableRow key={wig.id}>
-                      <TableCell>{wig.purchasedBundles}</TableCell>
-                      <TableCell>{wig.brand}</TableCell>
-                      <TableCell>{wig.colors}</TableCell>
-                      <TableCell>{wig.wigDetails}</TableCell>
-                      <TableCell>{wig.bundlesPrice.toFixed(2)} FC</TableCell>
-                      <TableCell>{wig.sellingPrice.toFixed(2)} FC</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-           <Card className="relative group">
-              <Dialog open={dialogOpen['pastries']} onOpenChange={(isOpen) => handleOpenDialog('pastries', isOpen)}>
+          <RecentSales sales={sales} />
+        </div>
+        <div className="grid grid-cols-1 gap-y-4">
+            <Card className="relative group">
+              <Dialog open={dialogOpen['products']} onOpenChange={(isOpen) => handleOpenDialog('products', isOpen)}>
                 <DialogTrigger asChild>
                     <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Pencil className="mr-2 h-4 w-4" /> Modifier
@@ -259,15 +171,15 @@ export default function DashboardPage() {
                 </DialogTrigger>
                 <DialogContent className="max-w-3xl">
                   <DialogHeader>
-                    <DialogTitle>Modifier la Gestion des Pâtisseries</DialogTitle>
+                    <DialogTitle>Modifier les Avoirs - Bijoux & Accessoires</DialogTitle>
                   </DialogHeader>
-                  <EditPastriesForm initialValues={{ pastries }} onSubmit={handlePastriesSubmit} />
+                  <EditProductsForm initialValues={{ products }} onSubmit={handleProductsSubmit} />
                 </DialogContent>
               </Dialog>
               <CardHeader>
-                <CardTitle className="text-xl">Gestion des Pâtisseries</CardTitle>
+                <CardTitle className="text-xl">Avoirs en Stock - Bijoux & Accessoires</CardTitle>
                 <CardDescription>
-                  Suivi des ventes de beignets, crêpes et gâteaux.
+                  Liste de vos marchandises actuellement en stock.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -275,34 +187,123 @@ export default function DashboardPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Produit</TableHead>
-                      <TableHead>Quantité</TableHead>
-                      <TableHead>Prix Unitaire</TableHead>
-                      <TableHead>Prix Total</TableHead>
-                      <TableHead>Dépenses</TableHead>
+                      <TableHead>Prix d'Achat</TableHead>
+                      <TableHead>Quantité en Stock</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {pastries.map((pastry) => (
-                      <TableRow key={pastry.id}>
-                        <TableCell className="font-medium">{pastry.name}</TableCell>
-                        <TableCell>{pastry.quantity}</TableCell>
-                        <TableCell>{pastry.unitPrice.toFixed(2)} FC</TableCell>
-                        <TableCell>{pastry.totalPrice.toFixed(2)} FC</TableCell>
-                        <TableCell>{pastry.expenses.toFixed(2)} FC</TableCell>
+                    {products.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
+                        <TableCell>{product.stock}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </CardContent>
             </Card>
-          
-          <div className="grid gap-4 md:grid-cols-2">
-            <AiChat />
-            <WeeklyAiAnalysis />
-          </div>
+
+            <Card className="relative group">
+              <Dialog open={dialogOpen['wigs']} onOpenChange={(isOpen) => handleOpenDialog('wigs', isOpen)}>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Pencil className="mr-2 h-4 w-4" /> Modifier
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Modifier les Avoirs - Perruques</DialogTitle>
+                  </DialogHeader>
+                  <EditWigsForm initialValues={{ wigs }} onSubmit={handleWigsSubmit} />
+                </DialogContent>
+              </Dialog>
+              <CardHeader>
+                <CardTitle  className="text-xl">Avoirs en Stock - Perruques</CardTitle>
+                <CardDescription>
+                  Détails de vos perruques confectionnées.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Mèches Achetées</TableHead>
+                      <TableHead>Marque</TableHead>
+                      <TableHead>Couleurs</TableHead>
+                      <TableHead>Détails Perruque</TableHead>
+                      <TableHead>Prix des Mèches</TableHead>
+                      <TableHead>Prix de Vente</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {wigs.map((wig) => (
+                      <TableRow key={wig.id}>
+                        <TableCell>{wig.purchasedBundles}</TableCell>
+                        <TableCell>{wig.brand}</TableCell>
+                        <TableCell>{wig.colors}</TableCell>
+                        <TableCell>{wig.wigDetails}</TableCell>
+                        <TableCell>{wig.bundlesPrice.toFixed(2)} FC</TableCell>
+                        <TableCell>{wig.sellingPrice.toFixed(2)} FC</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            <Card className="relative group">
+                <Dialog open={dialogOpen['pastries']} onOpenChange={(isOpen) => handleOpenDialog('pastries', isOpen)}>
+                  <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Pencil className="mr-2 h-4 w-4" /> Modifier
+                      </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-3xl">
+                    <DialogHeader>
+                      <DialogTitle>Modifier la Gestion des Pâtisseries</DialogTitle>
+                    </DialogHeader>
+                    <EditPastriesForm initialValues={{ pastries }} onSubmit={handlePastriesSubmit} />
+                  </DialogContent>
+                </Dialog>
+                <CardHeader>
+                  <CardTitle className="text-xl">Gestion des Pâtisseries</CardTitle>
+                  <CardDescription>
+                    Suivi des ventes de beignets, crêpes et gâteaux.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Produit</TableHead>
+                        <TableHead>Quantité</TableHead>
+                        <TableHead>Prix Unitaire</TableHead>
+                        <TableHead>Prix Total</TableHead>
+                        <TableHead>Dépenses</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pastries.map((pastry) => (
+                        <TableRow key={pastry.id}>
+                          <TableCell className="font-medium">{pastry.name}</TableCell>
+                          <TableCell>{pastry.quantity}</TableCell>
+                          <TableCell>{pastry.unitPrice.toFixed(2)} FC</TableCell>
+                          <TableCell>{pastry.totalPrice.toFixed(2)} FC</TableCell>
+                          <TableCell>{pastry.expenses.toFixed(2)} FC</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              <AiChat />
+              <WeeklyAiAnalysis />
+            </div>
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 }
-
-    

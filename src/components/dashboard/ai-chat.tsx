@@ -1,12 +1,13 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bot, Send, Wand2 } from 'lucide-react';
+import { getMenuSuggestion } from '@/app/actions';
 
 type Message = {
   text: string;
@@ -18,22 +19,27 @@ export default function AiChat() {
     { text: "Posez-moi une question sur vos données de vente, vos produits, ou comment agrandir votre entreprise.", sender: 'bot' },
   ]);
   const [inputValue, setInputValue] = useState('');
-  const [isPending, setIsPending] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const handleSendMessage = () => {
     if (inputValue.trim() === '') return;
 
     const userMessage: Message = { text: inputValue, sender: 'user' };
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = inputValue;
     setInputValue('');
-    setIsPending(true);
+    
+    startTransition(async () => {
+      const result = await getMenuSuggestion(currentInput);
+      let botResponse: Message;
 
-    // Simple bot response logic
-    setTimeout(() => {
-      const botResponse: Message = { text: `Je traite votre demande : "${inputValue}". Pour l'instant, je suis en phase d'apprentissage, mais bientôt je pourrai vous donner des conseils sur vos produits, vos ventes et vos stratégies de croissance !`, sender: 'bot' };
+      if (result.error || !result.data) {
+        botResponse = { text: "Désolé, je n'ai pas pu traiter votre demande. Veuillez réessayer.", sender: 'bot' };
+      } else {
+        botResponse = { text: result.data.suggestion, sender: 'bot' };
+      }
       setMessages((prev) => [...prev, botResponse]);
-      setIsPending(false);
-    }, 1500);
+    });
   };
 
   return (
@@ -95,5 +101,3 @@ export default function AiChat() {
     </Card>
   );
 }
-
-    

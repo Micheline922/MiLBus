@@ -2,6 +2,7 @@
 
 import { analyzeSalesDataForRestock, AnalyzeSalesDataForRestockOutput } from '@/ai/flows/analyze-sales-data-for-restock';
 import { getWeeklySalesSummary, GetWeeklySalesSummaryOutput } from '@/ai/flows/get-weekly-sales-summary';
+import { menuSuggester, MenuSuggesterOutput } from '@/ai/flows/menu-suggester-flow';
 
 // This is a sample of what your sales data might look like.
 // In a real application, you would fetch this from your database.
@@ -52,4 +53,19 @@ export async function getWeeklyAiSummary(): Promise<WeeklySummaryResult> {
     console.error('Weekly AI Summary Error:', e);
     return { error: 'Une erreur est survenue lors de la génération du résumé hebdomadaire.' };
   }
+}
+
+type MenuSuggestionResult = {
+    data?: MenuSuggesterOutput;
+    error?: string;
+}
+
+export async function getMenuSuggestion(prompt: string): Promise<MenuSuggestionResult> {
+    try {
+        const suggestion = await menuSuggester({ prompt });
+        return { data: suggestion };
+    } catch (e) {
+        console.error('Menu Suggestion Error:', e);
+        return { error: 'An error occurred while generating a suggestion.' };
+    }
 }
