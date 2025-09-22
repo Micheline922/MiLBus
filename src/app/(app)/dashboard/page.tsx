@@ -7,10 +7,9 @@ import { DollarSign, Package, Pencil, ShoppingCart, TrendingUp } from 'lucide-re
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { products as initialProducts, sales as initialSales, customers as initialCustomers, wigs as initialWigs } from '@/lib/data';
+import { products as initialProducts, sales as initialSales, customers as initialCustomers, wigs as initialWigs, pastries as initialPastries } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -42,6 +41,7 @@ export default function DashboardPage() {
   const [chartData, setChartData] = useState(initialChartData);
   const [products, setProducts] = useState(initialProducts);
   const [wigs, setWigs] = useState(initialWigs);
+  const [pastries, setPastries] = useState(initialPastries);
   const [sales, setSales] = useState(initialSales);
   const [customers, setCustomers] = useState(initialCustomers);
   const [stats, setStats] = useState({
@@ -145,20 +145,76 @@ export default function DashboardPage() {
         </Card>
         <RecentSales sales={sales} />
       </div>
-       <div className="grid gap-4 md:grid-cols-1">
-        <Tabs defaultValue="assets" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="assets">Bijoux & Accessoires</TabsTrigger>
-            <TabsTrigger value="wigs">Perruques</TabsTrigger>
-            <TabsTrigger value="inventory">Recommandations de Stock</TabsTrigger>
-            <TabsTrigger value="weekly">Analyse Hebdomadaire</TabsTrigger>
-          </TabsList>
-          <TabsContent value="assets">
-            <Card>
+       <div className="grid grid-cols-1 gap-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Avoirs en Stock - Bijoux & Accessoires</CardTitle>
+              <CardDescription>
+                Liste de vos marchandises actuellement en stock.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Produit</TableHead>
+                    <TableHead>Prix d'Achat</TableHead>
+                    <TableHead>Quantité en Stock</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {products.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
+                      <TableCell>{product.stock}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle  className="text-xl">Avoirs en Stock - Perruques</CardTitle>
+              <CardDescription>
+                Détails de vos perruques confectionnées.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Mèches Achetées</TableHead>
+                    <TableHead>Marque</TableHead>
+                    <TableHead>Couleurs</TableHead>
+                    <TableHead>Détails Perruque</TableHead>
+                    <TableHead>Prix des Mèches</TableHead>
+                    <TableHead>Prix de Vente</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {wigs.map((wig) => (
+                    <TableRow key={wig.id}>
+                      <TableCell>{wig.purchasedBundles}</TableCell>
+                      <TableCell>{wig.brand}</TableCell>
+                      <TableCell>{wig.colors}</TableCell>
+                      <TableCell>{wig.wigDetails}</TableCell>
+                      <TableCell>{wig.bundlesPrice.toFixed(2)} FC</TableCell>
+                      <TableCell>{wig.sellingPrice.toFixed(2)} FC</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+           <Card>
               <CardHeader>
-                <CardTitle>Avoirs en Stock - Bijoux & Accessoires</CardTitle>
+                <CardTitle className="text-xl">Gestion des Pâtisseries</CardTitle>
                 <CardDescription>
-                  Liste de vos marchandises actuellement en stock.
+                  Suivi des ventes de beignets, crêpes et gâteaux.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -166,66 +222,31 @@ export default function DashboardPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Produit</TableHead>
-                      <TableHead>Prix d'Achat</TableHead>
-                      <TableHead>Quantité en Stock</TableHead>
+                      <TableHead>Quantité</TableHead>
+                      <TableHead>Prix Unitaire</TableHead>
+                      <TableHead>Prix Total</TableHead>
+                      <TableHead>Dépenses</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {products.map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
-                        <TableCell>{product.stock}</TableCell>
+                    {pastries.map((pastry) => (
+                      <TableRow key={pastry.id}>
+                        <TableCell className="font-medium">{pastry.name}</TableCell>
+                        <TableCell>{pastry.quantity}</TableCell>
+                        <TableCell>{pastry.unitPrice.toFixed(2)} FC</TableCell>
+                        <TableCell>{pastry.totalPrice.toFixed(2)} FC</TableCell>
+                        <TableCell>{pastry.expenses.toFixed(2)} FC</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </CardContent>
             </Card>
-          </TabsContent>
-          <TabsContent value="wigs">
-            <Card>
-              <CardHeader>
-                <CardTitle>Avoirs en Stock - Perruques</CardTitle>
-                <CardDescription>
-                  Détails de vos perruques confectionnées.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Mèches Achetées</TableHead>
-                      <TableHead>Marque</TableHead>
-                      <TableHead>Couleurs</TableHead>
-                      <TableHead>Détails Perruque</TableHead>
-                      <TableHead>Prix des Mèches</TableHead>
-                      <TableHead>Prix de Vente</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {wigs.map((wig) => (
-                      <TableRow key={wig.id}>
-                        <TableCell>{wig.purchasedBundles}</TableCell>
-                        <TableCell>{wig.brand}</TableCell>
-                        <TableCell>{wig.colors}</TableCell>
-                        <TableCell>{wig.wigDetails}</TableCell>
-                        <TableCell>{wig.bundlesPrice.toFixed(2)} FC</TableCell>
-                        <TableCell>{wig.sellingPrice.toFixed(2)} FC</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="inventory">
+          
+          <div className="grid gap-4 md:grid-cols-2">
             <AiInsights />
-          </TabsContent>
-          <TabsContent value="weekly">
             <WeeklyAiAnalysis />
-          </TabsContent>
-        </Tabs>
+          </div>
       </div>
     </div>
   );

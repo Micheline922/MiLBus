@@ -18,6 +18,15 @@ export type Wig = {
   sellingPrice: number;
 };
 
+export type Pastry = {
+  id: string;
+  name: 'Beignets' | 'Crêpes' | 'Gâteaux';
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  expenses: number;
+};
+
 export type Sale = {
   id: string;
   productName: string;
@@ -58,6 +67,12 @@ export const products: Product[] = [
 export const wigs: Wig[] = [
     { id: 'w1', purchasedBundles: '3 paquets de mèches lisses', brand: 'Brazilian Hair', colors: 'Noir naturel (1B)', wigDetails: 'Perruque Lace Frontal 18 pouces', bundlesPrice: 100.00, sellingPrice: 150.00 },
     { id: 'w2', purchasedBundles: '4 paquets de mèches bouclées', brand: 'Peruvian Hair', colors: 'Blond miel', wigDetails: 'Perruque Full Lace 24 pouces avec baby hairs', bundlesPrice: 150.00, sellingPrice: 220.00 },
+];
+
+export const pastries: Pastry[] = [
+  { id: 'pa1', name: 'Beignets', quantity: 50, unitPrice: 0.5, totalPrice: 25, expenses: 10 },
+  { id: 'pa2', name: 'Crêpes', quantity: 30, unitPrice: 1, totalPrice: 30, expenses: 12 },
+  { id: 'pa3', name: 'Gâteaux', quantity: 10, unitPrice: 2, totalPrice: 20, expenses: 8 },
 ];
 
 export const sales: Sale[] = [
