@@ -1,4 +1,5 @@
 import AppSidebar from '@/components/shared/app-sidebar';
+import Chatbot from '@/components/shared/chatbot';
 import {
   Sidebar,
   SidebarInset,
@@ -11,7 +12,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <AppSidebar />
       </Sidebar>
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset>
+        {children}
+        <Chatbot />
+      </SidebarInset>
     </SidebarProvider>
   );
 }
