@@ -11,15 +11,12 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg
             {...props}
-            viewBox="0 0 100 100"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="4"
+            width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"
         >
-            <path d="M20 80 Q50 20 80 80" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M35 80 Q50 50 65 80" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="50" cy="50" r="3" fill="currentColor" stroke="none" />
+            <path d="M20 80C20 80 30 20 50 20C70 20 80 80 80 80" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M35 80C35 80 40 50 50 50C60 50 65 80 65 80" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M50 50V35" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+            <path d="M42 25L50 35L58 25" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
     );
 }
