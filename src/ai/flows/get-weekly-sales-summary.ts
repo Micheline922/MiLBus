@@ -23,7 +23,7 @@ const GetWeeklySalesSummaryOutputSchema = z.object({
   weeklySummary: z
     .string()
     .describe(
-      'A summary of the sales evolution for the week, highlighting key trends, top-selling products, and a general overview.'
+      'Un résumé de l\'évolution des ventes pour la semaine, mettant en évidence les principales tendances, les produits les plus vendus et une vue d\'ensemble générale.'
     ),
 });
 export type GetWeeklySalesSummaryOutput = z.infer<typeof GetWeeklySalesSummaryOutputSchema>;
@@ -36,14 +36,15 @@ const prompt = ai.definePrompt({
   name: 'getWeeklySalesSummaryPrompt',
   input: {schema: GetWeeklySalesSummaryInputSchema},
   output: {schema: GetWeeklySalesSummaryOutputSchema},
-  prompt: `You are an expert sales analyst.
-  Analyze the following sales data for the week and generate a concise summary of the sales evolution.
-  Identify the best-selling products, any noticeable trends (e.g., certain days with high sales), and provide a brief, easy-to-understand overview.
+  prompt: `Vous êtes un expert analyste des ventes.
+  Analysez les données de ventes suivantes pour la semaine et générez un résumé concis de l'évolution des ventes.
+  Identifiez les produits les plus vendus, les tendances notables (par exemple, certains jours avec des ventes élevées), et fournissez un aperçu bref et facile à comprendre.
+  Toutes les réponses doivent être en français.
 
-  Weekly Sales Data:
+  Données de ventes hebdomadaires :
   {{{salesData}}}
 
-  Your summary should be encouraging and insightful for a small business owner.
+  Votre résumé doit être encourageant et perspicace pour un propriétaire de petite entreprise.
   `,
 });
 

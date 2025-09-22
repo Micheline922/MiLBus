@@ -26,11 +26,11 @@ const AnalyzeSalesDataForRestockOutputSchema = z.object({
   restockRecommendations: z
     .string()
     .describe(
-      'A list of product names to restock, along with the recommended quantities.'
+      'Une liste de noms de produits à réapprovisionner, ainsi que les quantités recommandées.'
     ),
   salesTrends: z
     .string()
-    .describe('A summary of sales trends identified in the data.'),
+    .describe('Un résumé des tendances de vente identifiées dans les données.'),
 });
 export type AnalyzeSalesDataForRestockOutput = z.infer<
   typeof AnalyzeSalesDataForRestockOutputSchema
@@ -46,14 +46,15 @@ const analyzeSalesDataForRestockPrompt = ai.definePrompt({
   name: 'analyzeSalesDataForRestockPrompt',
   input: {schema: AnalyzeSalesDataForRestockInputSchema},
   output: {schema: AnalyzeSalesDataForRestockOutputSchema},
-  prompt: `You are an AI assistant helping a small business owner manage their inventory.
-  Analyze the following sales data to identify products that need restocking and provide a summary of sales trends.
+  prompt: `Vous êtes un assistant IA qui aide un propriétaire de petite entreprise à gérer ses stocks.
+  Analysez les données de ventes suivantes pour identifier les produits à réapprovisionner et fournir un résumé des tendances des ventes.
+  Toutes les réponses doivent être en français.
 
-  Sales Data:
+  Données de ventes :
   {{salesData}}
 
-  Based on this data, provide a list of products to restock and the recommended quantities.
-  Also, provide a summary of any sales trends you identify.
+  Sur la base de ces données, fournissez une liste de produits à réapprovisionner et les quantités recommandées.
+  Fournissez également un résumé des tendances de ventes que vous identifiez.
   `,
 });
 
