@@ -4,13 +4,13 @@
 import StatCard from '@/components/dashboard/stat-card';
 import RecentSales from '@/components/dashboard/recent-sales';
 import AiChat from '@/components/dashboard/ai-chat';
-import { DollarSign, Package, Pencil, ShoppingCart, TrendingUp } from 'lucide-react';
+import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { useState } from 'react';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { products as initialProducts, sales as initialSales, customers as initialCustomers, wigs as initialWigs, pastries as initialPastries } from '@/lib/data';
+import { products as initialProducts, sales as initialSales, customers as initialCustomers, wigs as initialWigs, pastries as initialPastries, pastryExpenses as initialPastryExpenses } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -26,6 +26,8 @@ import EditWigsForm from '@/components/dashboard/edit-wigs-form';
 import EditPastriesForm from '@/components/dashboard/edit-pastries-form';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import EditSalesForm from '@/components/dashboard/edit-sales-form';
+import PastryExpensesTable from '@/components/dashboard/pastry-expenses-table';
+import EditPastryExpensesForm from '@/components/dashboard/edit-pastry-expenses-form';
 
 
 const initialChartData = [
@@ -48,6 +50,7 @@ export default function DashboardPage() {
   const [products, setProducts] = useState(initialProducts);
   const [wigs, setWigs] = useState(initialWigs);
   const [pastries, setPastries] = useState(initialPastries);
+  const [pastryExpenses, setPastryExpenses] = useState(initialPastryExpenses);
   const [sales, setSales] = useState(initialSales);
   const [customers, setCustomers] = useState(initialCustomers);
   const [stats, setStats] = useState({
@@ -86,6 +89,11 @@ export default function DashboardPage() {
     handleOpenDialog('pastries', false);
   };
 
+  const handlePastryExpensesSubmit = (values: any) => {
+    setPastryExpenses(values.pastryExpenses);
+    handleOpenDialog('pastryExpenses', false);
+  }
+
   const handleSalesSubmit = (values: any) => {
     setSales(values.sales);
     handleOpenDialog('sales', false);
@@ -93,14 +101,14 @@ export default function DashboardPage() {
 
 
   return (
-    <ScrollArea className="h-[calc(100vh-52px)]">
+    <ScrollArea className="h-full">
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="relative group">
+            <Card className="relative group col-span-3">
               <Dialog open={dialogOpen['stats']} onOpenChange={(isOpen) => handleOpenDialog('stats', isOpen)}>
                 <DialogTrigger asChild>
                     <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -117,24 +125,26 @@ export default function DashboardPage() {
                   <EditStatsForm initialValues={stats} onSubmit={handleStatsSubmit} />
                 </DialogContent>
               </Dialog>
-               <StatCard 
-                title="Revenus totaux" 
-                value={stats.totalRevenue.value}
-                change={stats.totalRevenue.change}
-                icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
-              />
-              <StatCard
-                title="Ventes"
-                value={stats.sales.value}
-                change={stats.sales.change}
-                icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-              />
-              <StatCard 
-                title="Articles en stock" 
-                value={stats.stock.value}
-                change={stats.stock.change}
-                icon={<Package className="h-4 w-4 text-muted-foreground" />} 
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+                <StatCard 
+                  title="Revenus totaux" 
+                  value={stats.totalRevenue.value}
+                  change={stats.totalRevenue.change}
+                  icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
+                />
+                <StatCard
+                  title="Ventes"
+                  value={stats.sales.value}
+                  change={stats.sales.change}
+                  icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
+                />
+                <StatCard 
+                  title="Articles en stock" 
+                  value={stats.stock.value}
+                  change={stats.stock.change}
+                  icon={<Package className="h-4 w-4 text-muted-foreground" />} 
+                />
+              </div>
             </Card>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -329,6 +339,23 @@ export default function DashboardPage() {
                   </Table>
                 </CardContent>
               </Card>
+
+            <div className="relative group">
+                <Dialog open={dialogOpen['pastryExpenses']} onOpenChange={(isOpen) => handleOpenDialog('pastryExpenses', isOpen)}>
+                  <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Pencil className="mr-2 h-4 w-4" /> Modifier
+                      </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-3xl">
+                    <DialogHeader>
+                      <DialogTitle>Modifier les Dépenses des Pâtisseries</DialogTitle>
+                    </DialogHeader>
+                    <EditPastryExpensesForm initialValues={{ pastryExpenses }} onSubmit={handlePastryExpensesSubmit} />
+                  </DialogContent>
+                </Dialog>
+                <PastryExpensesTable expenses={pastryExpenses} />
+            </div>
             
             <div className="grid gap-4 md:grid-cols-2">
               <AiChat />
@@ -340,7 +367,3 @@ export default function DashboardPage() {
     </ScrollArea>
   );
 }
-
-    
-
-    

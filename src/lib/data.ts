@@ -33,6 +33,14 @@ export type Pastry = {
   remaining: number;
 };
 
+export type PastryExpense = {
+  id: string;
+  item: string;
+  cost: number;
+  category: 'Beignets' | 'Crêpes' | 'Gâteaux' | 'Général';
+  purchaseDate: string;
+};
+
 export type Sale = {
   id: string;
   productName: string;
@@ -81,6 +89,14 @@ export const pastries: Pastry[] = [
   { id: 'pa3', name: 'Gâteaux', quantity: 10, unitPrice: 2, totalPrice: 20, expenses: 8, sold: 8, remaining: 2 },
 ];
 
+export const pastryExpenses: PastryExpense[] = [
+  { id: 'pe1', item: 'Farine', cost: 5.00, category: 'Général', purchaseDate: '2023-10-20' },
+  { id: 'pe2', item: 'Sucre', cost: 3.00, category: 'Général', purchaseDate: '2023-10-20' },
+  { id: 'pe3', item: 'Oeufs', cost: 4.00, category: 'Gâteaux', purchaseDate: '2023-10-21' },
+  { id: 'pe4', item: 'Huile de friture', cost: 7.00, category: 'Beignets', purchaseDate: '2023-10-22' },
+  { id: 'pe5', item: 'Lait', cost: 2.50, category: 'Crêpes', purchaseDate: '2023-10-22' },
+];
+
 export const sales: Sale[] = [
   { id: 's1', productName: 'Perruque "Lisse 18 pouces"', customerName: 'Marie Claire', date: '2023-10-26', amount: 150.00, quantity: 1 },
   { id: 's2', productName: 'Chouchou en satin', customerName: 'Amina Diallo', date: '2023-10-25', amount: 11.00, quantity: 2 },
@@ -102,5 +118,3 @@ export const orders: Order[] = [
   { id: 'o2', customerName: 'Marie Claire', customerAddress: '45 Avenue des Champs, Lyon', products: ['Chaînette en or'], totalAmount: 25.00, paidAmount: 25.00, remainingAmount: 0.00, status: 'Payée', date: '2023-10-27'},
   { id: 'o3', customerName: 'Amina Diallo', customerAddress: '78 Boulevard Voltaire, Marseille', products: ['Chouchou en satin'], totalAmount: 5.50, paidAmount: 0.00, remainingAmount: 5.50, status: 'En attente', date: '2023-10-26'},
 ];
-
-    
