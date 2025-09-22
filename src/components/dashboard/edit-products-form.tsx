@@ -49,7 +49,7 @@ export default function EditProductsForm({ initialValues, onSubmit }: EditProduc
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <ScrollArea className="h-[60vh] pr-4">
+        <ScrollArea className="h-[65vh] pr-4">
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Avoirs en Stock - Bijoux & Accessoires</h3>
              <div className='space-y-4'>

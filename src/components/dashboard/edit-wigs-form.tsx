@@ -52,7 +52,7 @@ export default function EditWigsForm({ initialValues, onSubmit }: EditWigsFormPr
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <ScrollArea className="h-[60vh] pr-4">
+        <ScrollArea className="h-[65vh] pr-4">
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Avoirs en Stock - Perruques</h3>
              <div className='space-y-4'>
@@ -96,7 +96,7 @@ export default function EditWigsForm({ initialValues, onSubmit }: EditWigsFormPr
                         />
                         <FormField
                             control={form.control}
-                            name={`wigs.S${index}.wigDetails`}
+                            name={`wigs.${index}.wigDetails`}
                             render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Détails Perruque</FormLabel>
@@ -142,5 +142,3 @@ export default function EditWigsForm({ initialValues, onSubmit }: EditWigsFormPr
     </Form>
   );
 }
-
-    
