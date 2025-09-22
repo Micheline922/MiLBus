@@ -24,6 +24,18 @@ export type Customer = {
     lastPurchase: string;
 };
 
+export type Order = {
+  id: string;
+  customerName: string;
+  customerAddress: string;
+  products: string[];
+  totalAmount: number;
+  paidAmount: number;
+  remainingAmount: number;
+  status: 'En attente' | 'Payée' | 'Annulée';
+  date: string;
+};
+
 export const products: Product[] = [
   { id: 'p1', name: 'Chaînette en or', category: 'Bijoux & Accessoires', price: 25.00, stock: 15, profit: 10.00 },
   { id: 'p2', name: 'Chouchou en satin', category: 'Bijoux & Accessoires', price: 5.50, stock: 50, profit: 2.50 },
@@ -48,4 +60,10 @@ export const customers: Customer[] = [
     { id: 'c3', name: 'Sophie Dubois', contact: '+243 XXX XX XX XX', purchaseHistory: 5, lastPurchase: '2023-10-25' },
     { id: 'c4', name: 'Léa Martin', contact: '+243 XXX XX XX XX', purchaseHistory: 3, lastPurchase: '2023-10-23' },
     { id: 'c5', name: 'Fatou Ndiaye', contact: '+243 XXX XX XX XX', purchaseHistory: 1, lastPurchase: '2023-09-12' },
+];
+
+export const orders: Order[] = [
+  { id: 'o1', customerName: 'Sophie Dubois', customerAddress: '123 Rue de la Paix, Paris', products: ['Gloss "Crystal"', 'Pendentif lune'], totalAmount: 30.75, paidAmount: 20.00, remainingAmount: 10.75, status: 'En attente', date: '2023-10-28'},
+  { id: 'o2', customerName: 'Marie Claire', customerAddress: '45 Avenue des Champs, Lyon', products: ['Chaînette en or'], totalAmount: 25.00, paidAmount: 25.00, remainingAmount: 0.00, status: 'Payée', date: '2023-10-27'},
+  { id: 'o3', customerName: 'Amina Diallo', customerAddress: '78 Boulevard Voltaire, Marseille', products: ['Chouchou en satin'], totalAmount: 5.50, paidAmount: 0.00, remainingAmount: 5.50, status: 'En attente', date: '2023-10-26'},
 ];

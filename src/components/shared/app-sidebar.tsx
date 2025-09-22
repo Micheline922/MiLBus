@@ -20,6 +20,7 @@ import {
 import {
   BarChart3,
   ChevronDown,
+  ClipboardList,
   LayoutGrid,
   Package,
   Settings,
@@ -55,6 +56,13 @@ export default function AppSidebar() {
                 icon={<LayoutGrid />}
               >
                 Tableau de bord
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link href="/orders" className="w-full">
+              <SidebarMenuButton isActive={isActive('/orders')} icon={<ClipboardList />}>
+                Commandes
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>

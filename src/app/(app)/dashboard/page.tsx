@@ -7,6 +7,8 @@ import { DollarSign, Package, ShoppingCart, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { useEffect, useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 
 
 const initialChartData = [
@@ -28,6 +30,7 @@ export default function DashboardPage() {
   const [chartData, setChartData] = useState(initialChartData);
 
   useEffect(() => {
+    // This should run only on the client
     setChartData([
       { name: 'Jan', total: Math.floor(Math.random() * 5000) + 1000 },
       { name: 'Fev', total: Math.floor(Math.random() * 5000) + 1000 },
@@ -105,7 +108,18 @@ export default function DashboardPage() {
         <RecentSales />
       </div>
        <div className="grid gap-4 md:grid-cols-1">
-        <AiInsights />
+        <Tabs defaultValue="inventory">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="inventory">Recommandations de Stock</TabsTrigger>
+            <TabsTrigger value="weekly">Analyse Hebdomadaire</TabsTrigger>
+          </TabsList>
+          <TabsContent value="inventory">
+            <AiInsights />
+          </TabsContent>
+          <TabsContent value="weekly">
+            <WeeklyAiAnalysis />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
