@@ -1,27 +1,49 @@
+'use client';
+
 import StatCard from '@/components/dashboard/stat-card';
 import RecentSales from '@/components/dashboard/recent-sales';
 import AiInsights from '@/components/dashboard/ai-insights';
 import { DollarSign, Package, ShoppingCart, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { useEffect, useState } from 'react';
 
 
-const chartData = [
-  { name: 'Jan', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Fev', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Mar', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Avr', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Mai', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Jui', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Jui', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Aoû', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Sep', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Oct', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Nov', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Déc', total: Math.floor(Math.random() * 5000) + 1000 },
+const initialChartData = [
+  { name: 'Jan', total: 0 },
+  { name: 'Fev', total: 0 },
+  { name: 'Mar', total: 0 },
+  { name: 'Avr', total: 0 },
+  { name: 'Mai', total: 0 },
+  { name: 'Jui', total: 0 },
+  { name: 'Jui', total: 0 },
+  { name: 'Aoû', total: 0 },
+  { name: 'Sep', total: 0 },
+  { name: 'Oct', total: 0 },
+  { name: 'Nov', total: 0 },
+  { name: 'Déc', total: 0 },
 ]
 
 export default function DashboardPage() {
+  const [chartData, setChartData] = useState(initialChartData);
+
+  useEffect(() => {
+    setChartData([
+      { name: 'Jan', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Fev', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Mar', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Avr', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Mai', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Jui', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Jui', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Aoû', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Sep', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Oct', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Nov', total: Math.floor(Math.random() * 5000) + 1000 },
+      { name: 'Déc', total: Math.floor(Math.random() * 5000) + 1000 },
+    ]);
+  }, []);
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
