@@ -110,7 +110,7 @@ export default function DashboardPage() {
         <RecentSales />
       </div>
        <div className="grid gap-4 md:grid-cols-1">
-        <Tabs defaultValue="inventory">
+        <Tabs defaultValue="assets">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="assets">Actifs</TabsTrigger>
             <TabsTrigger value="inventory">Recommandations de Stock</TabsTrigger>
