@@ -115,9 +115,9 @@ export default function AppSidebar() {
             {open.products && (
                 <SidebarMenuSub>
                     <SidebarMenuSubItem>
-                        <Link href="/products" className="w-full" legacyBehavior passHref>
+                        <Link href="/products" className="w-full">
                             <SidebarMenuSubButton asChild isActive={isActive('/products')}>
-                                <a>Gérer les produits</a>
+                                Gérer les produits
                             </SidebarMenuSubButton>
                         </Link>
                     </SidebarMenuSubItem>
