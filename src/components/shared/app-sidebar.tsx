@@ -27,7 +27,8 @@ import {
   ShoppingCart,
   Users,
   Home,
-  FileText
+  FileText,
+  CreditCard
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -126,6 +127,13 @@ export default function AppSidebar() {
             <Link href="/customers" className="w-full">
               <SidebarMenuButton isActive={isActive('/customers')} icon={<Users />}>
                 Clients
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link href="/debts" className="w-full">
+              <SidebarMenuButton isActive={isActive('/debts')} icon={<CreditCard />}>
+                Dettes
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>

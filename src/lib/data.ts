@@ -70,6 +70,15 @@ export type Order = {
   date: string;
 };
 
+export type Debt = {
+  id: string;
+  debtorName: string;
+  amount: number;
+  debtDate: string;
+  paymentDate: string;
+  status: 'En cours' | 'Remboursée';
+};
+
 export const products: Product[] = [
   { id: 'p1', name: 'Chaînette en or', category: 'Bijoux & Accessoires', purchasePrice: 15.00, price: 25.00, stock: 15, sold: 5, remaining: 10, profit: 10.00 },
   { id: 'p2', name: 'Chouchou en satin', category: 'Bijoux & Accessoires', purchasePrice: 3.00, price: 5.50, stock: 50, sold: 20, remaining: 30, profit: 2.50 },
@@ -107,7 +116,7 @@ export const sales: Sale[] = [
 
 export const customers: Customer[] = [
     { id: 'c1', name: 'Marie Claire', contact: '+243 XXX XX XX XX', purchaseHistory: 2, lastPurchase: '2023-10-26' },
-    { id: 'c2', name: 'Amina Diallo', contact: '+243 XXX XX XX XX', purchaseHistory: 1, lastPurchase: '2023-10-25' },
+    { id: 'c2', name: 'Amina Diallo', contact: '+243 XXX XX XX XX', purchaseHistory: 1, lastPurchase: '203-10-25' },
     { id: 'c3', name: 'Sophie Dubois', contact: '+243 XXX XX XX XX', purchaseHistory: 5, lastPurchase: '2023-10-25' },
     { id: 'c4', name: 'Léa Martin', contact: '+243 XXX XX XX XX', purchaseHistory: 3, lastPurchase: '2023-10-23' },
     { id: 'c5', name: 'Fatou Ndiaye', contact: '+243 XXX XX XX XX', purchaseHistory: 1, lastPurchase: '2023-09-12' },
@@ -117,4 +126,10 @@ export const orders: Order[] = [
   { id: 'o1', customerName: 'Sophie Dubois', customerAddress: '123 Rue de la Paix, Paris', products: ['Gloss "Crystal"', 'Pendentif lune'], totalAmount: 30.75, paidAmount: 20.00, remainingAmount: 10.75, status: 'En attente', date: '2023-10-28'},
   { id: 'o2', customerName: 'Marie Claire', customerAddress: '45 Avenue des Champs, Lyon', products: ['Chaînette en or'], totalAmount: 25.00, paidAmount: 25.00, remainingAmount: 0.00, status: 'Payée', date: '2023-10-27'},
   { id: 'o3', customerName: 'Amina Diallo', customerAddress: '78 Boulevard Voltaire, Marseille', products: ['Chouchou en satin'], totalAmount: 5.50, paidAmount: 0.00, remainingAmount: 5.50, status: 'En attente', date: '2023-10-26'},
+];
+
+export const debts: Debt[] = [
+  { id: 'd1', debtorName: 'Jean Dupont', amount: 50.00, debtDate: '2023-10-15', paymentDate: '2023-11-15', status: 'En cours' },
+  { id: 'd2', debtorName: 'Elodie Martin', amount: 120.50, debtDate: '2023-09-01', paymentDate: '2023-10-01', status: 'Remboursée' },
+  { id: 'd3', debtorName: 'Lucas Bernard', amount: 75.00, debtDate: '2023-10-20', paymentDate: '2023-11-20', status: 'En cours' },
 ];
