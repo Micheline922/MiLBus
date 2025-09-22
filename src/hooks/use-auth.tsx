@@ -22,12 +22,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Check if user is logged in from a previous session
     try {
       const loggedIn = sessionStorage.getItem('isMilbusAuthenticated') === 'true';
       setIsAuthenticated(loggedIn);
     } catch (error) {
-        // If sessionStorage is not available (e.g. in server rendering), default to false
         setIsAuthenticated(false);
     }
     setIsLoading(false);
@@ -78,4 +76,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-
