@@ -5,20 +5,37 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Download, PlusCircle } from "lucide-react";
+import { Download, PlusCircle, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import EditInvoicesForm from "@/components/dashboard/edit-invoices-form";
+import { Invoice } from "@/lib/data";
 
-const invoices = [
+const initialInvoices: Invoice[] = [
   { id: 'INV001', orderId: 'o1', customerName: 'Sophie Dubois', date: '2023-10-28', amount: 30.75, status: 'En attente' },
   { id: 'INV002', orderId: 'o2', customerName: 'Marie Claire', date: '2023-10-27', amount: 25.00, status: 'Payée' },
 ];
 
 export default function InvoicesPage() {
+  const [invoices, setInvoices] = useState(initialInvoices);
   const [isClient, setIsClient] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const handleInvoicesSubmit = (values: { invoices: Invoice[] }) => {
+    setInvoices(values.invoices);
+    setDialogOpen(false);
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -32,7 +49,23 @@ export default function InvoicesPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="relative group">
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Pencil className="mr-2 h-4 w-4" /> Modifier
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Modifier les Factures</DialogTitle>
+              <DialogDescription>
+                Mettez à jour les détails de vos factures.
+              </DialogDescription>
+            </DialogHeader>
+            <EditInvoicesForm initialValues={{ invoices }} onSubmit={handleInvoicesSubmit} />
+          </DialogContent>
+        </Dialog>
         <CardHeader>
           <CardTitle>Liste des Factures</CardTitle>
           <CardDescription>

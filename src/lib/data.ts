@@ -1,4 +1,5 @@
 
+
 export type Product = {
   id: string;
   name: string;
@@ -80,6 +81,15 @@ export type Debt = {
   status: 'En cours' | 'Remboursée';
 };
 
+export type Invoice = {
+  id: string;
+  orderId: string;
+  customerName: string;
+  date: string;
+  amount: number;
+  status: 'En attente' | 'Payée';
+};
+
 export const products: Product[] = [
   { id: 'p1', name: 'Chaînette en or', category: 'Bijoux & Accessoires', purchasePrice: 15.00, price: 25.00, stock: 15, sold: 5, remaining: 10, profit: 10.00 },
   { id: 'p2', name: 'Chouchou en satin', category: 'Bijoux & Accessoires', purchasePrice: 3.00, price: 5.50, stock: 50, sold: 20, remaining: 30, profit: 2.50 },
@@ -134,4 +144,5 @@ export const debts: Debt[] = [
   { id: 'd2', debtorName: 'Elodie Martin', amount: 120.50, debtDate: '2023-09-01', paymentDate: '2023-10-01', status: 'Remboursée' },
   { id: 'd3', debtorName: 'Lucas Bernard', amount: 75.00, debtDate: '2023-10-20', paymentDate: '2023-11-20', status: 'En cours' },
 ];
+
 

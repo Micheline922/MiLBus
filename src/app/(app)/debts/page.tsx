@@ -6,16 +6,32 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { debts } from "@/lib/data";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { debts as initialDebts, Debt } from "@/lib/data";
+import { MoreHorizontal, PlusCircle, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import EditDebtsForm from "@/components/dashboard/edit-debts-form";
 
 export default function DebtsPage() {
+  const [debts, setDebts] = useState(initialDebts);
   const [isClient, setIsClient] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+  
+  const handleDebtsSubmit = (values: { debts: Debt[] }) => {
+    setDebts(values.debts);
+    setDialogOpen(false);
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -29,7 +45,23 @@ export default function DebtsPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="relative group">
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Pencil className="mr-2 h-4 w-4" /> Modifier
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Modifier les Dettes</DialogTitle>
+              <DialogDescription>
+                Mettez à jour les détails des dettes de vos clients.
+              </DialogDescription>
+            </DialogHeader>
+            <EditDebtsForm initialValues={{ debts }} onSubmit={handleDebtsSubmit} />
+          </DialogContent>
+        </Dialog>
         <CardHeader>
           <CardTitle>Liste des Dettes</CardTitle>
           <CardDescription>
