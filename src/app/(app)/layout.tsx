@@ -37,19 +37,21 @@ function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <AppSidebar />
       </Sidebar>
-      <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 md:hidden">
-            <SidebarTrigger className="md:hidden" />
+      <div className="flex flex-col flex-1">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6 md:hidden">
+            <SidebarTrigger />
             <h1 className="font-headline text-lg">MiLBus</h1>
         </header>
-        <div className="flex-1">
-          {children}
-        </div>
-        <footer className="text-center p-4 text-muted-foreground text-sm border-t">
-          Conçu par Micheline Ntale
-        </footer>
-        <Chatbot />
-      </SidebarInset>
+        <SidebarInset>
+            <div className="flex-1">
+              {children}
+            </div>
+            <footer className="text-center p-4 text-muted-foreground text-sm border-t">
+              Conçu par Micheline Ntale
+            </footer>
+            <Chatbot />
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }
