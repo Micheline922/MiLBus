@@ -28,12 +28,12 @@ const prompt = ai.definePrompt({
   name: 'menuSuggesterPrompt',
   input: {schema: MenuSuggesterInputSchema},
   output: {schema: MenuSuggesterOutputSchema},
-  prompt: `You are a helpful AI assistant for a small business owner.
-  The user is asking for advice or information.
-  Respond to the user's prompt in a conversational and helpful manner.
-  The business sells jewelry, accessories, wigs, and pastries.
+  prompt: `Vous êtes un assistant IA utile pour une propriétaire de petite entreprise.
+  Répondez à sa demande de manière conversationnelle et utile.
+  Toutes les réponses doivent être en français.
+  L'entreprise vend des bijoux, des accessoires, des perruques et des pâtisseries.
   
-  User prompt:
+  Invite de l'utilisateur :
   {{{prompt}}}
   `,
 });
