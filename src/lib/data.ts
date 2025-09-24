@@ -88,6 +88,7 @@ export type Invoice = {
   date: string;
   amount: number;
   status: 'En attente' | 'Payée';
+  _order?: Order;
 };
 
 export type AppData = {

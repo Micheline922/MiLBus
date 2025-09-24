@@ -14,16 +14,19 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Order } from "@/lib/data";
-import { MoreHorizontal, PlusCircle, Pencil } from "lucide-react";
+import { MoreHorizontal, PlusCircle, Pencil, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 import EditOrdersForm from "@/components/dashboard/edit-orders-form";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
+import { useToast } from "@/hooks/use-toast";
+import { generateInvoiceFromOrder } from "@/lib/invoice-generator";
 
 export default function OrdersPage() {
   const { username } = useAuth();
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (username) {
@@ -39,6 +42,21 @@ export default function OrdersPage() {
     setDialogOpen(false);
   };
   
+  const handleGenerateInvoice = (order: Order) => {
+    if (!username) return;
+
+    const appData = loadData(username);
+    const newInvoice = generateInvoiceFromOrder(order, appData.invoices.length);
+    const updatedInvoices = [...appData.invoices, newInvoice];
+    saveData(username, 'invoices', updatedInvoices);
+    
+    toast({
+        title: "Facture générée !",
+        description: `La facture ${newInvoice.id} a été créée pour la commande de ${order.customerName}.`,
+    });
+  };
+
+
   if (!orders) {
     return <div>Chargement...</div>;
   }
@@ -89,8 +107,8 @@ export default function OrdersPage() {
                 <TableHead>Montant Payé</TableHead>
                 <TableHead>Reste à Payer</TableHead>
                 <TableHead>Statut</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
+                <TableHead  className="text-right">
+                  Actions
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -108,7 +126,11 @@ export default function OrdersPage() {
                       {order.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right space-x-2">
+                    <Button variant="outline" size="sm" onClick={() => handleGenerateInvoice(order)}>
+                        <FileText className="mr-2 h-4 w-4" />
+                        Facturer
+                    </Button>
                     <Button variant="ghost" size="icon">
                       <MoreHorizontal className="h-4 w-4" />
                       <span className="sr-only">Actions</span>

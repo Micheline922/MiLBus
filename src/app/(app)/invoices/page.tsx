@@ -19,6 +19,7 @@ import EditInvoicesForm from "@/components/dashboard/edit-invoices-form";
 import { Invoice } from "@/lib/data";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
+import { downloadInvoice } from "@/lib/invoice-generator";
 
 export default function InvoicesPage() {
   const { username } = useAuth();
@@ -105,9 +106,9 @@ export default function InvoicesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon">
-                      <Download className="h-4 w-4" />
-                      <span className="sr-only">Télécharger</span>
+                    <Button variant="outline" size="sm" onClick={() => downloadInvoice(invoice)}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Télécharger
                     </Button>
                   </TableCell>
                 </TableRow>
