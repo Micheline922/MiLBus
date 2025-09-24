@@ -7,22 +7,9 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/ui/avatar';
-import {
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-  SidebarSeparator,
-} from '@/components/ui/sidebar';
 import { useAuth } from '@/hooks/use-auth';
 import {
   BarChart3,
-  ChevronDown,
   ClipboardList,
   LayoutGrid,
   Package,
@@ -36,7 +23,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import * as React from 'react';
+import { Button } from '../ui/button';
 
 function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -52,10 +39,22 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     );
 }
 
+const navLinks = [
+  { href: '/', icon: <Home className="h-4 w-4" />, text: 'Accueil' },
+  { href: '/dashboard', icon: <LayoutGrid className="h-4 w-4" />, text: 'Tableau de bord' },
+  { href: '/orders', icon: <ClipboardList className="h-4 w-4" />, text: 'Commandes' },
+  { href: '/sales', icon: <ShoppingCart className="h-4 w-4" />, text: 'Ventes' },
+  { href: '/products', icon: <Package className="h-4 w-4" />, text: 'Marchandises' },
+  { href: '/customers', icon: <Users className="h-4 w-4" />, text: 'Clients' },
+  { href: '/debts', icon: <CreditCard className="h-4 w-4" />, text: 'Dettes' },
+  { href: '/reports', icon: <BarChart3 className="h-4 w-4" />, text: 'Rapports' },
+  { href: '/invoices', icon: <FileText className="h-4 w-4" />, text: 'Factures' },
+];
+
+
 export default function AppSidebar() {
   const pathname = usePathname();
-  const [open, setOpen] = React.useState({ products: false });
-  const { logout } = useAuth();
+  const { logout, username } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -67,143 +66,50 @@ export default function AppSidebar() {
 
   return (
     <>
-      <SidebarHeader>
-        <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="p-1 bg-primary rounded-md flex items-center justify-center">
-                  <MilbusLogo className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <span className="font-headline text-xl">MiLBus</span>
-            </Link>
-        </div>
-      </SidebarHeader>
-      <SidebarContent className="p-2">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <Link href="/" className="w-full">
-              <SidebarMenuButton
-                isActive={isActive('/')}
-                icon={<Home />}
-              >
-                Accueil
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/dashboard" className="w-full">
-              <SidebarMenuButton
-                isActive={isActive('/dashboard')}
-                icon={<LayoutGrid />}
-              >
-                Tableau de bord
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/orders" className="w-full">
-              <SidebarMenuButton isActive={isActive('/orders')} icon={<ClipboardList />}>
-                Commandes
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/sales" className="w-full">
-              <SidebarMenuButton isActive={isActive('/sales')} icon={<ShoppingCart />}>
-                Ventes
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <div className="flex flex-col">
-                <SidebarMenuButton
-                  asChild
-                  icon={<Package />}
-                  rightIcon={
-                    <button onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      setOpen(prev => ({...prev, products: !prev.products}));
-                    }}>
-                      <ChevronDown size={16} className={`transition-transform duration-150 ${open.products ? 'rotate-180' : ''}`} />
-                    </button>
-                  }
-                  isActive={pathname.startsWith('/products')}
-                >
-                  <Link href="/products" className="w-full">
-                    Produits
-                  </Link>
-                </SidebarMenuButton>
-              {open.products && (
-                  <SidebarMenuSub>
-                      <SidebarMenuSubItem>
-                          <Link href="/products" className="w-full">
-                              <SidebarMenuSubButton isActive={isActive('/products')}>
-                                  Gérer les produits
-                              </SidebarMenuSubButton>
-                          </Link>
-                      </SidebarMenuSubItem>
-                  </SidebarMenuSub>
-              )}
+      <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+           <div className="p-1 bg-primary rounded-md flex items-center justify-center">
+              <MilbusLogo className="w-6 h-6 text-primary-foreground" />
             </div>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/customers" className="w-full">
-              <SidebarMenuButton isActive={isActive('/customers')} icon={<Users />}>
-                Clients
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/debts" className="w-full">
-              <SidebarMenuButton isActive={isActive('/debts')} icon={<CreditCard />}>
-                Dettes
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/reports" className="w-full">
-              <SidebarMenuButton isActive={isActive('/reports')} icon={<BarChart3 />}>
-                Rapports
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/invoices" className="w-full">
-              <SidebarMenuButton isActive={isActive('/invoices')} icon={<FileText />}>
-                Factures
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarContent>
-      <SidebarSeparator />
-      <SidebarFooter>
-        <div className="flex items-center gap-3 p-2">
-          <Avatar>
-            <AvatarImage src="https://picsum.photos/seed/user/40/40" />
-            <AvatarFallback>EN</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold">Entrepreneuse</span>
-            <span className="text-xs text-muted-foreground">contact@milbus.com</span>
+          <span className="font-headline text-xl">MiLBus</span>
+        </Link>
+      </div>
+      <div className="flex-1">
+        <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+          {navLinks.map(link => (
+             <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${isActive(link.href) ? 'bg-muted text-primary' : 'text-muted-foreground'}`}
+              >
+                {link.icon}
+                {link.text}
+              </Link>
+          ))}
+        </nav>
+      </div>
+       <div className="mt-auto p-4 border-t">
+          <div className="flex items-center gap-3 p-2 mb-2">
+            <Avatar>
+              <AvatarImage src={`https://picsum.photos/seed/${username}/40/40`} />
+              <AvatarFallback>{username ? username.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold">{username || "Entrepreneuse"}</span>
+              <span className="text-xs text-muted-foreground">contact@milbus.com</span>
+            </div>
           </div>
-        </div>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <Link href="/settings" className="w-full">
-              <SidebarMenuButton isActive={isActive('/settings')} icon={<Settings />}>
+          <nav className="grid gap-1">
+              <Link href="/settings" className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${isActive('/settings') ? 'bg-muted text-primary' : 'text-muted-foreground'}`}>
+                <Settings className="h-4 w-4" />
                 Paramètres
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-           <SidebarMenuItem>
-              <SidebarMenuButton onClick={handleLogout} icon={<LogOut />}>
+              </Link>
+              <Button variant="ghost" className="justify-start w-full text-muted-foreground hover:text-primary" onClick={handleLogout}>
+                 <LogOut className="mr-3 h-4 w-4" />
                 Déconnexion
-              </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+              </Button>
+          </nav>
+      </div>
     </>
   );
 }
-
