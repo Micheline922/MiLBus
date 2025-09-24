@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsAuthenticated(true);
       }
     } catch (error) {
-      // localStorage not available
+      console.warn('Could not access localStorage.');
     }
     setIsLoading(false);
   }, []);

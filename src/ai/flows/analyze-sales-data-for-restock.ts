@@ -51,7 +51,7 @@ const analyzeSalesDataForRestockPrompt = ai.definePrompt({
   Toutes les réponses doivent être en français.
 
   Données de ventes :
-  {{salesData}}
+  {{{salesData}}}
 
   Sur la base de ces données, fournissez une liste de produits à réapprovisionner et les quantités recommandées.
   Fournissez également un résumé des tendances de ventes que vous identifiez.
