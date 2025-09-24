@@ -5,15 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Customer } from "@/lib/data";
-import { PlusCircle, MessageSquare } from "lucide-react";
+import { PlusCircle, MessageSquare, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import EditCustomersForm from "@/components/dashboard/edit-customers-form";
 
 export default function CustomersPage() {
   const { username } = useAuth();
   const [customers, setCustomers] = useState<Customer[] | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -22,6 +32,13 @@ export default function CustomersPage() {
       setCustomers(data.customers);
     }
   }, [username]);
+
+  const handleCustomersSubmit = (values: { customers: Customer[] }) => {
+    if (!username) return;
+    setCustomers(values.customers);
+    saveData(username, 'customers', values.customers);
+    setDialogOpen(false);
+  };
 
   if (!customers) {
     return <div>Chargement...</div>;
@@ -39,7 +56,23 @@ export default function CustomersPage() {
         </Button>
       </div>
 
-       <Card>
+       <Card className="relative group">
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Pencil className="mr-2 h-4 w-4" /> Modifier
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                <DialogTitle>Modifier la Liste des Clients</DialogTitle>
+                <DialogDescription>
+                  Mettez à jour les informations de vos clients.
+                </DialogDescription>
+              </DialogHeader>
+              <EditCustomersForm initialValues={{ customers }} onSubmit={handleCustomersSubmit} />
+            </DialogContent>
+          </Dialog>
         <CardHeader>
           <CardTitle>Liste des Clients</CardTitle>
           <CardDescription>
