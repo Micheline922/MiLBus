@@ -6,19 +6,17 @@ import Chatbot from '@/components/shared/chatbot';
 import {
   Sheet,
   SheetContent,
-  SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useAuth } from '@/hooks/use-auth';
 import { Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -43,7 +41,7 @@ function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 md:hidden">
-          <Sheet open={open} onOpenChange={setOpen}>
+          <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="shrink-0">
                 <Menu className="h-5 w-5" />
@@ -51,7 +49,6 @@ function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col p-0">
-               <SheetTitle className="sr-only">Menu</SheetTitle>
                <AppSidebar />
             </SheetContent>
           </Sheet>
