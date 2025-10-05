@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Customer } from "@/lib/data";
-import { PlusCircle, MessageSquare, Pencil } from "lucide-react";
+import { PlusCircle, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
@@ -51,16 +51,6 @@ export default function CustomersPage() {
     saveData(username, 'customers', updatedCustomers);
     setAddDialogOpen(false);
   };
-
-  const handleContactCustomer = (contact: string) => {
-    // Simple mailto link for now. Can be expanded later.
-    if (contact.includes('@')) {
-      window.location.href = `mailto:${contact}`;
-    } else {
-      // Could implement tel: link, but mailto is more universal for now
-      alert(`Contact: ${contact}`);
-    }
-  }
 
   if (!customers) {
     return <div>Chargement...</div>;
@@ -122,9 +112,6 @@ export default function CustomersPage() {
                 <TableHead>Contact</TableHead>
                 <TableHead>Achats</TableHead>
                 <TableHead>Dernier Achat</TableHead>
-                <TableHead className="text-right">
-                  Actions
-                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -134,12 +121,6 @@ export default function CustomersPage() {
                   <TableCell>{customer.contact}</TableCell>
                   <TableCell>{customer.purchaseHistory}</TableCell>
                   <TableCell>{isClient ? new Date(customer.lastPurchase).toLocaleDateString() : ''}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="outline" size="sm" onClick={() => handleContactCustomer(customer.contact)}>
-                      <MessageSquare className="mr-2 h-4 w-4" />
-                      Contacter
-                    </Button>
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
