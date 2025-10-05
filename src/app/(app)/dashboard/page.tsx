@@ -6,8 +6,8 @@ import RecentSales from '@/components/dashboard/recent-sales';
 import AiChat from '@/components/dashboard/ai-chat';
 import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { useEffect, useState } from 'react';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { useEffect, useState, useMemo } from 'react';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -53,6 +53,25 @@ export default function DashboardPage() {
       setStats(data.stats);
     }
   }, [username]);
+  
+  const monthlySalesData = useMemo(() => {
+    if (!appData?.sales) return [];
+
+    const salesByMonth: { [key: string]: number } = {};
+
+    appData.sales.forEach(sale => {
+      const month = new Date(sale.date).toLocaleString('fr-FR', { month: 'short' });
+      salesByMonth[month] = (salesByMonth[month] || 0) + sale.amount;
+    });
+
+    const monthOrder = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+
+    return monthOrder.map(month => ({
+      name: month,
+      total: salesByMonth[month] || 0,
+    })).filter(d => d.total > 0);
+
+  }, [appData?.sales]);
 
   const updateData = <K extends keyof AppData>(key: K, value: AppData[K]) => {
     if (!username || !appData) return;
@@ -130,22 +149,54 @@ export default function DashboardPage() {
             </Card>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <div className='col-span-4 lg:col-span-7 relative group'>
-            <Dialog open={dialogOpen['sales']} onOpenChange={(isOpen) => handleOpenDialog('sales', isOpen)}>
-              <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Pencil className="mr-2 h-4 w-4" /> Modifier
-                  </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-3xl">
-                <DialogHeader>
-                  <DialogTitle>Modifier les Ventes Récentes</DialogTitle>
-                </DialogHeader>
-                <EditSalesForm initialValues={{ sales }} onSubmit={(v) => updateData('sales', v.sales)} />
-              </DialogContent>
-            </Dialog>
-            <RecentSales sales={sales} />
-          </div>
+           <Card className="col-span-full lg:col-span-4">
+              <CardHeader>
+                <CardTitle>Vue d'ensemble des Ventes</CardTitle>
+                <CardDescription>Évolution de vos revenus mensuels.</CardDescription>
+              </CardHeader>
+              <CardContent className="pl-2">
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={monthlySalesData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="name"
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => `${value} FC`}
+                    />
+                    <Tooltip 
+                       cursor={{fill: 'hsl(var(--muted))'}}
+                       contentStyle={{backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))'}}
+                    />
+                    <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+            <div className='col-span-full lg:col-span-3 relative group'>
+              <Dialog open={dialogOpen['sales']} onOpenChange={(isOpen) => handleOpenDialog('sales', isOpen)}>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Pencil className="mr-2 h-4 w-4" /> Modifier
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl">
+                  <DialogHeader>
+                    <DialogTitle>Modifier les Ventes Récentes</DialogTitle>
+                  </DialogHeader>
+                  <EditSalesForm initialValues={{ sales }} onSubmit={(v) => updateData('sales', v.sales)} />
+                </DialogContent>
+              </Dialog>
+              <RecentSales sales={sales} />
+            </div>
         </div>
         <div className="grid grid-cols-1 gap-y-4">
             <Card className="relative group">
@@ -323,3 +374,5 @@ export default function DashboardPage() {
     </ScrollArea>
   );
 }
+
+    
