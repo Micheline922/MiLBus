@@ -9,18 +9,46 @@ import Image from "next/image";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { useState, useTransition } from "react";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 export default function Cart() {
-    const { items, removeItem, updateItemQuantity, total, clearCart } = useCart();
+    const { items, removeItem, updateItemQuantity, total, clearCart, submitOrder } = useCart();
     const { toast } = useToast();
+    const [isPending, startTransition] = useTransition();
 
-    const handleCheckout = () => {
-        // This is a placeholder for a real checkout flow
-        toast({
-            title: "Fonctionnalité à venir",
-            description: "Le passage à la caisse n'est pas encore implémenté.",
+    const [customerName, setCustomerName] = useState('');
+    const [customerPhone, setCustomerPhone] = useState('');
+
+    const handleSendOrder = () => {
+        if (!customerName.trim() || !customerPhone.trim()) {
+            toast({
+                variant: 'destructive',
+                title: "Informations manquantes",
+                description: "Veuillez entrer votre nom et votre numéro de téléphone.",
+            });
+            return;
+        }
+
+        startTransition(async () => {
+            const success = await submitOrder({ name: customerName, phone: customerPhone });
+            if (success) {
+                toast({
+                    title: "Commande envoyée !",
+                    description: "Merci ! Nous vous contacterons bientôt pour finaliser votre commande.",
+                });
+                setCustomerName('');
+                setCustomerPhone('');
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: "Erreur",
+                    description: "Impossible d'envoyer la commande. Veuillez réessayer.",
+                });
+            }
         });
-    }
+    };
 
   return (
     <Sheet>
@@ -96,24 +124,32 @@ export default function Cart() {
                 ))}
               </div>
             </ScrollArea>
-            <SheetFooter className="gap-2 pr-6">
+            <SheetFooter className="flex-col gap-4 pr-6">
                  <div className="flex w-full flex-col gap-2 text-sm">
-                    <div className="flex justify-between">
-                        <span>Sous-total</span>
-                        <span>{total.toFixed(2)} FC</span>
-                    </div>
-                     <div className="flex justify-between">
-                        <span>Frais de livraison</span>
-                        <span>À calculer</span>
-                    </div>
-                    <Separator className="my-2" />
-                     <div className="flex justify-between font-semibold">
-                        <span>Total</span>
+                    <div className="flex justify-between font-semibold">
+                        <span>Total estimé</span>
                         <span>{total.toFixed(2)} FC</span>
                     </div>
                 </div>
-                <Button className="w-full" onClick={handleCheckout}>Passer à la caisse</Button>
-                <Button variant="outline" className="w-full" onClick={clearCart}>Vider le panier</Button>
+                 <Separator />
+                <div className="space-y-3">
+                    <h4 className="text-sm font-medium">Vos informations</h4>
+                    <div className="space-y-2">
+                        <Label htmlFor="customer-name">Nom complet</Label>
+                        <Input id="customer-name" placeholder="Ex: Marie Claire" value={customerName} onChange={(e) => setCustomerName(e.target.value)} disabled={isPending} />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="customer-phone">Numéro de téléphone</Label>
+                        <Input id="customer-phone" placeholder="Ex: +243 XXX XX XX XX" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} disabled={isPending}/>
+                    </div>
+                </div>
+
+                <Button className="w-full" onClick={handleSendOrder} disabled={isPending || items.length === 0}>
+                    {isPending ? "Envoi en cours..." : "Envoyer la commande et être contacté(e)"}
+                </Button>
+                <Button variant="outline" className="w-full" onClick={() => clearCart()} disabled={isPending}>
+                    Vider le panier
+                </Button>
             </SheetFooter>
           </>
         ) : (
