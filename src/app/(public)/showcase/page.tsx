@@ -2,7 +2,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { loadData } from '@/lib/storage';
 import { ShowcaseItem } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,12 +33,19 @@ function ShowcaseContent() {
 
     useEffect(() => {
         if (username) {
-            const data = loadData(username);
-            if (data && data.showcase) {
-                setItems(data.showcase.filter(item => item.published));
-                setBusinessName(data.stats.totalRevenue.value); // A bit of a hack, let's get it from user settings later
-            } else {
-                setError("Impossible de charger la vitrine pour cet utilisateur.");
+            try {
+                const data = loadData(username);
+                if (data && data.showcase) {
+                    setItems(data.showcase.filter(item => item.published));
+                    if (data.stats.totalRevenue.value) { // This is still a bit of a hack
+                       // A real app would get this from user profile settings
+                       // setBusinessName(data.userProfile.businessName)
+                    }
+                } else {
+                    setError("Impossible de charger la vitrine pour cet utilisateur.");
+                }
+            } catch (e) {
+                setError("Utilisateur non trouvé ou données corrompues.");
             }
         } else {
             setError("Aucun utilisateur spécifié pour afficher la vitrine.");
@@ -49,7 +56,7 @@ function ShowcaseContent() {
         return <div className="text-center py-10 text-red-500">{error}</div>;
     }
     
-    if (items.length === 0) {
+    if (items.length === 0 && !error) {
         return <div className="text-center py-10 text-muted-foreground">Aucun produit publié dans la vitrine pour le moment.</div>;
     }
 
@@ -97,5 +104,9 @@ function ShowcaseContent() {
 
 
 export default function ShowcasePage() {
-    return <ShowcaseContent />;
+    return (
+        <Suspense fallback={<div>Chargement de la vitrine...</div>}>
+            <ShowcaseContent />
+        </Suspense>
+    );
 }
