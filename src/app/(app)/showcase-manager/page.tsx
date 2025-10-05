@@ -15,10 +15,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, ImagePlus } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function ShowcaseManagerPage() {
   const { username } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[] | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -54,6 +56,13 @@ export default function ShowcaseManagerPage() {
       item.id === id ? { ...item, [field]: value } : item
     );
     setShowcaseItems(updatedItems);
+  };
+
+  const handlePublishChange = (checked: boolean, itemId: string) => {
+    handleItemChange(itemId, 'published', checked);
+    if (checked && username) {
+      router.push(`/showcase?user=${username}`);
+    }
   };
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: string) => {
@@ -144,7 +153,7 @@ export default function ShowcaseManagerPage() {
                         <Switch
                             id={`published-${item.id}`}
                             checked={item.published}
-                            onCheckedChange={checked => handleItemChange(item.id, 'published', checked)}
+                            onCheckedChange={checked => handlePublishChange(checked, item.id)}
                         />
                     </div>
                 </CardContent>
