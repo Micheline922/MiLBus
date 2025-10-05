@@ -1,20 +1,12 @@
 
 'use client';
 
-import { createOrderFromCart } from '@/app/actions';
 import { ShowcaseItem } from '@/lib/data';
-import { useSearchParams } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useToast } from './use-toast';
 
 export type CartItem = ShowcaseItem & {
   quantity: number;
-};
-
-type CustomerInfo = {
-    name: string;
-    phone: string;
-    email: string;
 };
 
 interface CartContextType {
@@ -24,7 +16,6 @@ interface CartContextType {
   updateItemQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   total: number;
-  submitOrder: (customerInfo: CustomerInfo) => Promise<boolean>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -34,8 +25,6 @@ const CART_STORAGE_KEY = 'milbus-cart';
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
-  const searchParams = useSearchParams();
-  const username = searchParams.get('user');
 
   useEffect(() => {
     try {
@@ -100,27 +89,6 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
-  const submitOrder = async (customerInfo: CustomerInfo) => {
-    if (!username) {
-        toast({ variant: 'destructive', title: 'Erreur', description: 'Identifiant de boutique non trouvé.'})
-        return false;
-    }
-    if (items.length === 0) {
-        toast({ variant: 'destructive', title: 'Erreur', description: 'Votre panier est vide.'})
-        return false;
-    }
-
-    const result = await createOrderFromCart(username, items, customerInfo);
-
-    if (result.success) {
-        clearCart();
-        return true;
-    } else {
-        toast({ variant: 'destructive', title: 'Erreur', description: result.error || "Impossible de créer la commande." });
-        return false;
-    }
-  }
-
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const value = {
@@ -130,7 +98,6 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateItemQuantity,
     clearCart,
     total,
-    submitOrder,
   };
 
   return (

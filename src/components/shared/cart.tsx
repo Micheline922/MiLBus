@@ -4,28 +4,20 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/use-cart";
-import { Mail, ShoppingCart, Trash2 } from "lucide-react";
+import { Mail, Phone, ShoppingCart, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useTransition, useEffect } from "react";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { useAuth } from "@/hooks/use-auth";
-import { loadData } from "@/lib/storage";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 
 export default function Cart() {
-    const { items, removeItem, updateItemQuantity, total, clearCart, submitOrder } = useCart();
+    const { items, removeItem, updateItemQuantity, total, clearCart } = useCart();
     const { toast } = useToast();
-    const [isPending, startTransition] = useTransition();
-
-    const [customerName, setCustomerName] = useState('');
-    const [customerPhone, setCustomerPhone] = useState('');
-    const [customerEmail, setCustomerEmail] = useState('');
-    const [vendorEmail, setVendorEmail] = useState('');
+    
+    const [vendorInfo, setVendorInfo] = useState({ email: '', phone: '' });
     
     const searchParams = useSearchParams();
     const username = searchParams.get('user');
@@ -35,40 +27,14 @@ export default function Cart() {
             const userCredentials = localStorage.getItem('milbus-user-credentials');
             if (userCredentials) {
                 const parsedUser = JSON.parse(userCredentials);
-                setVendorEmail(parsedUser.businessContact || '');
+                setVendorInfo({
+                    email: parsedUser.businessContact || '',
+                    phone: parsedUser.businessPhone || ''
+                });
             }
         }
     }, [username]);
 
-    const handleSendOrder = () => {
-        if (!customerName.trim() || !customerPhone.trim() || !customerEmail.trim()) {
-            toast({
-                variant: 'destructive',
-                title: "Informations manquantes",
-                description: "Veuillez entrer votre nom, numéro de téléphone et e-mail.",
-            });
-            return;
-        }
-
-        startTransition(async () => {
-            const success = await submitOrder({ name: customerName, phone: customerPhone, email: customerEmail });
-            if (success) {
-                toast({
-                    title: "Commande envoyée !",
-                    description: "Merci ! Nous vous contacterons bientôt pour finaliser votre commande.",
-                });
-                setCustomerName('');
-                setCustomerPhone('');
-                setCustomerEmail('');
-            } else {
-                toast({
-                    variant: 'destructive',
-                    title: "Erreur",
-                    description: "Impossible d'envoyer la commande. Veuillez réessayer.",
-                });
-            }
-        });
-    };
 
   return (
     <Sheet>
@@ -152,33 +118,28 @@ export default function Cart() {
                     </div>
                 </div>
                  <Separator />
-                <div className="space-y-3">
-                    <h4 className="text-sm font-medium">Vos informations</h4>
-                    <div className="space-y-2">
-                        <Label htmlFor="customer-name">Nom complet</Label>
-                        <Input id="customer-name" placeholder="Ex: Marie Claire" value={customerName} onChange={(e) => setCustomerName(e.target.value)} disabled={isPending} />
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="customer-phone">Numéro de téléphone</Label>
-                        <Input id="customer-phone" placeholder="Ex: +243 XXX XX XX XX" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} disabled={isPending}/>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="customer-email">Adresse e-mail</Label>
-                        <Input id="customer-email" type="email" placeholder="Ex: marie@exemple.com" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} disabled={isPending}/>
-                    </div>
+                <div className="space-y-4 text-center">
+                    <h4 className="font-semibold">Pour commander, contactez-nous !</h4>
+                    <p className="text-sm text-muted-foreground">
+                        Envoyez-nous la liste des articles de votre panier par e-mail ou par téléphone.
+                    </p>
+                    {vendorInfo.email && (
+                        <a href={`mailto:${vendorInfo.email}`} className="block">
+                            <Button className="w-full">
+                                <Mail className="mr-2 h-4 w-4" /> {vendorInfo.email}
+                            </Button>
+                        </a>
+                    )}
+                     {vendorInfo.phone && (
+                        <a href={`tel:${vendorInfo.phone}`} className="block">
+                            <Button variant="outline" className="w-full">
+                                <Phone className="mr-2 h-4 w-4" /> {vendorInfo.phone}
+                            </Button>
+                        </a>
+                    )}
                 </div>
 
-                 {vendorEmail && (
-                    <div className="text-xs text-muted-foreground flex items-center gap-2 rounded-md bg-muted p-2">
-                        <Mail className="h-4 w-4 shrink-0" />
-                        <p>Le vendeur vous contactera. Vous pouvez aussi le joindre à : <span className="font-medium text-foreground">{vendorEmail}</span></p>
-                    </div>
-                )}
-
-                <Button className="w-full" onClick={handleSendOrder} disabled={isPending || items.length === 0}>
-                    {isPending ? "Envoi en cours..." : "Envoyer la commande et être contacté(e)"}
-                </Button>
-                <Button variant="outline" className="w-full" onClick={() => clearCart()} disabled={isPending}>
+                <Button variant="destructive" className="w-full" onClick={() => clearCart()}>
                     Vider le panier
                 </Button>
             </SheetFooter>

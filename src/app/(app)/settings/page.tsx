@@ -19,6 +19,7 @@ export default function SettingsPage() {
   
   const [businessName, setBusinessName] = useState('');
   const [businessContact, setBusinessContact] = useState('');
+  const [businessPhone, setBusinessPhone] = useState('');
   const [businessAddress, setBusinessAddress] = useState('');
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
 
@@ -28,6 +29,7 @@ export default function SettingsPage() {
     if (user) {
         setBusinessName(user.businessName);
         setBusinessContact(user.businessContact);
+        setBusinessPhone(user.businessPhone);
         setBusinessAddress(user.businessAddress);
         setProfilePicture(user.profilePicture);
     }
@@ -37,6 +39,7 @@ export default function SettingsPage() {
     updateUser({
         businessName,
         businessContact,
+        businessPhone,
         businessAddress,
         profilePicture,
     });
@@ -94,16 +97,22 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Profil de l'Entreprise</CardTitle>
-            <CardDescription>Ces informations apparaîtront sur vos factures.</CardDescription>
+            <CardDescription>Ces informations apparaîtront sur vos factures et dans le panier de la vitrine.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="businessName">Nom de l'entreprise</Label>
               <Input id="businessName" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
             </div>
-             <div className="space-y-2">
-              <Label htmlFor="businessContact">Email de contact</Label>
-              <Input id="businessContact" type="email" value={businessContact} onChange={(e) => setBusinessContact(e.target.value)} />
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="businessContact">Email de contact</Label>
+                  <Input id="businessContact" type="email" value={businessContact} onChange={(e) => setBusinessContact(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="businessPhone">Téléphone de contact</Label>
+                  <Input id="businessPhone" type="tel" value={businessPhone} onChange={(e) => setBusinessPhone(e.target.value)} />
+                </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="businessAddress">Adresse de l'entreprise</Label>

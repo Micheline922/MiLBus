@@ -7,7 +7,8 @@ type UserData = {
     username: string;
     businessName: string;
     businessAddress: string;
-    businessContact: string;
+    businessContact: string; // email
+    businessPhone: string; // phone
     profilePicture: string | null;
 };
 
@@ -28,6 +29,7 @@ const defaultBusinessInfo = {
     businessName: "MiLBus - Beauté & Style",
     businessAddress: "Votre Adresse, Votre Ville",
     businessContact: "contact@milbus.com",
+    businessPhone: "+243 000 000 000",
     profilePicture: null,
 };
 
@@ -48,6 +50,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 businessName: parsed.businessName || defaultBusinessInfo.businessName,
                 businessAddress: parsed.businessAddress || defaultBusinessInfo.businessAddress,
                 businessContact: parsed.businessContact || defaultBusinessInfo.businessContact,
+                businessPhone: parsed.businessPhone || defaultBusinessInfo.businessPhone,
                 profilePicture: parsed.profilePicture || null,
             });
         }
@@ -76,6 +79,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                   businessName: businessInfo.businessName || defaultBusinessInfo.businessName,
                   businessAddress: businessInfo.businessAddress || defaultBusinessInfo.businessAddress,
                   businessContact: businessInfo.businessContact || defaultBusinessInfo.businessContact,
+                  businessPhone: businessInfo.businessPhone || defaultBusinessInfo.businessPhone,
                   profilePicture: businessInfo.profilePicture || null,
               });
               localStorage.setItem('isMilbusAuthenticated', 'true');
