@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
 import { AppData, Product, ShowcaseItem, Wig, Pastry } from '@/lib/data';
@@ -13,13 +13,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Eye } from 'lucide-react';
+import { Eye, ImagePlus } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ShowcaseManagerPage() {
   const { username } = useAuth();
   const { toast } = useToast();
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[] | null>(null);
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
     if (username) {
@@ -55,6 +56,17 @@ export default function ShowcaseManagerPage() {
     setShowcaseItems(updatedItems);
   };
   
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: string) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleItemChange(itemId, 'imageUrl', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = () => {
     if (!username || !showcaseItems) return;
     saveData(username, 'showcase', showcaseItems);
@@ -92,8 +104,23 @@ export default function ShowcaseManagerPage() {
         {showcaseItems.map(item => (
             <Card key={item.id}>
                 <CardHeader>
-                    <div className='relative w-full h-48 mb-4'>
+                    <div className='relative w-full h-48 mb-4 group'>
                         <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                         <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => fileInputRefs.current[item.id]?.click()}
+                         >
+                            <ImagePlus className="mr-2 h-4 w-4" /> Modifier l'image
+                        </Button>
+                        <Input 
+                            type="file"
+                            ref={el => fileInputRefs.current[item.id] = el}
+                            onChange={(e) => handleImageChange(e, item.id)}
+                            className="hidden"
+                            accept="image/*"
+                        />
                     </div>
                     <CardTitle>{item.name}</CardTitle>
                     <CardDescription>{item.price.toFixed(2)} FC</CardDescription>
@@ -106,10 +133,6 @@ export default function ShowcaseManagerPage() {
                      <div className="space-y-2">
                         <Label htmlFor={`description-${item.id}`}>Description</Label>
                         <Textarea id={`description-${item.id}`} value={item.description} onChange={e => handleItemChange(item.id, 'description', e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor={`imageUrl-${item.id}`}>URL de l'image</Label>
-                        <Input id={`imageUrl-${item.id}`} value={item.imageUrl} onChange={e => handleItemChange(item.id, 'imageUrl', e.target.value)} />
                     </div>
                     <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
                         <div className="space-y-0.5">
