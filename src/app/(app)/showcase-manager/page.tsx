@@ -27,29 +27,27 @@ export default function ShowcaseManagerPage() {
   useEffect(() => {
     if (username) {
       const data = loadData(username);
-      // Combine all products into a single list
       const allProducts = [
         ...data.products,
         ...data.wigs.map(w => ({ ...w, id: w.id, name: w.wigDetails, price: w.sellingPrice, stock: w.remaining })),
         ...data.pastries.map(p => ({ ...p, id: p.id, name: p.name, price: p.unitPrice, stock: p.remaining })),
       ];
 
-      // Get existing showcase data
       const existingShowcaseData = data.showcase || [];
       const existingShowcaseMap = new Map(existingShowcaseData.map(item => [item.id, item]));
 
       const initializedShowcase: ShowcaseItem[] = allProducts.map(p => {
         const existingItem = existingShowcaseMap.get(p.id);
+        const originalProduct = (p as any);
         return {
           id: p.id,
           name: existingItem?.name || p.name,
-          price: existingItem?.price ?? (p as any).price ?? (p as any).sellingPrice ?? (p as any).unitPrice,
+          price: existingItem?.price ?? originalProduct.price ?? originalProduct.sellingPrice ?? originalProduct.unitPrice,
           description: existingItem?.description || `Description pour ${p.name}`,
-          imageUrl: existingItem?.imageUrl || `https://picsum.photos/seed/${p.id}/400/400`,
+          imageUrl: existingItem?.imageUrl || `https://picsum.photos/seed/${p.id}/400/300`,
           published: existingItem?.published || false,
         };
       });
-
       setShowcaseItems(initializedShowcase);
     }
   }, [username]);
@@ -80,7 +78,6 @@ export default function ShowcaseManagerPage() {
   const handleUpdateAndRedirect = () => {
     if (!username || !showcaseItems) return;
     
-    // First, save the data
     saveData(username, 'showcase', showcaseItems);
     
     toast({
@@ -88,8 +85,8 @@ export default function ShowcaseManagerPage() {
         description: "Vos modifications ont été enregistrées.",
     });
 
-    // Then, redirect to a generic, shareable URL
-    router.push(`/showcase?user=${username}`);
+    // Use a generic username for the public URL
+    router.push(`/showcase?user=milbus`);
   };
 
   if (!showcaseItems) {
@@ -106,7 +103,8 @@ export default function ShowcaseManagerPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-            <Link href={`/showcase?user=${username}`} target="_blank" passHref>
+            {/* The public link uses a generic, non-sensitive identifier */}
+            <Link href={`/showcase?user=milbus`} target="_blank" passHref>
                 <Button variant="outline">
                     <Eye className="mr-2 h-4 w-4" />
                     Voir la page publique
@@ -141,7 +139,7 @@ export default function ShowcaseManagerPage() {
                         />
                     </div>
                     <CardTitle>{item.name}</CardTitle>
-                    <CardDescription>{item.price.toFixed(2)} FC</CardDescription>
+                    <CardDescription>{(item.price ?? 0).toFixed(2)} FC</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                      <div className="space-y-2">

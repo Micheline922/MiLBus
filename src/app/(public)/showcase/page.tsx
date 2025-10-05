@@ -27,32 +27,41 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 function ShowcaseContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const username = searchParams.get('user');
+    const userIdentifier = searchParams.get('user'); // This can be a generic identifier like 'milbus'
     const [items, setItems] = useState<ShowcaseItem[]>([]);
     const [businessName, setBusinessName] = useState("MiLBus");
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (username) {
+        if (userIdentifier) {
             try {
-                const data = loadData(username);
-                if (data && data.showcase) {
-                    setItems(data.showcase.filter(item => item.published));
-                    const userData = localStorage.getItem(`milbus-user-credentials`);
-                     if (userData) {
-                        const parsedUser = JSON.parse(userData);
-                        if(parsedUser.businessName) setBusinessName(parsedUser.businessName);
+                // In a real multi-user app, you'd fetch based on the identifier.
+                // Here, we load from the *first available* user credentials, assuming one user for this setup.
+                const userCredentials = localStorage.getItem('milbus-user-credentials');
+
+                if (userCredentials) {
+                    const parsedUser = JSON.parse(userCredentials);
+                    const username = parsedUser.storedUsername;
+                    
+                    const data = loadData(username);
+
+                    if (data && data.showcase) {
+                        setItems(data.showcase.filter(item => item.published));
+                        setBusinessName(parsedUser.businessName || "MiLBus");
+                    } else {
+                        setError("Impossible de charger la vitrine pour cet utilisateur.");
                     }
                 } else {
-                    setError("Impossible de charger la vitrine pour cet utilisateur.");
+                     setError("Aucun utilisateur trouvé. La vitrine ne peut pas être affichée.");
                 }
+
             } catch (e) {
-                setError("Utilisateur non trouvé ou données corrompues.");
+                setError("Données de la vitrine corrompues ou introuvables.");
             }
         } else {
-            setError("Aucun utilisateur spécifié pour afficher la vitrine.");
+            setError("Aucun identifiant de vitrine spécifié.");
         }
-    }, [username]);
+    }, [userIdentifier]);
 
     if (error) {
         return <div className="text-center py-10 text-red-500">{error}</div>;
@@ -85,20 +94,20 @@ function ShowcaseContent() {
                 </p>
             </header>
             
-            <div className="grid gap-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8">
+            <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
                 {items.map(item => (
                     <Card key={item.id} className="overflow-hidden group">
-                        <div className="relative w-full aspect-square">
+                        <div className="relative w-full aspect-[4/5]">
                            <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="transition-transform duration-300 group-hover:scale-105" />
                         </div>
-                        <CardHeader className="p-3">
-                            <CardTitle className="text-base truncate">{item.name}</CardTitle>
-                            <CardDescription className="text-sm font-semibold text-primary">{item.price.toFixed(2)} FC</CardDescription>
+                        <CardHeader className="p-2">
+                            <CardTitle className="text-sm truncate">{item.name}</CardTitle>
+                            <CardDescription className="text-xs font-semibold text-primary">{(item.price ?? 0).toFixed(2)} FC</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-3 pt-0">
-                            <p className="text-muted-foreground text-xs mb-3 h-12 overflow-hidden">{item.description}</p>
-                            <Button className="w-full h-9 text-xs">
-                                <ShoppingCart className="mr-2 h-4 w-4" /> Ajouter
+                        <CardContent className="p-2 pt-0">
+                            <p className="text-muted-foreground text-xs mb-2 h-10 overflow-hidden">{item.description}</p>
+                            <Button className="w-full h-8 text-xs">
+                                <ShoppingCart className="mr-2 h-3 w-3" /> Ajouter
                             </Button>
                         </CardContent>
                     </Card>
