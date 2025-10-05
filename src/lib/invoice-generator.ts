@@ -55,8 +55,11 @@ export function downloadInvoice(invoice: Invoice, businessDetails?: { name: stri
     doc.text("Facturé à :", 14, 55);
     doc.setFont('helvetica', 'normal');
     doc.text(invoice.customerName, 14, 62);
-    if(invoice._order?.customerAddress) {
-        doc.text(invoice._order.customerAddress, 14, 69);
+    if(invoice._order?.customerEmail) {
+        doc.text(invoice._order.customerEmail, 14, 69);
+    }
+    if(invoice._order?.customerPhone) {
+        doc.text(invoice._order.customerPhone, 14, 76);
     }
     
     // Status Badge
@@ -108,7 +111,7 @@ export function downloadInvoice(invoice: Invoice, businessDetails?: { name: stri
     }
     
     doc.autoTable({
-        startY: 80,
+        startY: 85,
         head: [tableColumn],
         body: tableRows,
         theme: 'striped',

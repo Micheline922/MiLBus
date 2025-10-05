@@ -11,6 +11,12 @@ export type CartItem = ShowcaseItem & {
   quantity: number;
 };
 
+type CustomerInfo = {
+    name: string;
+    phone: string;
+    email: string;
+};
+
 interface CartContextType {
   items: CartItem[];
   addItem: (item: ShowcaseItem) => void;
@@ -18,7 +24,7 @@ interface CartContextType {
   updateItemQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   total: number;
-  submitOrder: (customerInfo: { name: string, phone: string}) => Promise<boolean>;
+  submitOrder: (customerInfo: CustomerInfo) => Promise<boolean>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -94,7 +100,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
-  const submitOrder = async (customerInfo: { name: string, phone: string}) => {
+  const submitOrder = async (customerInfo: CustomerInfo) => {
     if (!username) {
         toast({ variant: 'destructive', title: 'Erreur', description: 'Identifiant de boutique non trouvé.'})
         return false;
@@ -110,6 +116,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         clearCart();
         return true;
     } else {
+        toast({ variant: 'destructive', title: 'Erreur', description: result.error || "Impossible de créer la commande." });
         return false;
     }
   }

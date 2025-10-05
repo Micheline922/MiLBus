@@ -63,7 +63,8 @@ export type Customer = {
 export type Order = {
   id: string;
   customerName: string;
-  customerAddress: string;
+  customerPhone: string;
+  customerEmail: string;
   products: string[];
   totalAmount: number;
   paidAmount: number;
@@ -157,15 +158,15 @@ export const initialData: AppData = {
   ],
   customers: [
       { id: 'c1', name: 'Marie Claire', contact: '+243 XXX XX XX XX', purchaseHistory: 2, lastPurchase: '2023-10-26' },
-      { id: 'c2', name: 'Amina Diallo', contact: '+243 XXX XX XX XX', purchaseHistory: 1, lastPurchase: '2023-10-25' },
-      { id: 'c3', name: 'Sophie Dubois', contact: '+243 XXX XX XX XX', purchaseHistory: 5, lastPurchase: '2023-10-25' },
+      { id: 'c2', name: 'Amina Diallo', contact: 'amina.diallo@example.com', purchaseHistory: 1, lastPurchase: '2023-10-25' },
+      { id: 'c3', name: 'Sophie Dubois', contact: 'sophie.dubois@example.com', purchaseHistory: 5, lastPurchase: '2023-10-25' },
       { id: 'c4', name: 'Léa Martin', contact: '+243 XXX XX XX XX', purchaseHistory: 3, lastPurchase: '2023-10-23' },
-      { id: 'c5', name: 'Fatou Ndiaye', contact: '+243 XXX XX XX XX', purchaseHistory: 1, lastPurchase: '2023-09-12' },
+      { id: 'c5', name: 'Fatou Ndiaye', contact: 'fatou.ndiaye@example.com', purchaseHistory: 1, lastPurchase: '2023-09-12' },
   ],
   orders: [
-    { id: 'o1', customerName: 'Sophie Dubois', customerAddress: '123 Rue de la Paix, Paris', products: ['Gloss "Crystal"', 'Pendentif lune'], totalAmount: 30.75, paidAmount: 20.00, remainingAmount: 10.75, status: 'En attente', date: '2023-10-28'},
-    { id: 'o2', customerName: 'Marie Claire', customerAddress: '45 Avenue des Champs, Lyon', products: ['Chaînette en or'], totalAmount: 25.00, paidAmount: 25.00, remainingAmount: 0.00, status: 'Payée', date: '2023-10-27'},
-    { id: 'o3', customerName: 'Amina Diallo', customerAddress: '78 Boulevard Voltaire, Marseille', products: ['Chouchou en satin'], totalAmount: 5.50, paidAmount: 0.00, remainingAmount: 5.50, status: 'En attente', date: '2023-10-26'},
+    { id: 'o1', customerName: 'Sophie Dubois', customerPhone: 'sophie.dubois@example.com', customerEmail: 'sophie.dubois@example.com', products: ['Gloss "Crystal"', 'Pendentif lune'], totalAmount: 30.75, paidAmount: 20.00, remainingAmount: 10.75, status: 'En attente', date: '2023-10-28'},
+    { id: 'o2', customerName: 'Marie Claire', customerPhone: '+243 XXX XX XX XX', customerEmail: 'marie.claire@example.com', products: ['Chaînette en or'], totalAmount: 25.00, paidAmount: 25.00, remainingAmount: 0.00, status: 'Payée', date: '2023-10-27'},
+    { id: 'o3', customerName: 'Amina Diallo', customerPhone: '+243 XXX XX XX XX', customerEmail: 'amina.diallo@example.com', products: ['Chouchou en satin'], totalAmount: 5.50, paidAmount: 0.00, remainingAmount: 5.50, status: 'En attente', date: '2023-10-26'},
   ],
   debts: [
     { id: 'd1', debtorName: 'Jean Dupont', amount: 50.00, debtDate: '2023-10-15', paymentDate: '2023-11-15', status: 'En cours' },

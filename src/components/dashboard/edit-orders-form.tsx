@@ -24,7 +24,8 @@ const formSchema = z.object({
     z.object({
       id: z.string(),
       customerName: z.string().min(1, 'Le nom est requis'),
-      customerAddress: z.string().min(1, 'L\'adresse est requise'),
+      customerPhone: z.string().min(1, 'Le téléphone est requis'),
+      customerEmail: z.string().email("L'email n'est pas valide"),
       products: z.string().transform((val) => val.split(',').map(s => s.trim()).filter(Boolean)), // Handle comma-separated strings
       totalAmount: z.coerce.number(),
       paidAmount: z.coerce.number(),
@@ -48,8 +49,6 @@ const transformOnSubmit = (values: z.infer<typeof formSchema>, onSubmit: (val: {
     const transformedValues = {
         orders: values.orders.map(order => ({
             ...order,
-            // This is where we would transform the string back to an array,
-            // but since the schema does that, we can just use the value.
             products: order.products as string[]
         }))
     };
@@ -104,11 +103,23 @@ export default function EditOrdersForm({ initialValues, onSubmit }: EditOrdersFo
 
                 <FormField
                   control={form.control}
-                  name={`orders.${index}.customerAddress`}
+                  name={`orders.${index}.customerPhone`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Adresse</FormLabel>
+                      <FormLabel>Contact (tél.)</FormLabel>
                       <FormControl><Input {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                 <FormField
+                  control={form.control}
+                  name={`orders.${index}.customerEmail`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Client</FormLabel>
+                      <FormControl><Input type="email" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -183,7 +194,7 @@ export default function EditOrdersForm({ initialValues, onSubmit }: EditOrdersFo
                 />
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => append({ id: `o${fields.length + 1}`, customerName: '', customerAddress: '', products: '', totalAmount: 0, paidAmount: 0, remainingAmount: 0, status: 'En attente', date: new Date().toISOString().split('T')[0] })}>
+            <Button type="button" variant="outline" size="sm" onClick={() => append({ id: `o${fields.length + 1}`, customerName: '', customerPhone: '', customerEmail: '', products: '', totalAmount: 0, paidAmount: 0, remainingAmount: 0, status: 'En attente', date: new Date().toISOString().split('T')[0] })}>
               Ajouter une commande
             </Button>
           </div>

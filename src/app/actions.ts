@@ -1,3 +1,4 @@
+
 'use server';
 
 import { analyzeSalesDataForRestock, AnalyzeSalesDataForRestockOutput } from '@/ai/flows/analyze-sales-data-for-restock';
@@ -85,9 +86,9 @@ type CreateOrderResult = {
 export async function createOrderFromCart(
     username: string, 
     cartItems: CartItem[],
-    customerInfo: { name: string; phone: string; }
+    customerInfo: { name: string; phone: string; email: string; }
 ): Promise<CreateOrderResult> {
-    if (!username || !cartItems.length || !customerInfo.name || !customerInfo.phone) {
+    if (!username || !cartItems.length || !customerInfo.name || !customerInfo.phone || !customerInfo.email) {
         return { success: false, error: 'Informations de commande incomplètes.' };
     }
 
@@ -99,7 +100,8 @@ export async function createOrderFromCart(
         const newOrder: Order = {
             id: `o${appData.orders.length + 1}_${Date.now()}`,
             customerName: customerInfo.name,
-            customerAddress: customerInfo.phone, // Using address field for phone
+            customerPhone: customerInfo.phone,
+            customerEmail: customerInfo.email,
             products: cartItems.flatMap(item => Array(item.quantity).fill(item.name)),
             totalAmount: totalAmount,
             paidAmount: 0,

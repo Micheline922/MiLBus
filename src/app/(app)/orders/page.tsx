@@ -102,6 +102,7 @@ export default function OrdersPage() {
               <TableRow>
                 <TableHead>Client</TableHead>
                 <TableHead>Contact (tél.)</TableHead>
+                <TableHead>Email Client</TableHead>
                 <TableHead>Produits</TableHead>
                 <TableHead>Montant Total</TableHead>
                 <TableHead>Montant Payé</TableHead>
@@ -116,7 +117,8 @@ export default function OrdersPage() {
               {orders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">{order.customerName}</TableCell>
-                  <TableCell>{order.customerAddress}</TableCell>
+                  <TableCell>{order.customerPhone}</TableCell>
+                  <TableCell>{order.customerEmail}</TableCell>
                   <TableCell>{order.products.join(', ')}</TableCell>
                   <TableCell>{order.totalAmount.toFixed(2)} FC</TableCell>
                   <TableCell>{order.paidAmount.toFixed(2)} FC</TableCell>

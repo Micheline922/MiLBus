@@ -4,14 +4,18 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/use-cart";
-import { ShoppingCart, Trash2 } from "lucide-react";
+import { Mail, ShoppingCart, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { useAuth } from "@/hooks/use-auth";
+import { loadData } from "@/lib/storage";
+import { useSearchParams } from "next/navigation";
+
 
 export default function Cart() {
     const { items, removeItem, updateItemQuantity, total, clearCart, submitOrder } = useCart();
@@ -20,19 +24,34 @@ export default function Cart() {
 
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
+    const [customerEmail, setCustomerEmail] = useState('');
+    const [vendorEmail, setVendorEmail] = useState('');
+    
+    const searchParams = useSearchParams();
+    const username = searchParams.get('user');
+
+    useEffect(() => {
+        if (username) {
+            const userCredentials = localStorage.getItem('milbus-user-credentials');
+            if (userCredentials) {
+                const parsedUser = JSON.parse(userCredentials);
+                setVendorEmail(parsedUser.businessContact || '');
+            }
+        }
+    }, [username]);
 
     const handleSendOrder = () => {
-        if (!customerName.trim() || !customerPhone.trim()) {
+        if (!customerName.trim() || !customerPhone.trim() || !customerEmail.trim()) {
             toast({
                 variant: 'destructive',
                 title: "Informations manquantes",
-                description: "Veuillez entrer votre nom et votre numéro de téléphone.",
+                description: "Veuillez entrer votre nom, numéro de téléphone et e-mail.",
             });
             return;
         }
 
         startTransition(async () => {
-            const success = await submitOrder({ name: customerName, phone: customerPhone });
+            const success = await submitOrder({ name: customerName, phone: customerPhone, email: customerEmail });
             if (success) {
                 toast({
                     title: "Commande envoyée !",
@@ -40,6 +59,7 @@ export default function Cart() {
                 });
                 setCustomerName('');
                 setCustomerPhone('');
+                setCustomerEmail('');
             } else {
                 toast({
                     variant: 'destructive',
@@ -142,7 +162,18 @@ export default function Cart() {
                         <Label htmlFor="customer-phone">Numéro de téléphone</Label>
                         <Input id="customer-phone" placeholder="Ex: +243 XXX XX XX XX" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} disabled={isPending}/>
                     </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="customer-email">Adresse e-mail</Label>
+                        <Input id="customer-email" type="email" placeholder="Ex: marie@exemple.com" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} disabled={isPending}/>
+                    </div>
                 </div>
+
+                 {vendorEmail && (
+                    <div className="text-xs text-muted-foreground flex items-center gap-2 rounded-md bg-muted p-2">
+                        <Mail className="h-4 w-4 shrink-0" />
+                        <p>Le vendeur vous contactera. Vous pouvez aussi le joindre à : <span className="font-medium text-foreground">{vendorEmail}</span></p>
+                    </div>
+                )}
 
                 <Button className="w-full" onClick={handleSendOrder} disabled={isPending || items.length === 0}>
                     {isPending ? "Envoi en cours..." : "Envoyer la commande et être contacté(e)"}
