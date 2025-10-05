@@ -94,20 +94,20 @@ function ShowcaseContent() {
                 </p>
             </header>
             
-            <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 {items.map(item => (
                     <Card key={item.id} className="overflow-hidden group">
                         <div className="relative w-full aspect-[4/5]">
                            <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="transition-transform duration-300 group-hover:scale-105" />
                         </div>
-                        <CardHeader className="p-2">
-                            <CardTitle className="text-sm truncate">{item.name}</CardTitle>
-                            <CardDescription className="text-xs font-semibold text-primary">{(item.price ?? 0).toFixed(2)} FC</CardDescription>
+                        <CardHeader className="p-3">
+                            <CardTitle className="text-base truncate">{item.name}</CardTitle>
+                            <CardDescription className="font-semibold text-primary">{(item.price ?? 0).toFixed(2)} FC</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-2 pt-0">
-                            <p className="text-muted-foreground text-xs mb-2 h-10 overflow-hidden">{item.description}</p>
-                            <Button className="w-full h-8 text-xs">
-                                <ShoppingCart className="mr-2 h-3 w-3" /> Ajouter
+                        <CardContent className="p-3 pt-0">
+                            <p className="text-muted-foreground text-sm mb-3 h-12 overflow-hidden">{item.description}</p>
+                            <Button className="w-full">
+                                <ShoppingCart className="mr-2 h-4 w-4" /> Ajouter
                             </Button>
                         </CardContent>
                     </Card>
