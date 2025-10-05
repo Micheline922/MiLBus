@@ -40,7 +40,6 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 }
 
 const navLinks = [
-  { href: '/', icon: <Home className="h-4 w-4" />, text: 'Accueil' },
   { href: '/dashboard', icon: <LayoutGrid className="h-4 w-4" />, text: 'Tableau de bord' },
   { href: '/orders', icon: <ClipboardList className="h-4 w-4" />, text: 'Commandes' },
   { href: '/sales', icon: <ShoppingCart className="h-4 w-4" />, text: 'Ventes' },

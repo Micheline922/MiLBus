@@ -1,11 +1,30 @@
 
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
 
 export default function SettingsPage() {
+  const { toast } = useToast();
+  const { username } = useAuth();
+  const [name, setName] = useState(username || "Entrepreneuse");
+  const [email, setEmail] = useState("contact@milbus.com");
+
+  const handleSave = () => {
+    // Here you would typically save the data to your backend
+    console.log("Saving data:", { name, email });
+    toast({
+      title: "Succès !",
+      description: "Vos informations ont été mises à jour.",
+    });
+  };
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <h1 className="text-3xl font-headline font-bold tracking-tight">Paramètres</h1>
@@ -18,13 +37,13 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nom</Label>
-              <Input id="name" defaultValue="Entrepreneuse" readOnly />
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue="contact@milbus.com" readOnly />
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
-            <Button>Enregistrer</Button>
+            <Button onClick={handleSave}>Enregistrer</Button>
           </CardContent>
         </Card>
 
