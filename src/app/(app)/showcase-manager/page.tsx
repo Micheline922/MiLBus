@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, ImagePlus, Send } from 'lucide-react';
+import { Eye, ImagePlus, Send, Link as LinkIcon, Copy } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -89,6 +89,23 @@ export default function ShowcaseManagerPage() {
     router.push(`/showcase?user=milbus`);
   };
 
+  const copyPublicUrl = () => {
+    const publicUrl = `${window.location.origin}/showcase?user=milbus`;
+    navigator.clipboard.writeText(publicUrl).then(() => {
+        toast({
+            title: "Lien copié !",
+            description: "Le lien public de la vitrine a été copié dans le presse-papiers.",
+        });
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        toast({
+            variant: "destructive",
+            title: "Erreur",
+            description: "Impossible de copier le lien.",
+        });
+    });
+  };
+
   if (!showcaseItems) {
     return <div>Chargement...</div>;
   }
@@ -103,7 +120,10 @@ export default function ShowcaseManagerPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-            {/* The public link uses a generic, non-sensitive identifier */}
+            <Button variant="outline" onClick={copyPublicUrl}>
+                <Copy className="mr-2 h-4 w-4" />
+                Copier le lien public
+            </Button>
             <Link href={`/showcase?user=milbus`} target="_blank" passHref>
                 <Button variant="outline">
                     <Eye className="mr-2 h-4 w-4" />
