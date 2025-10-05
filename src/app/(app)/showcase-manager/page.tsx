@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, ImagePlus } from 'lucide-react';
+import { Eye, ImagePlus, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -30,8 +30,8 @@ export default function ShowcaseManagerPage() {
       // Combine all products into a single list
       const allProducts = [
         ...data.products,
-        ...data.wigs.map(w => ({ ...w, name: w.wigDetails, price: w.sellingPrice, stock: w.remaining })),
-        ...data.pastries.map(p => ({ ...p, price: p.unitPrice, stock: p.remaining })),
+        ...data.wigs.map(w => ({ ...w, id: w.id, name: w.wigDetails, price: w.sellingPrice, stock: w.remaining })),
+        ...data.pastries.map(p => ({ ...p, id: p.id, name: p.name, price: p.unitPrice, stock: p.remaining })),
       ];
 
       // Get existing showcase data
@@ -77,13 +77,19 @@ export default function ShowcaseManagerPage() {
     }
   };
 
-  const handleSave = () => {
+  const handleUpdateAndRedirect = () => {
     if (!username || !showcaseItems) return;
+    
+    // First, save the data
     saveData(username, 'showcase', showcaseItems);
+    
     toast({
         title: "Vitrine mise à jour",
         description: "Vos modifications ont été enregistrées.",
     });
+
+    // Then, redirect
+    router.push(`/showcase?user=${username}`);
   };
 
   if (!showcaseItems) {
@@ -96,7 +102,7 @@ export default function ShowcaseManagerPage() {
         <div>
           <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Vitrine</h1>
           <p className="text-muted-foreground">
-            Choisissez les produits à afficher sur votre page publique.
+            Choisissez les produits à afficher, puis cliquez sur "Mettre à jour la vitrine".
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -106,7 +112,9 @@ export default function ShowcaseManagerPage() {
                     Voir la page publique
                 </Button>
             </Link>
-            <Button onClick={handleSave}>Enregistrer</Button>
+            <Button onClick={handleUpdateAndRedirect}>
+                <Send className="mr-2 h-4 w-4" /> Mettre à jour la vitrine
+            </Button>
         </div>
       </div>
       
