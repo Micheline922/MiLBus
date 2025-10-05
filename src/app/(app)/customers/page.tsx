@@ -52,6 +52,16 @@ export default function CustomersPage() {
     setAddDialogOpen(false);
   };
 
+  const handleContactCustomer = (contact: string) => {
+    // Simple mailto link for now. Can be expanded later.
+    if (contact.includes('@')) {
+      window.location.href = `mailto:${contact}`;
+    } else {
+      // Could implement tel: link, but mailto is more universal for now
+      alert(`Contact: ${contact}`);
+    }
+  }
+
   if (!customers) {
     return <div>Chargement...</div>;
   }
@@ -112,8 +122,8 @@ export default function CustomersPage() {
                 <TableHead>Contact</TableHead>
                 <TableHead>Achats</TableHead>
                 <TableHead>Dernier Achat</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
+                <TableHead className="text-right">
+                  Actions
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -125,9 +135,9 @@ export default function CustomersPage() {
                   <TableCell>{customer.purchaseHistory}</TableCell>
                   <TableCell>{isClient ? new Date(customer.lastPurchase).toLocaleDateString() : ''}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon">
-                      <MessageSquare className="h-4 w-4" />
-                      <span className="sr-only">Contacter</span>
+                    <Button variant="outline" size="sm" onClick={() => handleContactCustomer(customer.contact)}>
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      Contacter
                     </Button>
                   </TableCell>
                 </TableRow>

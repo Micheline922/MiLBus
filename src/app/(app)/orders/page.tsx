@@ -101,7 +101,7 @@ export default function OrdersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Client</TableHead>
-                <TableHead>Adresse</TableHead>
+                <TableHead>Contact (tél.)</TableHead>
                 <TableHead>Produits</TableHead>
                 <TableHead>Montant Total</TableHead>
                 <TableHead>Montant Payé</TableHead>

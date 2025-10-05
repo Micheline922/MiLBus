@@ -20,10 +20,10 @@ const formSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
   contact: z.string().min(1, 'Le contact est requis'),
   purchaseHistory: z.coerce.number().default(0),
-  lastPurchase: z.string().min(1, 'La date est requise'),
+  lastPurchase: z.string().default(new Date().toISOString().split('T')[0]),
 });
 
-type AddCustomerFormValues = z.infer<typeof formSchema>;
+type AddCustomerFormValues = Omit<Customer, 'id'>;
 
 type AddCustomerFormProps = {
   onSubmit: (values: AddCustomerFormValues) => void;
@@ -60,18 +60,7 @@ export default function AddCustomerForm({ onSubmit }: AddCustomerFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Contact (Email ou téléphone)</FormLabel>
-              <FormControl><Input {...field} placeholder="Ex: marie@example.com" /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-         <FormField
-          control={form.control}
-          name="lastPurchase"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Date du dernier achat</FormLabel>
-              <FormControl><Input type="date" {...field} /></FormControl>
+              <FormControl><Input {...field} placeholder="Ex: marie@example.com ou +243..." /></FormControl>
               <FormMessage />
             </FormItem>
           )}
