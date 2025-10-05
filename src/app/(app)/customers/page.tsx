@@ -18,12 +18,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import EditCustomersForm from "@/components/dashboard/edit-customers-form";
+import AddCustomerForm from "@/components/dashboard/add-customer-form";
 
 export default function CustomersPage() {
   const { username } = useAuth();
   const [customers, setCustomers] = useState<Customer[] | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -32,12 +34,22 @@ export default function CustomersPage() {
       setCustomers(data.customers);
     }
   }, [username]);
-
+  
   const handleCustomersSubmit = (values: { customers: Customer[] }) => {
     if (!username) return;
     setCustomers(values.customers);
     saveData(username, 'customers', values.customers);
-    setDialogOpen(false);
+    setEditDialogOpen(false);
+  };
+  
+  const handleAddCustomer = (newCustomer: Omit<Customer, 'id'>) => {
+    if (!username || !customers) return;
+    const newId = `c${customers.length + 1}_${Date.now()}`;
+    const customerToAdd: Customer = { ...newCustomer, id: newId };
+    const updatedCustomers = [...customers, customerToAdd];
+    setCustomers(updatedCustomers);
+    saveData(username, 'customers', updatedCustomers);
+    setAddDialogOpen(false);
   };
 
   if (!customers) {
@@ -51,16 +63,29 @@ export default function CustomersPage() {
           <h1 className="text-3xl font-headline font-bold tracking-tight">Clients</h1>
           <p className="text-muted-foreground">Gérez votre base de données clients.</p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un client
-        </Button>
+        <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+            <DialogTrigger asChild>
+                <Button>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un client
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Ajouter un nouveau client</DialogTitle>
+                    <DialogDescription>
+                        Remplissez les informations ci-dessous.
+                    </DialogDescription>
+                </DialogHeader>
+                <AddCustomerForm onSubmit={handleAddCustomer} />
+            </DialogContent>
+        </Dialog>
       </div>
 
        <Card className="relative group">
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Pencil className="mr-2 h-4 w-4" /> Modifier
+                <Pencil className="mr-2 h-4 w-4" /> Modifier la liste
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl">
