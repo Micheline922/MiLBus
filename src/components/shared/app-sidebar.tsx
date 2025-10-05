@@ -53,7 +53,7 @@ const navLinks = [
 
 export default function AppSidebar() {
   const pathname = usePathname();
-  const { logout, username } = useAuth();
+  const { logout, user } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -90,12 +90,12 @@ export default function AppSidebar() {
        <div className="mt-auto p-4 border-t">
           <div className="flex items-center gap-3 p-2 mb-2">
             <Avatar>
-              <AvatarImage src={`https://picsum.photos/seed/${username}/40/40`} />
-              <AvatarFallback>{username ? username.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
+              <AvatarImage src={`https://picsum.photos/seed/${user?.username}/40/40`} />
+              <AvatarFallback>{user?.username ? user.username.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold">{username || "Entrepreneuse"}</span>
-              <span className="text-xs text-muted-foreground">contact@milbus.com</span>
+              <span className="text-sm font-semibold">{user?.businessName || user?.username || "Entrepreneuse"}</span>
+              <span className="text-xs text-muted-foreground">{user?.businessContact}</span>
             </div>
           </div>
           <nav className="grid gap-1">

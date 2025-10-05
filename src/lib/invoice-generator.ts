@@ -2,6 +2,7 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { Invoice, Order } from './data';
+import { useAuth } from '@/hooks/use-auth';
 
 // Extend the jsPDF type to include autoTable
 interface jsPDFWithAutoTable extends jsPDF {
@@ -22,11 +23,12 @@ export function generateInvoiceFromOrder(order: Order, invoiceCount: number): In
     };
 }
 
-export function downloadInvoice(invoice: Invoice) {
+export function downloadInvoice(invoice: Invoice, businessDetails?: { name: string, address: string, contact: string }) {
     const doc = new jsPDF() as jsPDFWithAutoTable;
-    const businessName = "MiLBus - Beauté & Style";
-    const businessAddress = "Votre Adresse, Votre Ville";
-    const businessContact = "contact@milbus.com";
+    
+    const businessName = businessDetails?.name || "MiLBus - Beauté & Style";
+    const businessAddress = businessDetails?.address || "Votre Adresse, Votre Ville";
+    const businessContact = businessDetails?.contact || "contact@milbus.com";
 
     // Header
     doc.setFontSize(22);

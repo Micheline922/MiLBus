@@ -8,22 +8,40 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { username } = useAuth();
-  const [name, setName] = useState(username || "Entrepreneuse");
-  const [email, setEmail] = useState("contact@milbus.com");
+  const { user, updateUser } = useAuth();
+  
+  const [businessName, setBusinessName] = useState('');
+  const [businessContact, setBusinessContact] = useState('');
+  const [businessAddress, setBusinessAddress] = useState('');
+
+  useEffect(() => {
+    if (user) {
+        setBusinessName(user.businessName);
+        setBusinessContact(user.businessContact);
+        setBusinessAddress(user.businessAddress);
+    }
+  }, [user]);
 
   const handleSave = () => {
-    // Here you would typically save the data to your backend
-    console.log("Saving data:", { name, email });
+    updateUser({
+        businessName,
+        businessContact,
+        businessAddress,
+    });
     toast({
       title: "Succès !",
       description: "Vos informations ont été mises à jour.",
     });
   };
+  
+  if (!user) {
+    return <div>Chargement...</div>
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -31,19 +49,23 @@ export default function SettingsPage() {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Profil</CardTitle>
-            <CardDescription>Gérez les informations de votre compte.</CardDescription>
+            <CardTitle>Profil de l'Entreprise</CardTitle>
+            <CardDescription>Ces informations apparaîtront sur vos factures.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nom</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+              <Label htmlFor="businessName">Nom de l'entreprise</Label>
+              <Input id="businessName" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
+            </div>
+             <div className="space-y-2">
+              <Label htmlFor="businessContact">Email de contact</Label>
+              <Input id="businessContact" type="email" value={businessContact} onChange={(e) => setBusinessContact(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Label htmlFor="businessAddress">Adresse de l'entreprise</Label>
+              <Textarea id="businessAddress" value={businessAddress} onChange={(e) => setBusinessAddress(e.target.value)} placeholder="123 Rue de l'Exemple, Ville, Pays"/>
             </div>
-            <Button onClick={handleSave}>Enregistrer</Button>
+            <Button onClick={handleSave}>Enregistrer les modifications</Button>
           </CardContent>
         </Card>
 

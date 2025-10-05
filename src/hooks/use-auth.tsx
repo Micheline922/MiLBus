@@ -3,22 +3,36 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
+type UserData = {
+    username: string;
+    businessName: string;
+    businessAddress: string;
+    businessContact: string;
+};
+
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  username: string | null;
+  user: UserData | null;
   login: (username: string, pass: string) => Promise<void>;
   logout: () => void;
+  updateUser: (data: Partial<UserData>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const USER_KEY = 'milbus-user-credentials';
 
+const defaultBusinessInfo = {
+    businessName: "MiLBus - Beauté & Style",
+    businessAddress: "Votre Adresse, Votre Ville",
+    businessContact: "contact@milbus.com",
+};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [username, setUsername] = useState<string | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
 
   useEffect(() => {
     try {
@@ -26,7 +40,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (loggedIn) {
         const storedUser = localStorage.getItem(USER_KEY);
         if (storedUser) {
-            setUsername(JSON.parse(storedUser).storedUsername);
+            const parsed = JSON.parse(storedUser);
+            setUser({
+                username: parsed.storedUsername,
+                businessName: parsed.businessName || defaultBusinessInfo.businessName,
+                businessAddress: parsed.businessAddress || defaultBusinessInfo.businessAddress,
+                businessContact: parsed.businessContact || defaultBusinessInfo.businessContact,
+            });
         }
         setIsAuthenticated(true);
       }
@@ -36,7 +56,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(false);
   }, []);
 
-  const login = async (user: string, pass: string) => {
+  const login = async (username: string, pass: string) => {
     setIsLoading(true);
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
@@ -45,10 +65,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
           if (storedUser) {
             // User exists, validate credentials
-            const { storedUsername, storedPassword } = JSON.parse(storedUser);
-            if (user.toLowerCase() === storedUsername.toLowerCase() && pass === storedPassword) {
+            const { storedUsername, storedPassword, ...businessInfo } = JSON.parse(storedUser);
+            if (username.toLowerCase() === storedUsername.toLowerCase() && pass === storedPassword) {
               setIsAuthenticated(true);
-              setUsername(storedUsername);
+              setUser({ 
+                  username: storedUsername,
+                  businessName: businessInfo.businessName || defaultBusinessInfo.businessName,
+                  businessAddress: businessInfo.businessAddress || defaultBusinessInfo.businessAddress,
+                  businessContact: businessInfo.businessContact || defaultBusinessInfo.businessContact,
+              });
               localStorage.setItem('isMilbusAuthenticated', 'true');
               setIsLoading(false);
               resolve();
@@ -58,14 +83,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
           } else {
             // First time login/signup, save credentials
-            if (!user || !pass) {
+            if (!username || !pass) {
                setIsLoading(false);
                return reject(new Error("Le nom d'utilisateur et le mot de passe ne peuvent pas être vides."));
             }
-            const newUser = { storedUsername: user, storedPassword: pass };
+            const newUser = { 
+                storedUsername: username, 
+                storedPassword: pass,
+                ...defaultBusinessInfo
+            };
             localStorage.setItem(USER_KEY, JSON.stringify(newUser));
             setIsAuthenticated(true);
-            setUsername(user);
+            setUser({ username, ...defaultBusinessInfo });
             localStorage.setItem('isMilbusAuthenticated', 'true');
             setIsLoading(false);
             resolve();
@@ -80,17 +109,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = () => {
     setIsAuthenticated(false);
-    setUsername(null);
+    setUser(null);
     try {
-      // We keep the user credentials but log them out
       localStorage.removeItem('isMilbusAuthenticated');
     } catch (error) {
       console.warn('localStorage is not available. Logout state may not persist.');
     }
   };
 
+  const updateUser = (data: Partial<UserData>) => {
+    if (!user) return;
+    try {
+        const stored = localStorage.getItem(USER_KEY);
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            const updatedData = { ...parsed, ...data };
+            localStorage.setItem(USER_KEY, JSON.stringify(updatedData));
+            setUser(prev => prev ? { ...prev, ...data } : null);
+        }
+    } catch(e) {
+        console.error("Failed to update user data", e);
+    }
+  };
+
+
+  const value = {
+    isAuthenticated,
+    isLoading,
+    user,
+    login,
+    logout,
+    updateUser,
+    get username() { return user?.username ?? null; } // keep getter for compatibility
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, username, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

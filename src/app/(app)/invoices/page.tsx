@@ -22,26 +22,35 @@ import { loadData, saveData } from '@/lib/storage';
 import { downloadInvoice } from "@/lib/invoice-generator";
 
 export default function InvoicesPage() {
-  const { username } = useAuth();
+  const { user } = useAuth();
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-    if (username) {
-      const data = loadData(username);
+    if (user?.username) {
+      const data = loadData(user.username);
       setInvoices(data.invoices);
     }
-  }, [username]);
+  }, [user?.username]);
 
   const handleInvoicesSubmit = (values: { invoices: Invoice[] }) => {
-    if (!username) return;
+    if (!user?.username) return;
     setInvoices(values.invoices);
-    saveData(username, 'invoices', values.invoices);
+    saveData(user.username, 'invoices', values.invoices);
     setDialogOpen(false);
   };
   
+  const handleDownload = (invoice: Invoice) => {
+    if (!user) return;
+    downloadInvoice(invoice, {
+        name: user.businessName,
+        address: user.businessAddress,
+        contact: user.businessContact,
+    });
+  };
+
   if (!invoices) {
     return <div>Chargement...</div>;
   }
@@ -106,7 +115,7 @@ export default function InvoicesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="outline" size="sm" onClick={() => downloadInvoice(invoice)}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownload(invoice)}>
                       <Download className="mr-2 h-4 w-4" />
                       Télécharger
                     </Button>
