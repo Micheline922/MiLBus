@@ -85,18 +85,18 @@ function ShowcaseContent() {
                 </p>
             </header>
             
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {items.map(item => (
                     <Card key={item.id} className="overflow-hidden group">
-                        <div className="relative w-full aspect-square">
+                        <div className="relative w-full aspect-[4/3]">
                            <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="transition-transform duration-300 group-hover:scale-105" />
                         </div>
-                        <CardHeader>
-                            <CardTitle className="text-xl">{item.name}</CardTitle>
+                        <CardHeader className="p-4">
+                            <CardTitle className="text-lg">{item.name}</CardTitle>
                             <CardDescription className="text-base font-semibold text-primary">{item.price.toFixed(2)} FC</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground text-sm mb-4 h-20 overflow-hidden">{item.description}</p>
+                        <CardContent className="p-4 pt-0">
+                            <p className="text-muted-foreground text-sm mb-4 h-16 overflow-hidden">{item.description}</p>
                             <Button className="w-full">
                                 <ShoppingCart className="mr-2 h-4 w-4" /> Ajouter au panier
                             </Button>
