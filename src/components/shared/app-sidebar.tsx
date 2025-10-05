@@ -19,7 +19,8 @@ import {
   FileText,
   CreditCard,
   LogOut,
-  User
+  User,
+  GalleryHorizontal,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -48,6 +49,7 @@ const navLinks = [
   { href: '/debts', icon: <CreditCard className="h-4 w-4" />, text: 'Dettes' },
   { href: '/reports', icon: <BarChart3 className="h-4 w-4" />, text: 'Rapports' },
   { href: '/invoices', icon: <FileText className="h-4 w-4" />, text: 'Factures' },
+  { href: '/showcase-manager', icon: <GalleryHorizontal className="h-4 w-4" />, text: 'Vitrine' },
 ];
 
 

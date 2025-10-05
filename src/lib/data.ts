@@ -91,6 +91,15 @@ export type Invoice = {
   _order?: Order;
 };
 
+export type ShowcaseItem = {
+    id: string; // original product id
+    name: string;
+    price: number;
+    imageUrl: string;
+    description: string;
+    published: boolean;
+};
+
 export type AppData = {
   stats: {
     totalRevenue: { value: string; change: string; };
@@ -106,6 +115,7 @@ export type AppData = {
   orders: Order[];
   debts: Debt[];
   invoices: Invoice[];
+  showcase: ShowcaseItem[];
 }
 
 export const initialData: AppData = {
@@ -166,4 +176,9 @@ export const initialData: AppData = {
     { id: 'INV001', orderId: 'o1', customerName: 'Sophie Dubois', date: '2023-10-28', amount: 30.75, status: 'En attente' },
     { id: 'INV002', orderId: 'o2', customerName: 'Marie Claire', date: '2023-10-27', amount: 25.00, status: 'Payée' },
   ],
+  showcase: [
+    { id: 'p1', name: 'Chaînette en or', price: 25.00, imageUrl: 'https://picsum.photos/seed/chainette/400/400', description: 'Une magnifique chaînette en or pour sublimer votre cou.', published: true },
+    { id: 'w1', name: 'Perruque Lace Frontal 18 pouces', price: 150.00, imageUrl: 'https://picsum.photos/seed/perruque1/400/400', description: 'Qualité supérieure, pour un look naturel et élégant.', published: true },
+    { id: 'p2', name: 'Chouchou en satin', price: 5.50, imageUrl: 'https://picsum.photos/seed/satin/400/400', description: 'Protégez vos cheveux avec style.', published: false },
+  ]
 };
