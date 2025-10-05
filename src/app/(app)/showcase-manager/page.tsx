@@ -88,7 +88,7 @@ export default function ShowcaseManagerPage() {
         description: "Vos modifications ont été enregistrées.",
     });
 
-    // Then, redirect
+    // Then, redirect to a generic, shareable URL
     router.push(`/showcase?user=${username}`);
   };
 
