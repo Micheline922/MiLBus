@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { loadData } from '@/lib/storage';
 import { ShowcaseItem } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, ArrowLeft } from 'lucide-react';
 
 function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -26,6 +26,7 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 
 function ShowcaseContent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const username = searchParams.get('user');
     const [items, setItems] = useState<ShowcaseItem[]>([]);
     const [businessName, setBusinessName] = useState("MiLBus");
@@ -37,9 +38,10 @@ function ShowcaseContent() {
                 const data = loadData(username);
                 if (data && data.showcase) {
                     setItems(data.showcase.filter(item => item.published));
-                    if (data.stats.totalRevenue.value) { // This is still a bit of a hack
-                       // A real app would get this from user profile settings
-                       // setBusinessName(data.userProfile.businessName)
+                    const userData = localStorage.getItem(`milbus-user-credentials`);
+                     if (userData) {
+                        const parsedUser = JSON.parse(userData);
+                        if(parsedUser.businessName) setBusinessName(parsedUser.businessName);
                     }
                 } else {
                     setError("Impossible de charger la vitrine pour cet utilisateur.");
@@ -62,7 +64,16 @@ function ShowcaseContent() {
 
     return (
          <div className="container mx-auto p-4 md:p-8">
-            <header className="text-center mb-10">
+            <header className="relative text-center mb-10">
+                 <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="absolute top-0 left-0"
+                    onClick={() => router.back()}
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="sr-only">Retour</span>
+                </Button>
                 <div className="inline-block bg-primary text-primary-foreground rounded-full p-3 mb-4">
                     <MilbusLogo className="h-12 w-12" />
                 </div>
