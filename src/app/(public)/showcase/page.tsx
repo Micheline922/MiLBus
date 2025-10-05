@@ -85,7 +85,7 @@ function ShowcaseContent() {
                 </p>
             </header>
             
-            <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="grid gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {items.map(item => (
                     <Card key={item.id} className="overflow-hidden group">
                         <div className="relative w-full aspect-[4/3]">
