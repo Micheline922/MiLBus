@@ -64,10 +64,6 @@ export default function ShowcaseManagerPage() {
 
   const handlePublishChange = (checked: boolean, itemId: string) => {
     handleItemChange(itemId, 'published', checked);
-    if (checked && username) {
-      const url = `/showcase?user=${encodeURIComponent(username)}`;
-      window.open(url, '_blank');
-    }
   };
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: string) => {
