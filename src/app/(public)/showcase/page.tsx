@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
+import { useCart } from '@/hooks/use-cart';
+import Cart from '@/components/shared/cart';
 
 function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -27,16 +29,15 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 function ShowcaseContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const userIdentifier = searchParams.get('user'); // This can be a generic identifier like 'milbus'
+    const userIdentifier = searchParams.get('user');
     const [items, setItems] = useState<ShowcaseItem[]>([]);
     const [businessName, setBusinessName] = useState("MiLBus");
     const [error, setError] = useState<string | null>(null);
+    const { addItem } = useCart();
 
     useEffect(() => {
         if (userIdentifier) {
             try {
-                // In a real multi-user app, you'd fetch based on the identifier.
-                // Here, we load from the *first available* user credentials, assuming one user for this setup.
                 const userCredentials = localStorage.getItem('milbus-user-credentials');
 
                 if (userCredentials) {
@@ -75,7 +76,7 @@ function ShowcaseContent() {
          <div className="container mx-auto p-4 md:p-8">
             <header className="relative text-center mb-10">
                  <Button 
-                    variant="outline" 
+                    variant="ghost" 
                     size="icon" 
                     className="absolute top-0 left-0"
                     onClick={() => router.back()}
@@ -83,6 +84,9 @@ function ShowcaseContent() {
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Retour</span>
                 </Button>
+                <div className="absolute top-0 right-0">
+                    <Cart />
+                </div>
                 <div className="inline-block bg-primary text-primary-foreground rounded-full p-3 mb-4">
                     <MilbusLogo className="h-12 w-12" />
                 </div>
@@ -94,9 +98,9 @@ function ShowcaseContent() {
                 </p>
             </header>
             
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 {items.map(item => (
-                    <Card key={item.id} className="overflow-hidden group">
+                    <Card key={item.id} className="overflow-hidden group flex flex-col">
                         <div className="relative w-full aspect-[4/5]">
                            <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="transition-transform duration-300 group-hover:scale-105" />
                         </div>
@@ -104,9 +108,9 @@ function ShowcaseContent() {
                             <CardTitle className="text-base truncate">{item.name}</CardTitle>
                             <CardDescription className="font-semibold text-primary">{(item.price ?? 0).toFixed(2)} FC</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-3 pt-0">
-                            <p className="text-muted-foreground text-sm mb-3 h-12 overflow-hidden">{item.description}</p>
-                            <Button className="w-full">
+                        <CardContent className="p-3 pt-0 mt-auto">
+                            <p className="text-muted-foreground text-sm mb-3 h-10 overflow-hidden">{item.description}</p>
+                            <Button className="w-full" onClick={() => addItem(item)}>
                                 <ShoppingCart className="mr-2 h-4 w-4" /> Ajouter
                             </Button>
                         </CardContent>
