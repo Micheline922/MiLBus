@@ -27,23 +27,27 @@ export default function ShowcaseManagerPage() {
   useEffect(() => {
     if (username) {
       const data = loadData(username);
-      // Initialize showcase items from products, wigs, and pastries
+      // Combine all products into a single list
       const allProducts = [
-          ...data.products, 
-          ...data.wigs.map(w => ({...w, name: w.wigDetails, price: w.sellingPrice})), 
-          ...data.pastries.map(p => ({...p, price: p.unitPrice}))
+        ...data.products,
+        ...data.wigs.map(w => ({ ...w, name: w.wigDetails, price: w.sellingPrice, stock: w.remaining })),
+        ...data.pastries.map(p => ({ ...p, price: p.unitPrice, stock: p.remaining })),
       ];
-      
+
+      // Get existing showcase data
+      const existingShowcaseData = data.showcase || [];
+      const existingShowcaseMap = new Map(existingShowcaseData.map(item => [item.id, item]));
+
       const initializedShowcase: ShowcaseItem[] = allProducts.map(p => {
-          const existingItem = data.showcase?.find(item => item.id === p.id);
-          return {
-              id: p.id,
-              name: existingItem?.name || p.name,
-              price: p.price,
-              description: existingItem?.description || `Description pour ${p.name}`,
-              imageUrl: existingItem?.imageUrl || `https://picsum.photos/seed/${p.id}/400/400`,
-              published: existingItem?.published || false,
-          };
+        const existingItem = existingShowcaseMap.get(p.id);
+        return {
+          id: p.id,
+          name: existingItem?.name || p.name,
+          price: existingItem?.price ?? (p as any).price ?? (p as any).sellingPrice ?? (p as any).unitPrice,
+          description: existingItem?.description || `Description pour ${p.name}`,
+          imageUrl: existingItem?.imageUrl || `https://picsum.photos/seed/${p.id}/400/400`,
+          published: existingItem?.published || false,
+        };
       });
 
       setShowcaseItems(initializedShowcase);
@@ -61,7 +65,8 @@ export default function ShowcaseManagerPage() {
   const handlePublishChange = (checked: boolean, itemId: string) => {
     handleItemChange(itemId, 'published', checked);
     if (checked && username) {
-      router.push(`/showcase?user=${username}`);
+      const url = `/showcase?user=${encodeURIComponent(username)}`;
+      window.open(url, '_blank');
     }
   };
   
