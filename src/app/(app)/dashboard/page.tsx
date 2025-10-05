@@ -32,40 +32,25 @@ import { useAuth } from '@/hooks/use-auth';
 import { AppData, Product, Wig, Pastry, PastryExpense, Sale } from '@/lib/data';
 import { loadData, saveData } from '@/lib/storage';
 
+type Stats = {
+    totalRevenue: { value: string; change: string; };
+    sales: { value: string; change: string; };
+    stock: { value: string; change: string; };
+};
 
-const initialChartData = [
-  { name: 'Jan', total: 1200 },
-  { name: 'Fev', total: 1800 },
-  { name: 'Mar', total: 1500 },
-  { name: 'Avr', total: 2200 },
-  { name: 'Mai', total: 2500 },
-  { name: 'Jui', total: 2100 },
-  { name: 'Jui', total: 2800 },
-  { name: 'Aoû', total: 3200 },
-  { name: 'Sep', total: 3000 },
-  { name: 'Oct', total: 3500 },
-  { name: 'Nov', total: 4000 },
-  { name: 'Déc', total: 4500 },
-];
 
 export default function DashboardPage() {
   const { username } = useAuth();
   const [appData, setAppData] = useState<AppData | null>(null);
-
-  const [chartData, setChartData] = useState(initialChartData);
+  const [stats, setStats] = useState<Stats | null>(null);
   
-  const [stats, setStats] = useState({
-    totalRevenue: { value: '45 231,89 FC', change: '+20.1% depuis le mois dernier' },
-    sales: { value: '+12,234', change: '+19% depuis le mois dernier' },
-    stock: { value: '105', change: '2 articles en faible stock' },
-  });
-
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (username) {
       const data = loadData(username);
       setAppData(data);
+      setStats(data.stats);
     }
   }, [username]);
 
@@ -74,23 +59,21 @@ export default function DashboardPage() {
     const updatedData = { ...appData, [key]: value };
     setAppData(updatedData);
     saveData(username, key, value);
-    handleOpenDialog(key, false);
+    setDialogOpen(prev => ({ ...prev, [key]: false }));
   };
-  
+
   const handleOpenDialog = (id: string, isOpen: boolean) => {
     setDialogOpen(prev => ({ ...prev, [id]: isOpen }));
   };
-
-  const handleStatsSubmit = (values: any) => {
-    setStats(prev => ({
-      ...prev,
-      totalRevenue: values.totalRevenue,
-      stock: values.stock,
-    }));
+  
+  const handleStatsSubmit = (values: Stats) => {
+    if (!username) return;
+    setStats(values);
+    saveData(username, 'stats', values);
     handleOpenDialog('stats', false);
   };
 
-  if (!appData) {
+  if (!appData || !stats) {
     return <div>Chargement des données...</div>;
   }
 

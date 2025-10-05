@@ -3,40 +3,46 @@
 
 import { AppData, initialData } from './data';
 
-function getStorageKey(username: string) {
+function getStorageKey(username: string): string {
     if (!username) {
-        // This case should not happen for a logged-in user, but as a fallback:
-        return 'milbus-app-data-guest';
+        // Fallback for cases where username is not yet available, though this shouldn't be used for saving.
+        return 'milbus-app-data-anonymous';
     }
-    return `milbus-app-data-${username}`;
+    // Sanitize username to create a valid key
+    return `milbus-app-data-${username.toLowerCase().replace(/[^a-z0-9]/gi, '_')}`;
 }
 
 export function loadData(username: string): AppData {
     if (typeof window === 'undefined') {
-        return initialData;
+        // Return a deep copy to prevent mutation of the original initialData object
+        return JSON.parse(JSON.stringify(initialData));
     }
     try {
         const key = getStorageKey(username);
         const savedData = localStorage.getItem(key);
         if (savedData) {
-            return JSON.parse(savedData);
+            // Merge saved data with initial data to ensure all keys are present
+            const parsedData = JSON.parse(savedData);
+            return { ...initialData, ...parsedData };
         } else {
             // First time for this user, save initial data
             saveData(username, initialData);
-            return initialData;
+            // Return a deep copy
+            return JSON.parse(JSON.stringify(initialData));
         }
     } catch (error) {
         console.error("Failed to load data from localStorage", error);
-        return initialData;
+        // Return a deep copy
+        return JSON.parse(JSON.stringify(initialData));
     }
 }
 
-export function saveData<K extends keyof AppData>(
+export function saveData(
     username: string,
     data: AppData
 ): void;
 export function saveData<K extends keyof AppData>(
-    username: string,
+    username:string,
     key: K,
     value: AppData[K]
 ): void;
@@ -45,16 +51,18 @@ export function saveData<K extends keyof AppData>(
     keyOrData: K | AppData,
     value?: AppData[K]
 ): void {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !username) {
         return;
     }
     try {
         const storageKey = getStorageKey(username);
-        if (typeof keyOrData === 'string') {
+        if (typeof keyOrData === 'string' && value !== undefined) {
+            // Saving a specific key
             const currentData = loadData(username);
             const updatedData = { ...currentData, [keyOrData]: value };
             localStorage.setItem(storageKey, JSON.stringify(updatedData));
-        } else {
+        } else if (typeof keyOrData === 'object') {
+             // Saving the entire AppData object
             localStorage.setItem(storageKey, JSON.stringify(keyOrData));
         }
     } catch (error) {

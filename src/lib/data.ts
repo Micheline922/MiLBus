@@ -92,6 +92,11 @@ export type Invoice = {
 };
 
 export type AppData = {
+  stats: {
+    totalRevenue: { value: string; change: string; };
+    sales: { value: string; change: string; };
+    stock: { value: string; change: string; };
+  };
   products: Product[];
   wigs: Wig[];
   pastries: Pastry[];
@@ -104,6 +109,11 @@ export type AppData = {
 }
 
 export const initialData: AppData = {
+  stats: {
+    totalRevenue: { value: '45 231,89 FC', change: '+20.1% depuis le mois dernier' },
+    sales: { value: '+12,234', change: '+19% depuis le mois dernier' },
+    stock: { value: '105', change: '2 articles en faible stock' },
+  },
   products: [
     { id: 'p1', name: 'Chaînette en or', category: 'Bijoux & Accessoires', purchasePrice: 15.00, price: 25.00, stock: 15, sold: 5, remaining: 10, profit: 10.00 },
     { id: 'p2', name: 'Chouchou en satin', category: 'Bijoux & Accessoires', purchasePrice: 3.00, price: 5.50, stock: 50, sold: 20, remaining: 30, profit: 2.50 },

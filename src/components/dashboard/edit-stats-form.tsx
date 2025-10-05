@@ -76,6 +76,35 @@ export default function EditStatsForm({ initialValues, onSubmit }: EditStatsForm
                 )}
               />
             </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <FormField
+                control={form.control}
+                name="sales.value"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ventes (Valeur)</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="sales.change"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ventes (Changement)</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
