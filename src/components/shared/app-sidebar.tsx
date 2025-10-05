@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -19,7 +18,8 @@ import {
   Home,
   FileText,
   CreditCard,
-  LogOut
+  LogOut,
+  User
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -90,8 +90,10 @@ export default function AppSidebar() {
        <div className="mt-auto p-4 border-t">
           <div className="flex items-center gap-3 p-2 mb-2">
             <Avatar>
-              <AvatarImage src={`https://picsum.photos/seed/${user?.username}/40/40`} />
-              <AvatarFallback>{user?.username ? user.username.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
+              <AvatarImage src={user?.profilePicture || `https://picsum.photos/seed/${user?.username}/40/40`} />
+              <AvatarFallback>
+                {user?.username ? user.username.charAt(0).toUpperCase() : <User className="h-5 w-5" />}
+              </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
               <span className="text-sm font-semibold">{user?.businessName || user?.username || "Entrepreneuse"}</span>

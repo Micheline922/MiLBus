@@ -8,6 +8,7 @@ type UserData = {
     businessName: string;
     businessAddress: string;
     businessContact: string;
+    profilePicture: string | null;
 };
 
 interface AuthContextType {
@@ -16,7 +17,7 @@ interface AuthContextType {
   user: UserData | null;
   login: (username: string, pass: string) => Promise<void>;
   logout: () => void;
-  updateUser: (data: Partial<UserData>) => void;
+  updateUser: (data: Partial<Omit<UserData, 'username'>>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +28,7 @@ const defaultBusinessInfo = {
     businessName: "MiLBus - Beauté & Style",
     businessAddress: "Votre Adresse, Votre Ville",
     businessContact: "contact@milbus.com",
+    profilePicture: null,
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -46,6 +48,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 businessName: parsed.businessName || defaultBusinessInfo.businessName,
                 businessAddress: parsed.businessAddress || defaultBusinessInfo.businessAddress,
                 businessContact: parsed.businessContact || defaultBusinessInfo.businessContact,
+                profilePicture: parsed.profilePicture || null,
             });
         }
         setIsAuthenticated(true);
@@ -73,6 +76,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                   businessName: businessInfo.businessName || defaultBusinessInfo.businessName,
                   businessAddress: businessInfo.businessAddress || defaultBusinessInfo.businessAddress,
                   businessContact: businessInfo.businessContact || defaultBusinessInfo.businessContact,
+                  profilePicture: businessInfo.profilePicture || null,
               });
               localStorage.setItem('isMilbusAuthenticated', 'true');
               setIsLoading(false);
@@ -117,7 +121,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updateUser = (data: Partial<UserData>) => {
+  const updateUser = (data: Partial<Omit<UserData, 'username'>>) => {
     if (!user) return;
     try {
         const stored = localStorage.getItem(USER_KEY);
