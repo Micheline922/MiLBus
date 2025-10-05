@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Order } from "@/lib/data";
-import { MoreHorizontal, PlusCircle, Pencil, FileText } from "lucide-react";
+import { MoreHorizontal, PlusCircle, Pencil, FileText, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import EditOrdersForm from "@/components/dashboard/edit-orders-form";
 import { useAuth } from '@/hooks/use-auth';
@@ -54,6 +54,19 @@ export default function OrdersPage() {
         title: "Facture générée !",
         description: `La facture ${newInvoice.id} a été créée pour la commande de ${order.customerName}.`,
     });
+  };
+
+  const handleContactByEmail = (order: Order) => {
+    if (!order.customerEmail) {
+      toast({
+        variant: "destructive",
+        title: "E-mail manquant",
+        description: "Ce client n'a pas d'adresse e-mail enregistrée.",
+      });
+      return;
+    }
+    const subject = `Question concernant votre commande N°${order.id}`;
+    window.location.href = `mailto:${order.customerEmail}?subject=${encodeURIComponent(subject)}`;
   };
 
 
@@ -132,6 +145,10 @@ export default function OrdersPage() {
                     <Button variant="outline" size="sm" onClick={() => handleGenerateInvoice(order)}>
                         <FileText className="mr-2 h-4 w-4" />
                         Facturer
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleContactByEmail(order)} disabled={!order.customerEmail}>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Contacter
                     </Button>
                     <Button variant="ghost" size="icon">
                       <MoreHorizontal className="h-4 w-4" />
