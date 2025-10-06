@@ -259,6 +259,10 @@ export default function ShowcaseManagerPage() {
                             <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
                         </div>
                         <div className="space-y-2">
+                            <Label htmlFor={`price-${item.id}`}>Prix</Label>
+                            <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor={`description-${item.id}`}>Description</Label>
                             <Textarea id={`description-${item.id}`} value={item.description} onChange={e => handleItemChange(item.id, 'description', e.target.value)} />
                         </div>
