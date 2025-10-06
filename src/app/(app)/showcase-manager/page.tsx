@@ -200,7 +200,7 @@ export default function ShowcaseManagerPage() {
             <div className="flex items-center gap-2">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
+                        <Button>
                             <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit
                         </Button>
                     </DropdownMenuTrigger>
