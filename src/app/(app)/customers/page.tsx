@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Customer } from "@/lib/data";
-import { PlusCircle, Pencil } from "lucide-react";
+import { PlusCircle, Pencil, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
@@ -19,9 +19,11 @@ import {
 } from '@/components/ui/dialog';
 import EditCustomersForm from "@/components/dashboard/edit-customers-form";
 import AddCustomerForm from "@/components/dashboard/add-customer-form";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CustomersPage() {
   const { username } = useAuth();
+  const { toast } = useToast();
   const [customers, setCustomers] = useState<Customer[] | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -50,7 +52,24 @@ export default function CustomersPage() {
     setCustomers(updatedCustomers);
     saveData(username, 'customers', updatedCustomers);
     setAddDialogOpen(false);
+    toast({
+        title: "Client ajouté !",
+        description: `${newCustomer.name} a été ajouté à votre liste de clients.`,
+    });
   };
+
+  const handleContactByEmail = (customer: Customer) => {
+     if (!customer.contact.includes('@')) {
+      toast({
+        variant: "destructive",
+        title: "E-mail invalide",
+        description: "Ce contact ne semble pas être une adresse e-mail valide.",
+      });
+      return;
+    }
+    const subject = `Message pour ${customer.name}`;
+    window.location.href = `mailto:${customer.contact}?subject=${encodeURIComponent(subject)}`;
+  }
 
   if (!customers) {
     return <div>Chargement...</div>;
@@ -112,6 +131,7 @@ export default function CustomersPage() {
                 <TableHead>Contact</TableHead>
                 <TableHead>Achats</TableHead>
                 <TableHead>Dernier Achat</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -121,6 +141,12 @@ export default function CustomersPage() {
                   <TableCell>{customer.contact}</TableCell>
                   <TableCell>{customer.purchaseHistory}</TableCell>
                   <TableCell>{isClient ? new Date(customer.lastPurchase).toLocaleDateString() : ''}</TableCell>
+                   <TableCell className="text-right">
+                    <Button variant="outline" size="sm" onClick={() => handleContactByEmail(customer)} disabled={!customer.contact.includes('@')}>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Contacter
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

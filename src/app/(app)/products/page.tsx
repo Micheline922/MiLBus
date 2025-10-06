@@ -125,6 +125,7 @@ export default function ProductsPage() {
     setProducts(updatedProducts);
     saveData(username, 'products', updatedProducts);
     handleOpenDialog('add','products', false);
+     toast({ title: "Succès", description: "Produit ajouté."});
   };
   
   const handleAddWig = (newWig: Omit<Wig, 'id'>) => {
@@ -134,6 +135,7 @@ export default function ProductsPage() {
     setWigs(updatedWigs);
     saveData(username, 'wigs', updatedWigs);
     handleOpenDialog('add', 'wigs', false);
+    toast({ title: "Succès", description: "Perruque ajoutée."});
   };
   
   const handleAddPastry = (newPastry: Omit<Pastry, 'id'>) => {
@@ -143,6 +145,7 @@ export default function ProductsPage() {
     setPastries(updatedPastries);
     saveData(username, 'pastries', updatedPastries);
     handleOpenDialog('add', 'pastries', false);
+    toast({ title: "Succès", description: "Pâtisserie ajoutée."});
   };
 
   if (!products || !wigs || !pastries) {
@@ -459,5 +462,3 @@ export default function ProductsPage() {
     </>
   );
 }
-
-    
