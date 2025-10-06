@@ -31,6 +31,7 @@ import ThemeSwitcher from '@/components/settings/theme-switcher';
 import { useAuth } from '@/hooks/use-auth';
 import { AppData, Product, Wig, Pastry, PastryExpense, Sale } from '@/lib/data';
 import { loadData, saveData } from '@/lib/storage';
+import WelcomeTour from '@/components/dashboard/welcome-tour';
 
 type Stats = {
     totalRevenue: { value: string; change: string; };
@@ -99,6 +100,8 @@ export default function DashboardPage() {
   const { products, wigs, pastries, pastryExpenses, sales } = appData;
 
   return (
+    <>
+    <WelcomeTour />
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
@@ -372,6 +375,7 @@ export default function DashboardPage() {
         </div>
       </div>
     </ScrollArea>
+    </>
   );
 }
 
