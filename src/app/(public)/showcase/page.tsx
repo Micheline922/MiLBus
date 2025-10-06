@@ -4,7 +4,7 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { loadData } from '@/lib/storage';
-import { ShowcaseItem } from '@/lib/data';
+import { ShowcaseItem, AppData } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -38,25 +38,30 @@ function ShowcaseContent() {
     useEffect(() => {
         if (userIdentifier) {
             try {
-                const userCredentials = localStorage.getItem('milbus-user-credentials');
+                // For a public page, we can't rely on the logged-in user's localStorage.
+                // We'll load the data for a "default" or specified user.
+                // In a real multi-tenant app, this would be a server-side fetch.
+                // For this simulation, we'll assume the public showcase is always for 'milbus'.
+                const usernameToShowcase = userIdentifier;
+                const data: AppData = loadData(usernameToShowcase);
 
-                if (userCredentials) {
-                    const parsedUser = JSON.parse(userCredentials);
-                    const username = parsedUser.storedUsername;
+                if (data && data.showcase) {
+                    setItems(data.showcase.filter(item => item.published));
                     
-                    const data = loadData(username);
-
-                    if (data && data.showcase) {
-                        setItems(data.showcase.filter(item => item.published));
-                        setBusinessName(parsedUser.businessName || "MiLBus");
-                    } else {
-                        setError("Impossible de charger la vitrine pour cet utilisateur.");
+                    // To get business info for the cart, we still need a way to access it.
+                    // Let's assume we can load the user profile from storage, even if not logged in.
+                    const userCredentials = localStorage.getItem(`milbus-user-credentials`);
+                    if (userCredentials) {
+                         const parsedUser = JSON.parse(userCredentials);
+                         setBusinessName(parsedUser.businessName || "MiLBus");
                     }
+
                 } else {
-                     setError("Aucun utilisateur trouvé. La vitrine ne peut pas être affichée.");
+                    setError("Impossible de charger la vitrine pour cet utilisateur.");
                 }
 
             } catch (e) {
+                console.error(e);
                 setError("Données de la vitrine corrompues ou introuvables.");
             }
         } else {
