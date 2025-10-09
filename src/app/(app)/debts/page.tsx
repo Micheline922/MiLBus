@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Debt } from "@/lib/data";
 import { MoreHorizontal, PlusCircle, Pencil } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,10 +23,12 @@ import { loadData, saveData } from '@/lib/storage';
 
 
 export default function DebtsPage() {
-  const { username } = useAuth();
+  const { user, username } = useAuth();
   const [debts, setDebts] = useState<Debt[] | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  
+  const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
 
   useEffect(() => {
     setIsClient(true);
@@ -100,7 +102,7 @@ export default function DebtsPage() {
               {debts.map((debt) => (
                 <TableRow key={debt.id}>
                   <TableCell className="font-medium">{debt.debtorName}</TableCell>
-                  <TableCell>{debt.amount.toFixed(2)} FC</TableCell>
+                  <TableCell>{debt.amount.toFixed(2)} {currency}</TableCell>
                   <TableCell>{isClient ? new Date(debt.debtDate).toLocaleDateString() : ''}</TableCell>
                   <TableCell>{isClient ? new Date(debt.paymentDate).toLocaleDateString() : ''}</TableCell>
                   <TableCell>

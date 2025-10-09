@@ -9,18 +9,19 @@ import Image from "next/image";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 
 
 export default function Cart() {
-    const { items, removeItem, updateItemQuantity, total, clearCart } = useCart();
-    const { toast } = useToast();
+    const { items, removeItem, updateItemQuantity, total, clearCart, currency } = useCart();
     
     const [vendorInfo, setVendorInfo] = useState({ email: '', phone: '' });
     
     const params = useParams();
     const username = params.user;
+
+    const currencySymbol = useMemo(() => (currency === 'USD' ? '$' : 'FC'), [currency]);
 
     useEffect(() => {
         if (username) {
@@ -75,7 +76,7 @@ export default function Cart() {
                             {item.name}
                           </span>
                            <span className="line-clamp-1 text-xs text-muted-foreground">
-                            {item.price.toFixed(2)} FC
+                            {item.price.toFixed(2)} {currencySymbol}
                           </span>
                         </div>
                       </div>
@@ -114,7 +115,7 @@ export default function Cart() {
                  <div className="flex w-full flex-col gap-2 text-sm">
                     <div className="flex justify-between font-semibold">
                         <span>Total estimé</span>
-                        <span>{total.toFixed(2)} FC</span>
+                        <span>{total.toFixed(2)} {currencySymbol}</span>
                     </div>
                 </div>
                  <Separator />

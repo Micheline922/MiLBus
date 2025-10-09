@@ -10,6 +10,7 @@ type UserData = {
     businessContact: string; // email
     businessPhone: string; // phone
     profilePicture: string | null;
+    currency: 'FC' | 'USD';
 };
 
 interface AuthContextType {
@@ -31,6 +32,7 @@ const defaultBusinessInfo = {
     businessContact: "contact@milbus.com",
     businessPhone: "+243 000 000 000",
     profilePicture: null,
+    currency: 'FC' as 'FC' | 'USD',
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -52,6 +54,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 businessContact: parsed.businessContact || defaultBusinessInfo.businessContact,
                 businessPhone: parsed.businessPhone || defaultBusinessInfo.businessPhone,
                 profilePicture: parsed.profilePicture || null,
+                currency: parsed.currency || defaultBusinessInfo.currency,
             });
         }
         setIsAuthenticated(true);
@@ -81,6 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                   businessContact: businessInfo.businessContact || defaultBusinessInfo.businessContact,
                   businessPhone: businessInfo.businessPhone || defaultBusinessInfo.businessPhone,
                   profilePicture: businessInfo.profilePicture || null,
+                  currency: businessInfo.currency || defaultBusinessInfo.currency,
               });
               localStorage.setItem('isMilbusAuthenticated', 'true');
               setIsLoading(false);

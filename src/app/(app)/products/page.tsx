@@ -14,7 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Product, Wig, Pastry } from "@/lib/data";
 import { MoreHorizontal, PlusCircle, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import EditProductsForm from "@/components/dashboard/edit-products-form";
 import EditWigsForm from "@/components/dashboard/edit-wigs-form";
 import EditPastriesForm from "@/components/dashboard/edit-pastries-form";
@@ -32,7 +32,7 @@ type ItemType = 'product' | 'wig' | 'pastry';
 type Item = Product | Wig | Pastry;
 
 export default function ProductsPage() {
-  const { username } = useAuth();
+  const { user, username } = useAuth();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[] | null>(null);
   const [wigs, setWigs] = useState<Wig[] | null>(null);
@@ -41,6 +41,8 @@ export default function ProductsPage() {
   const [editDialogOpen, setEditDialogOpen] = useState<Record<string, boolean>>({});
   const [addDialogOpen, setAddDialogOpen] = useState<Record<string, boolean>>({});
   const [deleteAlert, setDeleteAlert] = useState<{ isOpen: boolean; item: Item | null; type: ItemType | null }>({ isOpen: false, item: null, type: null });
+
+  const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
 
   useEffect(() => {
     if (username) {
@@ -262,10 +264,10 @@ export default function ProductsPage() {
                     {products.map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
-                        <TableCell>{product.price.toFixed(2)} FC</TableCell>
+                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} {currency}</TableCell>
+                        <TableCell>{product.price.toFixed(2)} {currency}</TableCell>
                         <TableCell>{product.stock}</TableCell>
-                        <TableCell>{product.profit?.toFixed(2) ?? 'N/A'} FC</TableCell>
+                        <TableCell>{product.profit?.toFixed(2) ?? 'N/A'} {currency}</TableCell>
                         <TableCell>
                           <Badge variant={product.stock > 5 ? 'secondary' : product.stock > 0 ? 'outline' : 'destructive'} 
                                 className={product.stock > 5 ? 'text-green-700 border-green-300' : product.stock > 0 ? 'text-orange-600 border-orange-300' : ''}>
@@ -340,10 +342,10 @@ export default function ProductsPage() {
                     {wigs.map((wig) => (
                       <TableRow key={wig.id}>
                         <TableCell className="font-medium">{wig.wigDetails}</TableCell>
-                        <TableCell>{wig.bundlesPrice.toFixed(2)} FC</TableCell>
-                        <TableCell>{wig.sellingPrice.toFixed(2)} FC</TableCell>
+                        <TableCell>{wig.bundlesPrice.toFixed(2)} {currency}</TableCell>
+                        <TableCell>{wig.sellingPrice.toFixed(2)} {currency}</TableCell>
                         <TableCell>{wig.remaining}</TableCell>
-                        <TableCell>{(wig.sellingPrice - wig.bundlesPrice).toFixed(2)} FC</TableCell>
+                        <TableCell>{(wig.sellingPrice - wig.bundlesPrice).toFixed(2)} {currency}</TableCell>
                         <TableCell>
                           <Badge variant={wig.remaining > 0 ? 'secondary' : 'destructive'} 
                                 className={wig.remaining > 0 ? 'text-green-700 border-green-300' : ''}>
@@ -419,7 +421,7 @@ export default function ProductsPage() {
                       <TableRow key={pastry.id}>
                         <TableCell className="font-medium">{pastry.name}</TableCell>
                         <TableCell>{pastry.quantity}</TableCell>
-                        <TableCell>{pastry.unitPrice.toFixed(2)} FC</TableCell>
+                        <TableCell>{pastry.unitPrice.toFixed(2)} {currency}</TableCell>
                         <TableCell>{pastry.sold}</TableCell>
                         <TableCell>{pastry.remaining}</TableCell>
                         <TableCell>

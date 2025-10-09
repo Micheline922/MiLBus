@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sale } from '@/lib/data';
 
-export default function RecentSales({ sales }: { sales: Sale[] }) {
+export default function RecentSales({ sales, currency }: { sales: Sale[], currency: string }) {
   return (
     <Card className="h-full">
       <CardHeader>
@@ -21,7 +21,7 @@ export default function RecentSales({ sales }: { sales: Sale[] }) {
                 <p className="text-sm font-medium leading-none">{sale.customerName}</p>
                 <p className="text-sm text-muted-foreground">{sale.productName}</p>
               </div>
-              <div className="ml-auto font-medium">+{sale.amount.toFixed(2)} FC</div>
+              <div className="ml-auto font-medium">+{sale.amount.toFixed(2)} {currency}</div>
             </div>
           ))}
         </div>

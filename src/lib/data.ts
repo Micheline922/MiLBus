@@ -121,7 +121,7 @@ export type AppData = {
 
 export const initialData: AppData = {
   stats: {
-    totalRevenue: { value: '45 231,89 FC', change: '+20.1% depuis le mois dernier' },
+    totalRevenue: { value: '45231.89', change: '+20.1% depuis le mois dernier' },
     sales: { value: '+12,234', change: '+19% depuis le mois dernier' },
     stock: { value: '105', change: '2 articles en faible stock' },
   },

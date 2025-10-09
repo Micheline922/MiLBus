@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Download, PlusCircle, Pencil } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,8 @@ export default function InvoicesPage() {
   const [isClient, setIsClient] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  
+  const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
 
   useEffect(() => {
     setIsClient(true);
@@ -72,6 +74,7 @@ export default function InvoicesPage() {
         name: user.businessName,
         address: user.businessAddress,
         contact: user.businessContact,
+        currency: user.currency,
     });
   };
 
@@ -145,7 +148,7 @@ export default function InvoicesPage() {
                   <TableCell className="font-medium">{invoice.id}</TableCell>
                   <TableCell>{invoice.customerName}</TableCell>
                   <TableCell>{isClient ? new Date(invoice.date).toLocaleDateString() : ''}</TableCell>
-                  <TableCell>{invoice.amount.toFixed(2)} FC</TableCell>
+                  <TableCell>{invoice.amount.toFixed(2)} {currency}</TableCell>
                   <TableCell>
                     <Badge variant={invoice.status === 'Payée' ? 'secondary' : 'outline'}>
                       {invoice.status}

@@ -40,11 +40,13 @@ type Stats = {
 
 
 export default function DashboardPage() {
-  const { username } = useAuth();
+  const { user, username } = useAuth();
   const [appData, setAppData] = useState<AppData | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({});
+
+  const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
 
   useEffect(() => {
     if (username) {
@@ -140,7 +142,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
                 <StatCard 
                   title="Revenus totaux" 
-                  value={stats.totalRevenue.value}
+                  value={`${stats.totalRevenue.value} ${currency}`}
                   change={stats.totalRevenue.change}
                   icon={<DollarSign className="h-4 w-4 text-muted-foreground" />} 
                 />
@@ -181,7 +183,7 @@ export default function DashboardPage() {
                       fontSize={12}
                       tickLine={false}
                       axisLine={false}
-                      tickFormatter={(value) => `${value} FC`}
+                      tickFormatter={(value) => `${value} ${currency}`}
                     />
                     <Tooltip 
                        cursor={{fill: 'hsl(var(--muted))'}}
@@ -206,7 +208,7 @@ export default function DashboardPage() {
                   <EditSalesForm initialValues={{ sales }} onSubmit={(v) => updateData('sales', v.sales)} />
                 </DialogContent>
               </Dialog>
-              <RecentSales sales={sales} />
+              <RecentSales sales={sales} currency={currency} />
             </div>
         </div>
         <div className="grid grid-cols-1 gap-y-4">
@@ -251,7 +253,7 @@ export default function DashboardPage() {
                     {products.map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} FC</TableCell>
+                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} {currency}</TableCell>
                         <TableCell>{product.stock}</TableCell>
                         <TableCell>{product.sold}</TableCell>
                         <TableCell>{product.remaining}</TableCell>
@@ -280,8 +282,8 @@ export default function DashboardPage() {
                         <TableCell>{wig.brand}</TableCell>
                         <TableCell>{wig.colors}</TableCell>
                         <TableCell>{wig.wigDetails}</TableCell>
-                        <TableCell>{wig.bundlesPrice.toFixed(2)} FC</TableCell>
-                        <TableCell>{wig.sellingPrice.toFixed(2)} FC</TableCell>
+                        <TableCell>{wig.bundlesPrice.toFixed(2)} {currency}</TableCell>
+                        <TableCell>{wig.sellingPrice.toFixed(2)} {currency}</TableCell>
                         <TableCell>{wig.sold}</TableCell>
                         <TableCell>{wig.remaining}</TableCell>
                       </TableRow>
@@ -306,9 +308,9 @@ export default function DashboardPage() {
                         <TableRow key={pastry.id}>
                           <TableCell className="font-medium">{pastry.name}</TableCell>
                           <TableCell>{pastry.quantity}</TableCell>
-                          <TableCell>{pastry.unitPrice.toFixed(2)} FC</TableCell>
-                          <TableCell>{pastry.totalPrice.toFixed(2)} FC</TableCell>
-                          <TableCell>{pastry.expenses.toFixed(2)} FC</TableCell>
+                          <TableCell>{pastry.unitPrice.toFixed(2)} {currency}</TableCell>
+                          <TableCell>{pastry.totalPrice.toFixed(2)} {currency}</TableCell>
+                          <TableCell>{pastry.expenses.toFixed(2)} {currency}</TableCell>
                            <TableCell>{pastry.sold}</TableCell>
                           <TableCell>{pastry.remaining}</TableCell>
                         </TableRow>
@@ -332,7 +334,7 @@ export default function DashboardPage() {
                     <EditPastryExpensesForm initialValues={{ pastryExpenses }} onSubmit={(v) => updateData('pastryExpenses', v.pastryExpenses)} />
                   </DialogContent>
                 </Dialog>
-                <PastryExpensesTable expenses={pastryExpenses} />
+                <PastryExpensesTable expenses={pastryExpenses} currency={currency} />
             </div>
             
             <div className="grid gap-4 md:grid-cols-2">
@@ -346,5 +348,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    

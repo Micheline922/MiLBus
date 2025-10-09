@@ -6,17 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Sale } from "@/lib/data";
 import { PlusCircle, FileText, Pencil } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import EditSalesForm from "@/components/dashboard/edit-sales-form";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
 
 export default function SalesPage() {
-  const { username } = useAuth();
+  const { user, username } = useAuth();
   const [sales, setSales] = useState<Sale[] | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+
+  const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
 
   useEffect(() => {
     setIsClient(true);
@@ -93,7 +95,7 @@ export default function SalesPage() {
                   <TableCell>{sale.productName}</TableCell>
                   <TableCell>{sale.quantity}</TableCell>
                   <TableCell>{isClient ? new Date(sale.date).toLocaleDateString() : ''}</TableCell>
-                  <TableCell className="text-right">{sale.amount.toFixed(2)} FC</TableCell>
+                  <TableCell className="text-right">{sale.amount.toFixed(2)} {currency}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

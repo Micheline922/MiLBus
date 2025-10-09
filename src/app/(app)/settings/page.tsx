@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState, useRef } from "react";
 import { User } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -22,6 +23,7 @@ export default function SettingsPage() {
   const [businessPhone, setBusinessPhone] = useState('');
   const [businessAddress, setBusinessAddress] = useState('');
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [currency, setCurrency] = useState<'FC' | 'USD'>('FC');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -32,6 +34,7 @@ export default function SettingsPage() {
         setBusinessPhone(user.businessPhone);
         setBusinessAddress(user.businessAddress);
         setProfilePicture(user.profilePicture);
+        setCurrency(user.currency);
     }
   }, [user]);
 
@@ -42,6 +45,7 @@ export default function SettingsPage() {
         businessPhone,
         businessAddress,
         profilePicture,
+        currency,
     });
     toast({
       title: "Succès !",
@@ -119,6 +123,29 @@ export default function SettingsPage() {
               <Textarea id="businessAddress" value={businessAddress} onChange={(e) => setBusinessAddress(e.target.value)} placeholder="123 Rue de l'Exemple, Ville, Pays"/>
             </div>
           </CardContent>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Devise</CardTitle>
+                <CardDescription>Choisissez la devise principale pour votre entreprise.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <RadioGroup
+                    value={currency}
+                    onValueChange={(value: 'FC' | 'USD') => setCurrency(value)}
+                    className="flex items-center space-x-4"
+                >
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="FC" id="fc" />
+                        <Label htmlFor="fc">Franc Congolais (FC)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="USD" id="usd" />
+                        <Label htmlFor="usd">Dollar Américain (USD)</Label>
+                    </div>
+                </RadioGroup>
+            </CardContent>
         </Card>
 
         <Card>

@@ -23,9 +23,10 @@ export function generateInvoiceFromOrder(order: Order, invoiceCount: number): In
     };
 }
 
-export function downloadInvoice(invoice: Invoice, businessDetails?: { name: string, address: string, contact: string }) {
+export function downloadInvoice(invoice: Invoice, businessDetails?: { name: string, address: string, contact: string, currency: 'FC' | 'USD' }) {
     const doc = new jsPDF() as jsPDFWithAutoTable;
     
+    const currency = businessDetails?.currency === 'USD' ? '$' : 'FC';
     const businessName = businessDetails?.name || "MiLBus - Beauté & Style";
     const businessAddress = businessDetails?.address || "Votre Adresse, Votre Ville";
     const businessContact = businessDetails?.contact || "contact@milbus.com";
@@ -72,7 +73,7 @@ export function downloadInvoice(invoice: Invoice, businessDetails?: { name: stri
 
 
     // Table
-    const tableColumn = ["Produit", "Quantité", "Prix Unitaire", "Total"];
+    const tableColumn = ["Produit", "Quantité", `Prix Unitaire (${currency})`, `Total (${currency})`];
     const tableRows = [];
 
     // Assuming we have product details in the _order object attached to the invoice
@@ -93,8 +94,8 @@ export function downloadInvoice(invoice: Invoice, businessDetails?: { name: stri
             const row = [
                 productName,
                 quantity.toString(),
-                `${averagePrice.toFixed(2)} FC`,
-                `${(averagePrice * quantity).toFixed(2)} FC`
+                `${averagePrice.toFixed(2)}`,
+                `${(averagePrice * quantity).toFixed(2)}`
             ];
             tableRows.push(row);
         }
@@ -104,8 +105,8 @@ export function downloadInvoice(invoice: Invoice, businessDetails?: { name: stri
         const row = [
             "Articles divers",
             "1",
-            `${invoice.amount.toFixed(2)} FC`,
-            `${invoice.amount.toFixed(2)} FC`
+            `${invoice.amount.toFixed(2)}`,
+            `${invoice.amount.toFixed(2)}`
         ];
         tableRows.push(row);
     }
@@ -123,16 +124,16 @@ export function downloadInvoice(invoice: Invoice, businessDetails?: { name: stri
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
     doc.text("Total", 140, finalY + 15);
-    doc.text(`${invoice.amount.toFixed(2)} FC`, 190, finalY + 15, { align: 'right' });
+    doc.text(`${invoice.amount.toFixed(2)} ${currency}`, 190, finalY + 15, { align: 'right' });
     
     if (invoice._order) {
         doc.setFont('helvetica', 'normal');
         doc.text("Montant Payé", 140, finalY + 22);
-        doc.text(`${invoice._order.paidAmount.toFixed(2)} FC`, 190, finalY + 22, { align: 'right' });
+        doc.text(`${invoice._order.paidAmount.toFixed(2)} ${currency}`, 190, finalY + 22, { align: 'right' });
         
         doc.setFont('helvetica', 'bold');
         doc.text("Reste à Payer", 140, finalY + 29);
-        doc.text(`${invoice._order.remainingAmount.toFixed(2)} FC`, 190, finalY + 29, { align: 'right' });
+        doc.text(`${invoice._order.remainingAmount.toFixed(2)} ${currency}`, 190, finalY + 29, { align: 'right' });
     }
 
     // Footer

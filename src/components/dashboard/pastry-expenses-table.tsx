@@ -8,9 +8,10 @@ import { useEffect, useState } from 'react';
 
 type PastryExpensesTableProps = {
   expenses: PastryExpense[];
+  currency: string;
 };
 
-export default function PastryExpensesTable({ expenses }: PastryExpensesTableProps) {
+export default function PastryExpensesTable({ expenses, currency }: PastryExpensesTableProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function PastryExpensesTable({ expenses }: PastryExpensesTablePro
           <TableHeader>
             <TableRow>
               <TableHead>Article de Dépense</TableHead>
-              <TableHead>Coût (FC)</TableHead>
+              <TableHead>Coût ({currency})</TableHead>
               <TableHead>Catégorie de Pâtisserie</TableHead>
               <TableHead>Date d'Achat</TableHead>
             </TableRow>
@@ -37,7 +38,7 @@ export default function PastryExpensesTable({ expenses }: PastryExpensesTablePro
             {expenses.map((expense) => (
               <TableRow key={expense.id}>
                 <TableCell className="font-medium">{expense.item}</TableCell>
-                <TableCell>{expense.cost.toFixed(2)} FC</TableCell>
+                <TableCell>{expense.cost.toFixed(2)} {currency}</TableCell>
                 <TableCell>{expense.category}</TableCell>
                 <TableCell>{isClient ? new Date(expense.purchaseDate).toLocaleDateString() : ''}</TableCell>
               </TableRow>

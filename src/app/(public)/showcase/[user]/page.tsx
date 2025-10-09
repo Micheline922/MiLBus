@@ -2,7 +2,7 @@
 'use client';
 
 import { useRouter, useParams } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useMemo } from 'react';
 import { loadData } from '@/lib/storage';
 import { ShowcaseItem, AppData } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,8 +32,11 @@ function ShowcaseContent() {
     const userIdentifier = params.user as string;
     const [items, setItems] = useState<ShowcaseItem[]>([]);
     const [businessName, setBusinessName] = useState("MiLBus");
+    const [currency, setCurrency] = useState('FC');
     const [error, setError] = useState<string | null>(null);
     const { addItem } = useCart();
+    
+    const currencySymbol = useMemo(() => (currency === 'USD' ? '$' : 'FC'), [currency]);
 
     useEffect(() => {
         if (userIdentifier) {
@@ -48,6 +51,7 @@ function ShowcaseContent() {
                     if (userCredentials) {
                          const parsedUser = JSON.parse(userCredentials);
                          setBusinessName(parsedUser.businessName || "MiLBus");
+                         setCurrency(parsedUser.currency || 'FC');
                     }
 
                 } else {
@@ -105,11 +109,11 @@ function ShowcaseContent() {
                         </div>
                         <CardHeader className="p-3">
                             <CardTitle className="text-base truncate">{item.name}</CardTitle>
-                            <CardDescription className="font-semibold text-primary">{(item.price ?? 0).toFixed(2)} FC</CardDescription>
+                            <CardDescription className="font-semibold text-primary">{(item.price ?? 0).toFixed(2)} {currencySymbol}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-3 pt-0 mt-auto">
                             <p className="text-muted-foreground text-sm mb-3 h-10 overflow-hidden">{item.description}</p>
-                            <Button className="w-full" onClick={() => addItem(item)}>
+                            <Button className="w-full" onClick={() => addItem({ ...item, price: item.price ?? 0 })}>
                                 <ShoppingCart className="mr-2 h-4 w-4" /> Ajouter
                             </Button>
                         </CardContent>

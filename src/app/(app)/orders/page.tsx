@@ -15,7 +15,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Order } from "@/lib/data";
 import { MoreHorizontal, PlusCircle, Pencil, FileText, Mail } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import EditOrdersForm from "@/components/dashboard/edit-orders-form";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
@@ -23,10 +23,12 @@ import { useToast } from "@/hooks/use-toast";
 import { generateInvoiceFromOrder } from "@/lib/invoice-generator";
 
 export default function OrdersPage() {
-  const { username } = useAuth();
+  const { user, username } = useAuth();
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
+
+  const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
 
   useEffect(() => {
     if (username) {
@@ -133,9 +135,9 @@ export default function OrdersPage() {
                   <TableCell>{order.customerPhone}</TableCell>
                   <TableCell>{order.customerEmail}</TableCell>
                   <TableCell>{order.products.join(', ')}</TableCell>
-                  <TableCell>{order.totalAmount.toFixed(2)} FC</TableCell>
-                  <TableCell>{order.paidAmount.toFixed(2)} FC</TableCell>
-                  <TableCell className="font-medium">{order.remainingAmount.toFixed(2)} FC</TableCell>
+                  <TableCell>{order.totalAmount.toFixed(2)} {currency}</TableCell>
+                  <TableCell>{order.paidAmount.toFixed(2)} {currency}</TableCell>
+                  <TableCell className="font-medium">{order.remainingAmount.toFixed(2)} {currency}</TableCell>
                   <TableCell>
                     <Badge variant={order.status === 'Payée' ? 'secondary' : 'outline'}>
                       {order.status}
