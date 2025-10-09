@@ -20,12 +20,16 @@ import { Invoice } from "@/lib/data";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
 import { downloadInvoice } from "@/lib/invoice-generator";
+import AddInvoiceForm, { AddInvoiceFormValues } from "@/components/dashboard/add-invoice-form";
+import { useToast } from "@/hooks/use-toast";
 
 export default function InvoicesPage() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -39,9 +43,29 @@ export default function InvoicesPage() {
     if (!user?.username) return;
     setInvoices(values.invoices);
     saveData(user.username, 'invoices', values.invoices);
-    setDialogOpen(false);
+    setEditDialogOpen(false);
   };
   
+  const handleAddInvoice = (values: AddInvoiceFormValues) => {
+    if (!user?.username || !invoices) return;
+    
+    const newInvoice: Invoice = {
+      id: `INV${(invoices.length + 1).toString().padStart(3, '0')}_${Date.now()}`,
+      orderId: `manual-${Date.now()}`,
+      date: new Date().toISOString().split('T')[0],
+      ...values,
+    };
+
+    const updatedInvoices = [...invoices, newInvoice];
+    setInvoices(updatedInvoices);
+    saveData(user.username, 'invoices', updatedInvoices);
+    setAddDialogOpen(false);
+    toast({
+      title: "Facture créée !",
+      description: `La facture pour ${newInvoice.customerName} a été ajoutée.`,
+    });
+  };
+
   const handleDownload = (invoice: Invoice) => {
     if (!user) return;
     downloadInvoice(invoice, {
@@ -62,13 +86,26 @@ export default function InvoicesPage() {
           <h1 className="text-3xl font-headline font-bold tracking-tight">Factures</h1>
           <p className="text-muted-foreground">Gérez et suivez vos factures.</p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" /> Créer une facture
-        </Button>
+        <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <PlusCircle className="mr-2 h-4 w-4" /> Créer une facture
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Créer une nouvelle facture</DialogTitle>
+              <DialogDescription>
+                Remplissez les informations ci-dessous.
+              </DialogDescription>
+            </DialogHeader>
+            <AddInvoiceForm onSubmit={handleAddInvoice} />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card className="relative group">
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
               <Pencil className="mr-2 h-4 w-4" /> Modifier
