@@ -4,7 +4,7 @@
 import StatCard from '@/components/dashboard/stat-card';
 import RecentSales from '@/components/dashboard/recent-sales';
 import AiChat from '@/components/dashboard/ai-chat';
-import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp } from 'lucide-react';
+import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp, FileText } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useEffect, useState, useMemo } from 'react';
@@ -30,6 +30,8 @@ import { AppData, Product, Wig, Pastry, PastryExpense, Sale } from '@/lib/data';
 import { loadData, saveData } from '@/lib/storage';
 import WelcomeTour from '@/components/dashboard/welcome-tour';
 import EditInventoryForm from '@/components/dashboard/edit-inventory-form';
+import { exportInventoryToPDF } from '@/lib/inventory-exporter';
+import { useToast } from '@/hooks/use-toast';
 
 
 type Stats = {
@@ -41,6 +43,7 @@ type Stats = {
 
 export default function DashboardPage() {
   const { user, username } = useAuth();
+  const { toast } = useToast();
   const [appData, setAppData] = useState<AppData | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   
@@ -102,6 +105,19 @@ export default function DashboardPage() {
     updateData('pastries', pastries);
     handleOpenDialog('inventory', false);
   }
+  
+  const handleExport = () => {
+    if (!appData || !user) return;
+    const { products, wigs, pastries } = appData;
+    exportInventoryToPDF(products, wigs, pastries, {
+        name: user.businessName,
+        currency: user.currency,
+    });
+     toast({
+      title: "Exportation réussie",
+      description: "L'inventaire a été téléchargé en PDF.",
+    });
+  };
 
   if (!appData || !stats) {
     return <div>Chargement des données...</div>;
@@ -213,25 +229,30 @@ export default function DashboardPage() {
         </div>
         <div className="grid grid-cols-1 gap-y-4">
             <Card className="relative group">
-               <Dialog open={dialogOpen['inventory']} onOpenChange={(isOpen) => handleOpenDialog('inventory', isOpen)}>
-                  <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Pencil className="mr-2 h-4 w-4" /> Modifier l'Inventaire
-                      </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl">
-                    <DialogHeader>
-                      <DialogTitle>Modifier la Gestion de l'Inventaire</DialogTitle>
-                       <DialogDescription>
-                        Renommez les catégories et modifiez les articles de votre inventaire.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <EditInventoryForm 
-                      initialValues={{ products, wigs, pastries }} 
-                      onSubmit={handleInventorySubmit} 
-                    />
-                  </DialogContent>
-                </Dialog>
+               <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleExport}>
+                  <FileText className="mr-2 h-4 w-4" /> Exporter
+                </Button>
+                <Dialog open={dialogOpen['inventory']} onOpenChange={(isOpen) => handleOpenDialog('inventory', isOpen)}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Pencil className="mr-2 h-4 w-4" /> Modifier
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl">
+                      <DialogHeader>
+                        <DialogTitle>Modifier la Gestion de l'Inventaire</DialogTitle>
+                         <DialogDescription>
+                          Renommez les catégories et modifiez les articles de votre inventaire.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <EditInventoryForm 
+                        initialValues={{ products, wigs, pastries }} 
+                        onSubmit={handleInventorySubmit} 
+                      />
+                    </DialogContent>
+                  </Dialog>
+               </div>
               <CardHeader>
                 <CardTitle className="text-xl">Gestion de l'Inventaire</CardTitle>
                 <CardDescription>
@@ -290,3 +311,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    
