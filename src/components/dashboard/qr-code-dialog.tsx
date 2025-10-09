@@ -73,5 +73,4 @@ export default function QRCodeDialog({ isOpen, setIsOpen, url }: QRCodeDialogPro
     </Dialog>
   );
 }
-
     
