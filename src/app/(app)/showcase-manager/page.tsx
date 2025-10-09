@@ -103,11 +103,11 @@ export default function ShowcaseManagerPage() {
         description: "Vos modifications ont été enregistrées.",
     });
 
-    router.push(`/showcase?user=milbus`);
+    router.push(`/showcase/milbus`);
   };
 
   const copyPublicUrl = () => {
-    const publicUrl = `${window.location.origin}/showcase?user=milbus`;
+    const publicUrl = `${window.location.origin}/showcase/milbus`;
     navigator.clipboard.writeText(publicUrl).then(() => {
         toast({
             title: "Lien copié !",
@@ -216,7 +216,7 @@ export default function ShowcaseManagerPage() {
                     <Copy className="mr-2 h-4 w-4" />
                     Copier le lien public
                 </Button>
-                <Link href={`/showcase?user=milbus`} target="_blank" passHref>
+                <Link href={`/showcase/milbus`} target="_blank" passHref>
                     <Button variant="outline">
                         <Eye className="mr-2 h-4 w-4" />
                         Voir la page publique
@@ -287,5 +287,3 @@ export default function ShowcaseManagerPage() {
     </>
   );
 }
-
-    

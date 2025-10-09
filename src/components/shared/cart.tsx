@@ -10,7 +10,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 
 export default function Cart() {
@@ -19,12 +19,12 @@ export default function Cart() {
     
     const [vendorInfo, setVendorInfo] = useState({ email: '', phone: '' });
     
-    const searchParams = useSearchParams();
-    const username = searchParams.get('user');
+    const params = useParams();
+    const username = params.user;
 
     useEffect(() => {
         if (username) {
-            const userCredentials = localStorage.getItem('milbus-user-credentials');
+            const userCredentials = localStorage.getItem(`${username}-user-credentials`) || localStorage.getItem('milbus-user-credentials');
             if (userCredentials) {
                 const parsedUser = JSON.parse(userCredentials);
                 setVendorInfo({

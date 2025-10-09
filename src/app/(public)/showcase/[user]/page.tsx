@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { loadData } from '@/lib/storage';
 import { ShowcaseItem, AppData } from '@/lib/data';
@@ -26,10 +26,9 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     );
 }
 
-function ShowcaseContent() {
-    const searchParams = useSearchParams();
+function ShowcaseContent({ params }: { params: { user: string } }) {
     const router = useRouter();
-    const userIdentifier = searchParams.get('user');
+    const userIdentifier = params.user;
     const [items, setItems] = useState<ShowcaseItem[]>([]);
     const [businessName, setBusinessName] = useState("MiLBus");
     const [error, setError] = useState<string | null>(null);
@@ -38,19 +37,13 @@ function ShowcaseContent() {
     useEffect(() => {
         if (userIdentifier) {
             try {
-                // For a public page, we can't rely on the logged-in user's localStorage.
-                // We'll load the data for a "default" or specified user.
-                // In a real multi-tenant app, this would be a server-side fetch.
-                // For this simulation, we'll assume the public showcase is always for 'milbus'.
                 const usernameToShowcase = userIdentifier;
                 const data: AppData = loadData(usernameToShowcase);
 
                 if (data && data.showcase) {
                     setItems(data.showcase.filter(item => item.published));
                     
-                    // To get business info for the cart, we still need a way to access it.
-                    // Let's assume we can load the user profile from storage, even if not logged in.
-                    const userCredentials = localStorage.getItem(`milbus-user-credentials`);
+                    const userCredentials = localStorage.getItem(`${usernameToShowcase}-user-credentials`) || localStorage.getItem(`milbus-user-credentials`);
                     if (userCredentials) {
                          const parsedUser = JSON.parse(userCredentials);
                          setBusinessName(parsedUser.businessName || "MiLBus");
@@ -132,10 +125,10 @@ function ShowcaseContent() {
 }
 
 
-export default function ShowcasePage() {
+export default function ShowcasePage({ params }: { params: { user: string } }) {
     return (
         <Suspense fallback={<div>Chargement de la vitrine...</div>}>
-            <ShowcaseContent />
+            <ShowcaseContent params={params} />
         </Suspense>
     );
 }
