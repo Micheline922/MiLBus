@@ -19,7 +19,7 @@ export default function Cart() {
     const [vendorInfo, setVendorInfo] = useState({ email: '', phone: '' });
     
     const params = useParams();
-    const username = params.user;
+    const username = params.user as string;
 
     const currencySymbol = useMemo(() => (currency === 'USD' ? '$' : 'FC'), [currency]);
 

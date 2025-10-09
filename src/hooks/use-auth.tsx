@@ -20,6 +20,7 @@ interface AuthContextType {
   login: (username: string, pass: string) => Promise<void>;
   logout: () => void;
   updateUser: (data: Partial<Omit<UserData, 'username'>>) => void;
+  username: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

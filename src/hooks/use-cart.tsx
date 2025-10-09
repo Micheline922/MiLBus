@@ -30,7 +30,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [currency, setCurrency] = useState('FC');
   
   const params = useParams();
-  const username = params.user;
+  const username = params.user as string;
 
   useEffect(() => {
     if (username) {
