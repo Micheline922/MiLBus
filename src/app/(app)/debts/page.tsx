@@ -20,13 +20,17 @@ import {
 import EditDebtsForm from "@/components/dashboard/edit-debts-form";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
+import AddDebtForm, { AddDebtFormValues } from "@/components/dashboard/add-debt-form";
+import { useToast } from "@/hooks/use-toast";
 
 
 export default function DebtsPage() {
   const { user, username } = useAuth();
+  const { toast } = useToast();
   const [debts, setDebts] = useState<Debt[] | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
   
   const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
 
@@ -42,9 +46,27 @@ export default function DebtsPage() {
     if (!username) return;
     setDebts(values.debts);
     saveData(username, 'debts', values.debts);
-    setDialogOpen(false);
+    setEditDialogOpen(false);
   };
   
+  const handleAddDebt = (values: AddDebtFormValues) => {
+    if (!username || !debts) return;
+
+    const newDebt: Debt = {
+      id: `d${debts.length + 1}_${Date.now()}`,
+      ...values,
+    };
+
+    const updatedDebts = [...debts, newDebt];
+    setDebts(updatedDebts);
+    saveData(username, 'debts', updatedDebts);
+    setAddDialogOpen(false);
+    toast({
+      title: "Dette ajoutée !",
+      description: `La dette de ${newDebt.debtorName} a été enregistrée.`,
+    });
+  };
+
   if (!debts) {
     return <div>Chargement...</div>;
   }
@@ -56,13 +78,26 @@ export default function DebtsPage() {
           <h1 className="text-3xl font-headline font-bold tracking-tight">Dettes</h1>
           <p className="text-muted-foreground">Suivez les dettes de vos clients.</p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" /> Ajouter une dette
-        </Button>
+        <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+            <DialogTrigger asChild>
+                <Button>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Ajouter une dette
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Ajouter une nouvelle dette</DialogTitle>
+                    <DialogDescription>
+                        Remplissez les informations ci-dessous.
+                    </DialogDescription>
+                </DialogHeader>
+                <AddDebtForm onSubmit={handleAddDebt} />
+            </DialogContent>
+        </Dialog>
       </div>
 
       <Card className="relative group">
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
               <Pencil className="mr-2 h-4 w-4" /> Modifier
