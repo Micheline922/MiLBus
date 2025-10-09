@@ -25,7 +25,7 @@ const formSchema = z.object({
       id: z.string(),
       customerName: z.string().min(1, 'Le nom est requis'),
       customerPhone: z.string().min(1, 'Le téléphone est requis'),
-      customerEmail: z.string().email("L'email n'est pas valide"),
+      customerEmail: z.string().email("L'email n'est pas valide").or(z.literal('')),
       products: z.string().transform((val) => val.split(',').map(s => s.trim()).filter(Boolean)), // Handle comma-separated strings
       totalAmount: z.coerce.number(),
       paidAmount: z.coerce.number(),
@@ -41,6 +41,7 @@ const transformInitialValues = (initialValues: { orders: Order[] }) => ({
   orders: initialValues.orders.map(order => ({
     ...order,
     products: order.products.join(', '),
+    customerEmail: order.customerEmail || '',
   })),
 });
 

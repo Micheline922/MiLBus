@@ -44,7 +44,9 @@ type EditProductsFormProps = {
 export default function EditProductsForm({ initialValues, onSubmit }: EditProductsFormProps) {
   const form = useForm<EditProductsFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialValues,
+    defaultValues: {
+        products: initialValues.products.map(p => ({ ...p, purchasePrice: p.purchasePrice ?? 0, profit: p.profit ?? 0 }))
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -71,7 +73,7 @@ export default function EditProductsForm({ initialValues, onSubmit }: EditProduc
                 <FormField control={form.control} name={`products.${index}.profit`} render={({ field }) => ( <FormItem><FormLabel>Bénéfice</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => append({ id: `p${fields.length + 1}`, name: 'Nouveau Produit', category: 'Bijoux & Accessoires', price: 0, stock: 0, sold: 0, remaining: 0 })}>
+            <Button type="button" variant="outline" size="sm" onClick={() => append({ id: `p${fields.length + 1}`, name: 'Nouveau Produit', category: 'Bijoux & Accessoires', price: 0, stock: 0, sold: 0, remaining: 0, purchasePrice: 0, profit: 0 })}>
               Ajouter un produit
             </Button>
           </div>
