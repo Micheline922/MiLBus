@@ -114,7 +114,7 @@ export default function ShowcaseManagerPage() {
         description: "Vos modifications ont été enregistrées.",
     });
 
-    router.push(`/showcase/milbus`);
+    window.open(publicUrl, '_blank');
   };
 
   const copyPublicUrl = () => {
@@ -250,14 +250,9 @@ export default function ShowcaseManagerPage() {
                     <Share2 className="mr-2 h-4 w-4" />
                     Partager
                 </Button>
-                <Link href={publicUrl} target="_blank" passHref>
-                    <Button variant="outline">
-                        <Eye className="mr-2 h-4 w-4" />
-                        Voir la page
-                    </Button>
-                </Link>
                 <Button onClick={handleUpdateAndRedirect}>
-                    <Send className="mr-2 h-4 w-4" /> Mettre à jour
+                    <Eye className="mr-2 h-4 w-4" />
+                    Mettre à jour et voir
                 </Button>
             </div>
         </div>
