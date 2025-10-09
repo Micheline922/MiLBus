@@ -105,14 +105,21 @@ export default function DashboardPage() {
   };
   
   const handleInventorySubmit = (values: { products: Product[], wigs: Wig[], pastries: Pastry[] }) => {
-    if (!username) return;
+    if (!username || !appData) return;
     
+    const updatedData = { 
+        ...appData, 
+        products: values.products,
+        wigs: values.wigs,
+        pastries: values.pastries,
+    };
+    
+    setAppData(updatedData);
+
     saveData(username, 'products', values.products);
     saveData(username, 'wigs', values.wigs);
     saveData(username, 'pastries', values.pastries);
-
-    const reloadedData = loadData(username);
-    setAppData(reloadedData);
+    
     inventoryForm.reset(values);
 
     toast({
@@ -299,3 +306,4 @@ export default function DashboardPage() {
   );
 }
 
+    

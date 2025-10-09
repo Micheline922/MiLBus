@@ -198,3 +198,5 @@ export default function EditInventoryForm({ onSubmit }: { onSubmit: (values: Edi
     </form>
   );
 }
+
+    
