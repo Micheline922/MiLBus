@@ -101,15 +101,12 @@ export default function DashboardPage() {
     if (!username) return;
     const { products, wigs, pastries } = values;
 
-    // Update state
     setAppData(prev => prev ? { ...prev, products, wigs, pastries } : null);
 
-    // Save each part to localStorage
     saveData(username, 'products', products);
     saveData(username, 'wigs', wigs);
     saveData(username, 'pastries', pastries);
 
-    // Close the dialog
     handleOpenDialog('inventory', false);
     toast({
       title: "Inventaire mis à jour",
@@ -281,10 +278,10 @@ export default function DashboardPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {[...products, ...wigs.map(w => ({id: w.id, name: w.wigDetails, category: "Perruques", price: w.sellingPrice, stock: w.remaining})), ...pastries.map(p => ({id: p.id, name: p.name, category: "Pâtisseries", price: p.unitPrice, stock: p.remaining}))].map((product) => (
+                    {[...products, ...wigs, ...pastries].map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.category}</TableCell>
+                        <TableCell>{(product as any).category || ((product as any).wigDetails ? "Perruques" : "Pâtisseries")}</TableCell>
                         <TableCell>{(product as any).price?.toFixed(2) ?? (product as any).sellingPrice?.toFixed(2) ?? (product as any).unitPrice?.toFixed(2)} {currency}</TableCell>
                         <TableCell>{(product as any).stock ?? (product as any).remaining}</TableCell>
                       </TableRow>
@@ -322,4 +319,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
     
