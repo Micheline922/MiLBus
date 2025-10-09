@@ -50,13 +50,14 @@ function ShowcaseContent() {
     useEffect(() => {
         if (userIdentifier) {
             try {
-                const usernameToShowcase = userIdentifier;
+                // In a real app, you'd fetch this, but we use a convention
+                const usernameToShowcase = 'milbus';
                 const data: AppData = loadData(usernameToShowcase);
 
                 if (data && data.showcase) {
                     setItems(data.showcase.filter(item => item.published));
                     
-                    const userCredentials = localStorage.getItem(`${usernameToShowcase}-user-credentials`) || localStorage.getItem(`milbus-user-credentials`);
+                    const userCredentials = localStorage.getItem(`${usernameToShowcase}-user-credentials`) || localStorage.getItem('milbus-user-credentials');
                     if (userCredentials) {
                          const parsedUser = JSON.parse(userCredentials);
                          setBusinessName(parsedUser.businessName || "MiLBus");
