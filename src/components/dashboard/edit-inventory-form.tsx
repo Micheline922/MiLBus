@@ -108,7 +108,7 @@ export default function EditInventoryForm({ onSubmit }: { onSubmit: (values: Edi
                 <Trash2 className="h-4 w-4" />
               </Button>
               <FormField control={form.control} name={`products.${index}.name`} render={({ field }) => ( <FormItem className="col-span-2 md:col-span-4"><FormLabel>Nom</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name={`products.${index}.purchasePrice`} render={({ field }) => ( <FormItem><FormLabel>Prix Achat</FormLabel><FormControl><Input type="number" {...field} value={field.value ?? 0} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name={`products.${index}.purchasePrice`} render={({ field }) => ( <FormItem><FormLabel>Prix Achat</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name={`products.${index}.price`} render={({ field }) => ( <FormItem><FormLabel>Prix Vente</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name={`products.${index}.stock`} render={({ field }) => ( <FormItem><FormLabel>Stock</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name={`products.${index}.sold`} render={({ field }) => ( <FormItem><FormLabel>Vendu</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
