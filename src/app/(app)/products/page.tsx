@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Product, Wig, Pastry } from "@/lib/data";
-import { MoreHorizontal, PlusCircle, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, PlusCircle, Pencil, Trash2, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState, useMemo } from "react";
 import EditInventoryForm from "@/components/dashboard/edit-inventory-form";
@@ -26,6 +26,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddProductForm from "@/components/dashboard/add-product-form";
 import AddWigForm from "@/components/dashboard/add-wig-form";
 import AddPastryForm from "@/components/dashboard/add-pastry-form";
+import { exportInventoryToPDF } from "@/lib/inventory-exporter";
+
 
 type ItemType = 'product' | 'wig' | 'pastry';
 type Item = Product | Wig | Pastry;
@@ -137,6 +139,19 @@ export default function ProductsPage() {
     handleOpenDialog('add', 'pastries', false);
     toast({ title: "Succès", description: "Pâtisserie ajoutée."});
   };
+  
+  const handleExport = () => {
+    if (!products || !wigs || !pastries || !user) return;
+    exportInventoryToPDF(products, wigs, pastries, {
+        name: user.businessName,
+        currency: user.currency,
+    });
+     toast({
+      title: "Exportation réussie",
+      description: "L'inventaire a été téléchargé en PDF.",
+    });
+  };
+
 
   if (!products || !wigs || !pastries) {
     return <div>Chargement...</div>;
@@ -172,6 +187,9 @@ export default function ProductsPage() {
             <p className="text-muted-foreground">Gérez vos marchandises et inventaire.</p>
           </div>
            <div className="flex items-center space-x-2">
+            <Button variant="outline" onClick={handleExport}>
+                <FileText className="mr-2 h-4 w-4" /> Exporter
+            </Button>
             <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
                 <DialogTrigger asChild>
                     <Button variant="outline">
@@ -442,5 +460,3 @@ export default function ProductsPage() {
     </>
   );
 }
-
-    
