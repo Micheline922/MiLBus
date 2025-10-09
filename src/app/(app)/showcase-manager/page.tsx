@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, ImagePlus, Send, Link as LinkIcon, Copy, PlusCircle } from 'lucide-react';
+import { Eye, ImagePlus, Send, Link as LinkIcon, Copy, PlusCircle, QrCode } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import AddProductForm from '@/components/dashboard/add-product-form';
 import AddWigForm from '@/components/dashboard/add-wig-form';
 import AddPastryForm from '@/components/dashboard/add-pastry-form';
+import QRCodeDialog from '@/components/dashboard/qr-code-dialog';
 
 
 export default function ShowcaseManagerPage() {
@@ -31,6 +32,14 @@ export default function ShowcaseManagerPage() {
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[] | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [addDialogOpen, setAddDialogOpen] = useState<Record<string, boolean>>({});
+  const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
+  const [publicUrl, setPublicUrl] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setPublicUrl(`${window.location.origin}/showcase/milbus`);
+    }
+  }, []);
 
   const loadShowcaseData = (username: string) => {
       const data = loadData(username);
@@ -72,7 +81,7 @@ export default function ShowcaseManagerPage() {
 
   const handleItemChange = (id: string, field: keyof ShowcaseItem, value: string | boolean | number) => {
     if (!showcaseItems) return;
-    const updatedItems = showcaseItems.map(item => 
+    const updatedItems = showcaseItems.map(item =>
       item.id === id ? { ...item, [field]: value } : item
     );
     setShowcaseItems(updatedItems);
@@ -107,7 +116,6 @@ export default function ShowcaseManagerPage() {
   };
 
   const copyPublicUrl = () => {
-    const publicUrl = `${window.location.origin}/showcase/milbus`;
     navigator.clipboard.writeText(publicUrl).then(() => {
         toast({
             title: "Lien copié !",
@@ -189,6 +197,13 @@ export default function ShowcaseManagerPage() {
             <AddPastryForm onSubmit={handleAddPastry} />
             </DialogContent>
         </Dialog>
+
+        <QRCodeDialog 
+            isOpen={qrCodeDialogOpen} 
+            setIsOpen={setQrCodeDialogOpen} 
+            url={publicUrl} 
+        />
+
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
             <div>
@@ -214,16 +229,20 @@ export default function ShowcaseManagerPage() {
                 </DropdownMenu>
                 <Button variant="outline" onClick={copyPublicUrl}>
                     <Copy className="mr-2 h-4 w-4" />
-                    Copier le lien public
+                    Copier le lien
                 </Button>
-                <Link href={`/showcase/milbus`} target="_blank" passHref>
+                 <Button variant="outline" onClick={() => setQrCodeDialogOpen(true)}>
+                    <QrCode className="mr-2 h-4 w-4" />
+                    Générer QR Code
+                </Button>
+                <Link href={publicUrl} target="_blank" passHref>
                     <Button variant="outline">
                         <Eye className="mr-2 h-4 w-4" />
-                        Voir la page publique
+                        Voir la page
                     </Button>
                 </Link>
                 <Button onClick={handleUpdateAndRedirect}>
-                    <Send className="mr-2 h-4 w-4" /> Mettre à jour la vitrine
+                    <Send className="mr-2 h-4 w-4" /> Mettre à jour
                 </Button>
             </div>
         </div>
@@ -287,3 +306,5 @@ export default function ShowcaseManagerPage() {
     </>
   );
 }
+
+    
