@@ -97,26 +97,21 @@ export default function DashboardPage() {
     handleOpenDialog('stats', false);
   };
   
-  const handleInventorySubmit = (values: {products: Product[], wigs: Wig[], pastries: Pastry[]}) => {
-    if (!username || !appData) return;
+  const handleInventorySubmit = (values: { products: Product[], wigs: Wig[], pastries: Pastry[] }) => {
+    if (!username) return;
     const { products, wigs, pastries } = values;
-    
-    // Create copies to avoid direct mutation before setting state
-    const newProducts = [...products];
-    const newWigs = [...wigs];
-    const newPastries = [...pastries];
 
     // Update state
-    setAppData(prev => prev ? { ...prev, products: newProducts, wigs: newWigs, pastries: newPastries } : null);
+    setAppData(prev => prev ? { ...prev, products, wigs, pastries } : null);
 
     // Save each part to localStorage
-    saveData(username, 'products', newProducts);
-    saveData(username, 'wigs', newWigs);
-    saveData(username, 'pastries', newPastries);
+    saveData(username, 'products', products);
+    saveData(username, 'wigs', wigs);
+    saveData(username, 'pastries', pastries);
 
     // Close the dialog
     handleOpenDialog('inventory', false);
-     toast({
+    toast({
       title: "Inventaire mis à jour",
       description: "Vos modifications ont été enregistrées.",
     });
