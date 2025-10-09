@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  devServer: {
+    allowedDevOrigins: [
+      "https://*.cloudworkstations.dev",
+    ],
+  },
   images: {
     remotePatterns: [
       {
@@ -18,7 +23,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https',
+        protocol: 'https' ,
         hostname: 'images.unsplash.com',
         port: '',
         pathname: '/**',
