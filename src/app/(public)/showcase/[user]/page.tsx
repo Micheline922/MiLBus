@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { loadData } from '@/lib/storage';
 import { ShowcaseItem, AppData } from '@/lib/data';
@@ -26,9 +26,10 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     );
 }
 
-function ShowcaseContent({ params }: { params: { user: string } }) {
+function ShowcaseContent() {
     const router = useRouter();
-    const userIdentifier = params.user;
+    const params = useParams();
+    const userIdentifier = params.user as string;
     const [items, setItems] = useState<ShowcaseItem[]>([]);
     const [businessName, setBusinessName] = useState("MiLBus");
     const [error, setError] = useState<string | null>(null);
@@ -125,10 +126,10 @@ function ShowcaseContent({ params }: { params: { user: string } }) {
 }
 
 
-export default function ShowcasePage({ params }: { params: { user: string } }) {
+export default function ShowcasePage() {
     return (
         <Suspense fallback={<div>Chargement de la vitrine...</div>}>
-            <ShowcaseContent params={params} />
+            <ShowcaseContent />
         </Suspense>
     );
 }
