@@ -4,12 +4,11 @@
 import StatCard from '@/components/dashboard/stat-card';
 import RecentSales from '@/components/dashboard/recent-sales';
 import AiChat from '@/components/dashboard/ai-chat';
-import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp, FileText } from 'lucide-react';
+import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp, FileText, Save } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useEffect, useState, useMemo } from 'react';
 import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -32,6 +31,7 @@ import WelcomeTour from '@/components/dashboard/welcome-tour';
 import EditInventoryForm from '@/components/dashboard/edit-inventory-form';
 import { exportInventoryToPDF } from '@/lib/inventory-exporter';
 import { useToast } from '@/hooks/use-toast';
+import { useForm, FormProvider } from 'react-hook-form';
 
 
 type Stats = {
@@ -51,13 +51,20 @@ export default function DashboardPage() {
 
   const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
 
+  const inventoryForm = useForm<any>();
+
   useEffect(() => {
     if (username) {
       const data = loadData(username);
       setAppData(data);
       setStats(data.stats);
+      inventoryForm.reset({
+          products: data.products,
+          wigs: data.wigs,
+          pastries: data.pastries,
+      });
     }
-  }, [username]);
+  }, [username, inventoryForm.reset]);
   
   const monthlySalesData = useMemo(() => {
     if (!appData?.sales) return [];
@@ -99,18 +106,18 @@ export default function DashboardPage() {
   
   const handleInventorySubmit = (values: { products: Product[], wigs: Wig[], pastries: Pastry[] }) => {
     if (!username) return;
-    const { products, wigs, pastries } = values;
+    
+    saveData(username, 'products', values.products);
+    saveData(username, 'wigs', values.wigs);
+    saveData(username, 'pastries', values.pastries);
 
-    setAppData(prev => prev ? { ...prev, products, wigs, pastries } : null);
+    const reloadedData = loadData(username);
+    setAppData(reloadedData);
+    inventoryForm.reset(values);
 
-    saveData(username, 'products', products);
-    saveData(username, 'wigs', wigs);
-    saveData(username, 'pastries', pastries);
-
-    handleOpenDialog('inventory', false);
     toast({
-      title: "Inventaire mis à jour",
-      description: "Vos modifications ont été enregistrées.",
+      title: "Inventaire sauvegardé !",
+      description: "Vos modifications ont été enregistrées avec succès.",
     });
   }
   
@@ -131,7 +138,7 @@ export default function DashboardPage() {
     return <div>Chargement des données...</div>;
   }
 
-  const { products, wigs, pastries, pastryExpenses, sales } = appData;
+  const { pastryExpenses, sales } = appData;
 
   return (
     <>
@@ -236,59 +243,31 @@ export default function DashboardPage() {
             </div>
         </div>
         <div className="grid grid-cols-1 gap-y-4">
-            <Card className="relative group">
-               <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                <Button variant="outline" size="sm" onClick={handleExport}>
-                  <FileText className="mr-2 h-4 w-4" /> Exporter
-                </Button>
-                <Dialog open={dialogOpen['inventory']} onOpenChange={(isOpen) => handleOpenDialog('inventory', isOpen)}>
-                    <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Pencil className="mr-2 h-4 w-4" /> Modifier
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl">
-                      <DialogHeader>
-                        <DialogTitle>Modifier la Gestion de l'Inventaire</DialogTitle>
-                         <DialogDescription>
-                          Renommez les catégories et modifiez les articles de votre inventaire.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <EditInventoryForm 
-                        initialValues={{ products, wigs, pastries }} 
-                        onSubmit={handleInventorySubmit} 
-                      />
-                    </DialogContent>
-                  </Dialog>
-               </div>
-              <CardHeader>
-                <CardTitle className="text-xl">Gestion de l'Inventaire</CardTitle>
-                <CardDescription>
-                  Liste de vos marchandises actuellement en stock.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Produit</TableHead>
-                      <TableHead>Catégorie</TableHead>
-                      <TableHead>Prix de Vente</TableHead>
-                      <TableHead>Stock</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {[...products, ...wigs, ...pastries].map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{(product as any).category || ((product as any).wigDetails ? "Perruques" : "Pâtisseries")}</TableCell>
-                        <TableCell>{(product as any).price?.toFixed(2) ?? (product as any).sellingPrice?.toFixed(2) ?? (product as any).unitPrice?.toFixed(2)} {currency}</TableCell>
-                        <TableCell>{(product as any).stock ?? (product as any).remaining}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle className="text-xl">Gestion de l'Inventaire</CardTitle>
+                            <CardDescription>Modifiez directement votre inventaire et sauvegardez les changements.</CardDescription>
+                        </div>
+                        <div className="flex gap-2">
+                             <Button variant="outline" size="sm" onClick={handleExport}>
+                                <FileText className="mr-2 h-4 w-4" /> Exporter
+                            </Button>
+                            <Button size="sm" onClick={inventoryForm.handleSubmit(handleInventorySubmit)}>
+                                <Save className="mr-2 h-4 w-4" /> Sauvegarder
+                            </Button>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <FormProvider {...inventoryForm}>
+                        <EditInventoryForm
+                          initialValues={{ products: appData.products, wigs: appData.wigs, pastries: appData.pastries }}
+                          onSubmit={handleInventorySubmit}
+                        />
+                    </FormProvider>
+                </CardContent>
             </Card>
 
             <div className="relative group">
@@ -320,4 +299,3 @@ export default function DashboardPage() {
   );
 }
 
-    
