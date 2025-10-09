@@ -13,15 +13,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, ImagePlus, Send, Link as LinkIcon, Copy, PlusCircle, QrCode } from 'lucide-react';
+import { Eye, ImagePlus, Send, Link as LinkIcon, Copy, PlusCircle, QrCode, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import AddProductForm from '@/components/dashboard/add-product-form';
 import AddWigForm from '@/components/dashboard/add-wig-form';
 import AddPastryForm from '@/components/dashboard/add-pastry-form';
 import QRCodeDialog from '@/components/dashboard/qr-code-dialog';
+import SocialShare from '@/components/shared/social-share';
 
 
 export default function ShowcaseManagerPage() {
@@ -33,6 +34,7 @@ export default function ShowcaseManagerPage() {
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [addDialogOpen, setAddDialogOpen] = useState<Record<string, boolean>>({});
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [publicUrl, setPublicUrl] = useState('');
 
   useEffect(() => {
@@ -203,6 +205,15 @@ export default function ShowcaseManagerPage() {
             setIsOpen={setQrCodeDialogOpen} 
             url={publicUrl} 
         />
+        
+        <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Partager votre vitrine</DialogTitle>
+                </DialogHeader>
+                <SocialShare url={publicUrl} title="Découvrez ma boutique !" />
+            </DialogContent>
+        </Dialog>
 
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
@@ -212,7 +223,7 @@ export default function ShowcaseManagerPage() {
                 Choisissez les produits à afficher, puis cliquez sur "Mettre à jour la vitrine".
             </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button>
@@ -233,7 +244,11 @@ export default function ShowcaseManagerPage() {
                 </Button>
                  <Button variant="outline" onClick={() => setQrCodeDialogOpen(true)}>
                     <QrCode className="mr-2 h-4 w-4" />
-                    Générer QR Code
+                    QR Code
+                </Button>
+                 <Button variant="outline" onClick={() => setShareDialogOpen(true)}>
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Partager
                 </Button>
                 <Link href={publicUrl} target="_blank" passHref>
                     <Button variant="outline">

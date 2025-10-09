@@ -8,9 +8,11 @@ import { ShowcaseItem, AppData } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Share2 } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
 import Cart from '@/components/shared/cart';
+import { Separator } from '@/components/ui/separator';
+import SocialShare from '@/components/shared/social-share';
 
 function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -35,7 +37,14 @@ function ShowcaseContent() {
     const [currency, setCurrency] = useState('FC');
     const [error, setError] = useState<string | null>(null);
     const { addItem } = useCart();
+    const [publicUrl, setPublicUrl] = useState('');
     
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+          setPublicUrl(window.location.href);
+        }
+    }, []);
+
     const currencySymbol = useMemo(() => (currency === 'USD' ? '$' : 'FC'), [currency]);
 
     useEffect(() => {
@@ -119,6 +128,16 @@ function ShowcaseContent() {
                         </CardContent>
                     </Card>
                 ))}
+            </div>
+
+            <Separator className="my-12" />
+
+            <div className="text-center space-y-4">
+                <h3 className="text-xl font-semibold">Partagez la bonne nouvelle !</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">Si vous aimez nos produits, partagez notre boutique avec vos amis et votre famille.</p>
+                <div className="flex justify-center">
+                    <SocialShare url={publicUrl} title={`Découvrez la boutique ${businessName} !`} />
+                </div>
             </div>
             
             <footer className="text-center mt-12 text-sm text-muted-foreground">
