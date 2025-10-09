@@ -29,9 +29,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { AppData, Product, Wig, Pastry, PastryExpense, Sale } from '@/lib/data';
 import { loadData, saveData } from '@/lib/storage';
 import WelcomeTour from '@/components/dashboard/welcome-tour';
-import EditProductsForm from '@/components/dashboard/edit-products-form';
-import EditWigsForm from '@/components/dashboard/edit-wigs-form';
-import EditPastriesForm from '@/components/dashboard/edit-pastries-form';
+import EditInventoryForm from '@/components/dashboard/edit-inventory-form';
 
 
 type Stats = {
@@ -94,6 +92,15 @@ export default function DashboardPage() {
     handleOpenDialog('stats', false);
   };
   
+  const handleInventorySubmit = (values: {products: Product[], wigs: Wig[], pastries: Pastry[]}) => {
+    if (!username || !appData) return;
+    const { products, wigs, pastries } = values;
+    updateData('products', products);
+    updateData('wigs', wigs);
+    updateData('pastries', pastries);
+    handleOpenDialog('inventory', false);
+  }
+
   if (!appData || !stats) {
     return <div>Chargement des données...</div>;
   }
@@ -204,21 +211,27 @@ export default function DashboardPage() {
         </div>
         <div className="grid grid-cols-1 gap-y-4">
             <Card className="relative group">
-               <Dialog open={dialogOpen['products']} onOpenChange={(isOpen) => handleOpenDialog('products', isOpen)}>
+               <Dialog open={dialogOpen['inventory']} onOpenChange={(isOpen) => handleOpenDialog('inventory', isOpen)}>
                   <DialogTrigger asChild>
                       <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Pencil className="mr-2 h-4 w-4" /> Modifier
+                        <Pencil className="mr-2 h-4 w-4" /> Modifier l'Inventaire
                       </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
+                  <DialogContent className="max-w-4xl">
                     <DialogHeader>
-                      <DialogTitle>Modifier les Avoirs - Bijoux & Accessoires</DialogTitle>
+                      <DialogTitle>Modifier la Gestion de l'Inventaire</DialogTitle>
+                       <DialogDescription>
+                        Renommez les catégories et modifiez les articles de votre inventaire.
+                      </DialogDescription>
                     </DialogHeader>
-                    <EditProductsForm initialValues={{ products }} onSubmit={(v) => updateData('products', v.products)} />
+                    <EditInventoryForm 
+                      initialValues={{ products, wigs, pastries }} 
+                      onSubmit={handleInventorySubmit} 
+                    />
                   </DialogContent>
                 </Dialog>
               <CardHeader>
-                <CardTitle className="text-xl">Avoirs en Stock - Bijoux & Accessoires</CardTitle>
+                <CardTitle className="text-xl">Gestion de l'Inventaire</CardTitle>
                 <CardDescription>
                   Liste de vos marchandises actuellement en stock.
                 </CardDescription>
@@ -246,30 +259,7 @@ export default function DashboardPage() {
                     ))}
                   </TableBody>
                 </Table>
-              </CardContent>
-            </Card>
-
-            <Card className="relative group">
-              <Dialog open={dialogOpen['wigs']} onOpenChange={(isOpen) => handleOpenDialog('wigs', isOpen)}>
-                  <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Pencil className="mr-2 h-4 w-4" /> Modifier
-                      </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl">
-                    <DialogHeader>
-                      <DialogTitle>Modifier les Avoirs - Perruques</DialogTitle>
-                    </DialogHeader>
-                    <EditWigsForm initialValues={{ wigs }} onSubmit={(v) => updateData('wigs', v.wigs)} />
-                  </DialogContent>
-                </Dialog>
-              <CardHeader>
-                <CardTitle  className="text-xl">Avoirs en Stock - Perruques</CardTitle>
-                <CardDescription>
-                  Détails de vos perruques confectionnées.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                <hr className="my-4" />
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -298,31 +288,8 @@ export default function DashboardPage() {
                     ))}
                   </TableBody>
                 </Table>
-              </CardContent>
-            </Card>
-
-            <Card className="relative group">
-                 <Dialog open={dialogOpen['pastries']} onOpenChange={(isOpen) => handleOpenDialog('pastries', isOpen)}>
-                  <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Pencil className="mr-2 h-4 w-4" /> Modifier
-                      </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <DialogHeader>
-                      <DialogTitle>Modifier la Gestion des Pâtisseries</DialogTitle>
-                    </DialogHeader>
-                    <EditPastriesForm initialValues={{ pastries }} onSubmit={(v) => updateData('pastries', v.pastries)} />
-                  </DialogContent>
-                </Dialog>
-                <CardHeader>
-                  <CardTitle className="text-xl">Gestion des Pâtisseries</CardTitle>
-                  <CardDescription>
-                    Suivi des ventes de beignets, crêpes et gâteaux.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
+                 <hr className="my-4" />
+                <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Produit</TableHead>
@@ -348,8 +315,8 @@ export default function DashboardPage() {
                       ))}
                     </TableBody>
                   </Table>
-                </CardContent>
-              </Card>
+              </CardContent>
+            </Card>
 
             <div className="relative group">
                 <Dialog open={dialogOpen['pastryExpenses']} onOpenChange={(isOpen) => handleOpenDialog('pastryExpenses', isOpen)}>
@@ -379,3 +346,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    
