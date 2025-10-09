@@ -243,80 +243,22 @@ export default function DashboardPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Produit</TableHead>
-                      <TableHead>Prix d'Achat</TableHead>
-                      <TableHead>Quantité en Stock</TableHead>
-                      <TableHead>Quantités Vendues</TableHead>
-                      <TableHead>Quantités Restantes</TableHead>
+                      <TableHead>Catégorie</TableHead>
+                      <TableHead>Prix de Vente</TableHead>
+                      <TableHead>Stock</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {products.map((product) => (
+                    {[...products, ...wigs.map(w => ({id: w.id, name: w.wigDetails, category: "Perruques", price: w.sellingPrice, stock: w.remaining})), ...pastries.map(p => ({id: p.id, name: p.name, category: "Pâtisseries", price: p.unitPrice, stock: p.remaining}))].map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.purchasePrice?.toFixed(2) ?? 'N/A'} {currency}</TableCell>
-                        <TableCell>{product.stock}</TableCell>
-                        <TableCell>{product.sold}</TableCell>
-                        <TableCell>{product.remaining}</TableCell>
+                        <TableCell>{product.category}</TableCell>
+                        <TableCell>{(product as any).price?.toFixed(2) ?? (product as any).sellingPrice?.toFixed(2) ?? (product as any).unitPrice?.toFixed(2)} {currency}</TableCell>
+                        <TableCell>{(product as any).stock ?? (product as any).remaining}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-                <hr className="my-4" />
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Mèches Achetées</TableHead>
-                      <TableHead>Marque</TableHead>
-                      <TableHead>Couleurs</TableHead>
-                      <TableHead>Détails Perruque</TableHead>
-                      <TableHead>Prix des Mèches</TableHead>
-                      <TableHead>Prix de Vente</TableHead>
-                       <TableHead>Quantités Vendues</TableHead>
-                      <TableHead>Quantités Restantes</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {wigs.map((wig) => (
-                      <TableRow key={wig.id}>
-                        <TableCell>{wig.purchasedBundles}</TableCell>
-                        <TableCell>{wig.brand}</TableCell>
-                        <TableCell>{wig.colors}</TableCell>
-                        <TableCell>{wig.wigDetails}</TableCell>
-                        <TableCell>{wig.bundlesPrice.toFixed(2)} {currency}</TableCell>
-                        <TableCell>{wig.sellingPrice.toFixed(2)} {currency}</TableCell>
-                        <TableCell>{wig.sold}</TableCell>
-                        <TableCell>{wig.remaining}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                 <hr className="my-4" />
-                <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Produit</TableHead>
-                        <TableHead>Quantité Initiale</TableHead>
-                        <TableHead>Prix Unitaire</TableHead>
-                        <TableHead>Prix Total</TableHead>
-                        <TableHead>Dépenses</TableHead>
-                         <TableHead>Quantités Vendues</TableHead>
-                        <TableHead>Quantités Restantes</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {pastries.map((pastry) => (
-                        <TableRow key={pastry.id}>
-                          <TableCell className="font-medium">{pastry.name}</TableCell>
-                          <TableCell>{pastry.quantity}</TableCell>
-                          <TableCell>{pastry.unitPrice.toFixed(2)} {currency}</TableCell>
-                          <TableCell>{pastry.totalPrice.toFixed(2)} {currency}</TableCell>
-                          <TableCell>{pastry.expenses.toFixed(2)} {currency}</TableCell>
-                           <TableCell>{pastry.sold}</TableCell>
-                          <TableCell>{pastry.remaining}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
               </CardContent>
             </Card>
 

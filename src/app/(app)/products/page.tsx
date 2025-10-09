@@ -15,9 +15,7 @@ import { Product, Wig, Pastry } from "@/lib/data";
 import { MoreHorizontal, PlusCircle, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState, useMemo } from "react";
-import EditProductsForm from "@/components/dashboard/edit-products-form";
-import EditWigsForm from "@/components/dashboard/edit-wigs-form";
-import EditPastriesForm from "@/components/dashboard/edit-pastries-form";
+import EditInventoryForm from "@/components/dashboard/edit-inventory-form";
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -38,7 +36,7 @@ export default function ProductsPage() {
   const [wigs, setWigs] = useState<Wig[] | null>(null);
   const [pastries, setPastries] = useState<Pastry[] | null>(null);
 
-  const [editDialogOpen, setEditDialogOpen] = useState<Record<string, boolean>>({});
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState<Record<string, boolean>>({});
   const [deleteAlert, setDeleteAlert] = useState<{ isOpen: boolean; item: Item | null; type: ItemType | null }>({ isOpen: false, item: null, type: null });
 
@@ -53,9 +51,8 @@ export default function ProductsPage() {
     }
   }, [username]);
   
-  const handleOpenDialog = (type: 'edit' | 'add', id: string, isOpen: boolean) => {
-    const setter = type === 'edit' ? setEditDialogOpen : setAddDialogOpen;
-    setter(prev => ({ ...prev, [id]: isOpen }));
+  const handleOpenDialog = (type: 'add', id: string, isOpen: boolean) => {
+    setAddDialogOpen(prev => ({ ...prev, [id]: isOpen }));
   };
 
   const handleDelete = () => {
@@ -99,25 +96,15 @@ export default function ProductsPage() {
   };
 
 
-  const handleProductsSubmit = (values: { products: Product[] }) => {
+  const handleInventorySubmit = (values: { products: Product[], wigs: Wig[], pastries: Pastry[] }) => {
     if (!username) return;
     setProducts(values.products);
-    saveData(username, 'products', values.products);
-    handleOpenDialog('edit','products', false);
-  };
-  
-  const handleWigsSubmit = (values: { wigs: Wig[] }) => {
-    if (!username) return;
     setWigs(values.wigs);
-    saveData(username, 'wigs', values.wigs);
-    handleOpenDialog('edit', 'wigs', false);
-  };
-
-  const handlePastriesSubmit = (values: { pastries: Pastry[] }) => {
-    if (!username) return;
     setPastries(values.pastries);
+    saveData(username, 'products', values.products);
+    saveData(username, 'wigs', values.wigs);
     saveData(username, 'pastries', values.pastries);
-    handleOpenDialog('edit', 'pastries', false);
+    setEditDialogOpen(false);
   };
   
   const handleAddProduct = (newProduct: Omit<Product, 'id' | 'category'>) => {
@@ -154,6 +141,13 @@ export default function ProductsPage() {
     return <div>Chargement...</div>;
   }
 
+  const inventoryTitles = {
+    products: "Bijoux & Accessoires",
+    wigs: "Perruques",
+    pastries: "Pâtisseries"
+  }
+
+
   return (
     <>
       <AlertDialog open={deleteAlert.isOpen} onOpenChange={(isOpen) => setDeleteAlert(prev => ({...prev, isOpen}))}>
@@ -176,25 +170,47 @@ export default function ProductsPage() {
             <h1 className="text-3xl font-headline font-bold tracking-tight">Marchandises</h1>
             <p className="text-muted-foreground">Gérez vos marchandises et inventaire.</p>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                <DropdownMenuLabel>Choisir une catégorie</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleOpenDialog('add', 'products', true)}>Bijoux & Accessoire</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleOpenDialog('add', 'wigs', true)}>Perruque</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleOpenDialog('add', 'pastries', true)}>Pâtisserie</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+           <div className="flex items-center space-x-2">
+            <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="outline">
+                        <Pencil className="mr-2 h-4 w-4" /> Personnaliser les catégories
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl">
+                    <DialogHeader>
+                      <DialogTitle>Modifier la Gestion de l'Inventaire</DialogTitle>
+                       <DialogDescription>
+                        Renommez les catégories et modifiez les articles de votre inventaire.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <EditInventoryForm
+                      initialValues={{ products, wigs, pastries }}
+                      onSubmit={handleInventorySubmit}
+                    />
+                  </DialogContent>
+            </Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button>
+                      <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                  <DropdownMenuLabel>Choisir une catégorie</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => handleOpenDialog('add', 'products', true)}>{inventoryTitles.products}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleOpenDialog('add', 'wigs', true)}>{inventoryTitles.wigs}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleOpenDialog('add', 'pastries', true)}>{inventoryTitles.pastries}</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
 
             <Dialog open={addDialogOpen['products']} onOpenChange={(isOpen) => handleOpenDialog('add', 'products', isOpen)}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Ajouter un Bijou ou Accessoire</DialogTitle>
+                  <DialogTitle>Ajouter un article à "{inventoryTitles.products}"</DialogTitle>
                 </DialogHeader>
                 <AddProductForm onSubmit={handleAddProduct} />
               </DialogContent>
@@ -203,7 +219,7 @@ export default function ProductsPage() {
             <Dialog open={addDialogOpen['wigs']} onOpenChange={(isOpen) => handleOpenDialog('add', 'wigs', isOpen)}>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Ajouter une Perruque</DialogTitle>
+                  <DialogTitle>Ajouter un article à "{inventoryTitles.wigs}"</DialogTitle>
                 </DialogHeader>
                 <AddWigForm onSubmit={handleAddWig} />
               </DialogContent>
@@ -212,7 +228,7 @@ export default function ProductsPage() {
             <Dialog open={addDialogOpen['pastries']} onOpenChange={(isOpen) => handleOpenDialog('add', 'pastries', isOpen)}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Ajouter une Pâtisserie</DialogTitle>
+                  <DialogTitle>Ajouter un article à "{inventoryTitles.pastries}"</DialogTitle>
                 </DialogHeader>
                 <AddPastryForm onSubmit={handleAddPastry} />
               </DialogContent>
@@ -221,30 +237,17 @@ export default function ProductsPage() {
         
         <Tabs defaultValue="products">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="products">Bijoux & Accessoires</TabsTrigger>
-            <TabsTrigger value="wigs">Perruques</TabsTrigger>
-            <TabsTrigger value="pastries">Pâtisseries</TabsTrigger>
+            <TabsTrigger value="products">{inventoryTitles.products}</TabsTrigger>
+            <TabsTrigger value="wigs">{inventoryTitles.wigs}</TabsTrigger>
+            <TabsTrigger value="pastries">{inventoryTitles.pastries}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products">
             <Card className="relative group/card">
-              <Dialog open={editDialogOpen['products']} onOpenChange={(isOpen) => handleOpenDialog('edit', 'products', isOpen)}>
-                  <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover/card:opacity-100 transition-opacity">
-                        <Pencil className="mr-2 h-4 w-4" /> Modifier la liste
-                      </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <DialogHeader>
-                      <DialogTitle>Modifier les Avoirs - Bijoux & Accessoires</DialogTitle>
-                    </DialogHeader>
-                    <EditProductsForm initialValues={{ products }} onSubmit={handleProductsSubmit} />
-                  </DialogContent>
-              </Dialog>
               <CardHeader>
-                <CardTitle>Bijoux & Accessoires</CardTitle>
+                <CardTitle>{inventoryTitles.products}</CardTitle>
                 <CardDescription>
-                  Liste de vos bijoux et accessoires en stock.
+                  Liste de vos articles dans cette catégorie.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -284,7 +287,7 @@ export default function ProductsPage() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                  <DropdownMenuItem onClick={() => handleOpenDialog('edit', 'products', true)}>
+                                  <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
                                       <Pencil className="mr-2 h-4 w-4" />
                                       Modifier la liste
                                   </DropdownMenuItem>
@@ -306,30 +309,17 @@ export default function ProductsPage() {
 
           <TabsContent value="wigs">
             <Card className="relative group/card">
-              <Dialog open={editDialogOpen['wigs']} onOpenChange={(isOpen) => handleOpenDialog('edit', 'wigs', isOpen)}>
-                  <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover/card:opacity-100 transition-opacity">
-                        <Pencil className="mr-2 h-4 w-4" /> Modifier la liste
-                      </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl">
-                    <DialogHeader>
-                      <DialogTitle>Modifier les Avoirs - Perruques</DialogTitle>
-                    </DialogHeader>
-                    <EditWigsForm initialValues={{ wigs }} onSubmit={handleWigsSubmit} />
-                  </DialogContent>
-                </Dialog>
               <CardHeader>
-                <CardTitle>Perruques</CardTitle>
+                <CardTitle>{inventoryTitles.wigs}</CardTitle>
                 <CardDescription>
-                  Liste de vos perruques confectionnées.
+                  Liste de vos articles dans cette catégorie.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Détails Perruque</TableHead>
+                      <TableHead>Détails Article</TableHead>
                       <TableHead>Prix d'Achat</TableHead>
                       <TableHead>Prix de Vente</TableHead>
                       <TableHead>Stock</TableHead>
@@ -362,7 +352,7 @@ export default function ProductsPage() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                  <DropdownMenuItem onClick={() => handleOpenDialog('edit', 'wigs', true)}>
+                                  <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
                                       <Pencil className="mr-2 h-4 w-4" />
                                       Modifier la liste
                                   </DropdownMenuItem>
@@ -384,23 +374,10 @@ export default function ProductsPage() {
           
           <TabsContent value="pastries">
             <Card className="relative group/card">
-                <Dialog open={editDialogOpen['pastries']} onOpenChange={(isOpen) => handleOpenDialog('edit', 'pastries', isOpen)}>
-                  <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover/card:opacity-100 transition-opacity">
-                        <Pencil className="mr-2 h-4 w-4" /> Modifier la liste
-                      </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <DialogHeader>
-                      <DialogTitle>Modifier la Gestion des Pâtisseries</DialogTitle>
-                    </DialogHeader>
-                    <EditPastriesForm initialValues={{ pastries }} onSubmit={handlePastriesSubmit} />
-                  </DialogContent>
-                </Dialog>
               <CardHeader>
-                <CardTitle>Pâtisseries</CardTitle>
+                <CardTitle>{inventoryTitles.pastries}</CardTitle>
                 <CardDescription>
-                  Suivi des ventes de beignets, crêpes, gâteaux et gaufres.
+                  Liste de vos articles dans cette catégorie.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -440,7 +417,7 @@ export default function ProductsPage() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                  <DropdownMenuItem onClick={() => handleOpenDialog('edit', 'pastries', true)}>
+                                  <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
                                       <Pencil className="mr-2 h-4 w-4" />
                                       Modifier la liste
                                   </DropdownMenuItem>

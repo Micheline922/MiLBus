@@ -18,6 +18,7 @@ import { Trash2 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Product, Wig, Pastry } from '@/lib/data';
 import { Separator } from '../ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 const productSchema = z.object({
     id: z.string(),
@@ -28,6 +29,7 @@ const productSchema = z.object({
     sold: z.coerce.number(),
     remaining: z.coerce.number(),
     profit: z.coerce.number().optional(),
+    category: z.string(),
 });
 
 const wigSchema = z.object({
@@ -74,10 +76,12 @@ export default function EditInventoryForm({ initialValues, onSubmit }: EditInven
   const form = useForm<EditInventoryFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-        ...initialValues,
-        productTitle: "Avoirs en Stock - Bijoux & Accessoires",
-        wigTitle: "Avoirs en Stock - Perruques",
-        pastryTitle: "Gestion des Pâtisseries",
+        products: initialValues.products.map(p => ({...p, purchasePrice: p.purchasePrice ?? undefined, profit: p.profit ?? undefined})),
+        wigs: initialValues.wigs,
+        pastries: initialValues.pastries,
+        productTitle: "Bijoux & Accessoires",
+        wigTitle: "Perruques",
+        pastryTitle: "Pâtisseries",
     },
   });
 
@@ -174,7 +178,29 @@ export default function EditInventoryForm({ initialValues, onSubmit }: EditInven
             {pastryFields.map((field, index) => (
                 <div key={field.id} className="relative grid grid-cols-2 gap-4 p-4 border rounded-lg">
                      <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => removePastry(index)}><Trash2 className="h-4 w-4" /></Button>
-                    <FormField control={form.control} name={`pastries.${index}.name`} render={({ field }) => ( <FormItem><FormLabel>Produit</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField
+                      control={form.control}
+                      name={`pastries.${index}.name`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Produit</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionnez un produit" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                <SelectItem value="Beignets">Beignets</SelectItem>
+                                <SelectItem value="Crêpes">Crêpes</SelectItem>
+                                <SelectItem value="Gâteaux">Gâteaux</SelectItem>
+                                <SelectItem value="Gaufres">Gaufres</SelectItem>
+                                </SelectContent>
+                            </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField control={form.control} name={`pastries.${index}.quantity`} render={({ field }) => ( <FormItem><FormLabel>Quantité</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name={`pastries.${index}.unitPrice`} render={({ field }) => ( <FormItem><FormLabel>Prix Unitaire</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name={`pastries.${index}.totalPrice`} render={({ field }) => ( <FormItem><FormLabel>Prix Total</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -194,5 +220,3 @@ export default function EditInventoryForm({ initialValues, onSubmit }: EditInven
     </Form>
   );
 }
-
-    

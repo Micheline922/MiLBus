@@ -3,7 +3,7 @@
 export type Product = {
   id: string;
   name: string;
-  category: 'Bijoux & Accessoires';
+  category: string;
   purchasePrice?: number;
   price: number;
   stock: number;
