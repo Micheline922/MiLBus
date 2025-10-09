@@ -20,9 +20,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import EditStatsForm from '@/components/dashboard/edit-stats-form';
-import EditProductsForm from '@/components/dashboard/edit-products-form';
-import EditWigsForm from '@/components/dashboard/edit-wigs-form';
-import EditPastriesForm from '@/components/dashboard/edit-pastries-form';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import EditSalesForm from '@/components/dashboard/edit-sales-form';
 import PastryExpensesTable from '@/components/dashboard/pastry-expenses-table';
@@ -32,6 +29,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { AppData, Product, Wig, Pastry, PastryExpense, Sale } from '@/lib/data';
 import { loadData, saveData } from '@/lib/storage';
 import WelcomeTour from '@/components/dashboard/welcome-tour';
+import EditDashboardForm from '@/components/dashboard/edit-dashboard-form';
 
 type Stats = {
     totalRevenue: { value: string; change: string; };
@@ -92,6 +90,15 @@ export default function DashboardPage() {
     saveData(username, 'stats', values);
     handleOpenDialog('stats', false);
   };
+  
+  const handleDashboardSubmit = (values: { products: Product[], wigs: Wig[], pastries: Pastry[], pastryExpenses: PastryExpense[] }) => {
+    if (!username || !appData) return;
+    const { products, wigs, pastries, pastryExpenses } = values;
+    const updatedData = { ...appData, products, wigs, pastries, pastryExpenses };
+    setAppData(updatedData);
+    saveData(username, updatedData);
+    handleOpenDialog('dashboard', false);
+};
 
   if (!appData || !stats) {
     return <div>Chargement des données...</div>;
@@ -107,6 +114,25 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between space-y-2">
           <h1 className="text-3xl font-headline font-bold tracking-tight">Tableau de bord</h1>
           <div className="flex items-center space-x-2">
+            <Dialog open={dialogOpen['dashboard']} onOpenChange={(isOpen) => handleOpenDialog('dashboard', isOpen)}>
+                <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <Pencil className="mr-2 h-4 w-4" /> Modifier le tableau de bord
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl h-[90vh]">
+                  <DialogHeader>
+                    <DialogTitle>Modifier le Tableau de Bord</DialogTitle>
+                    <DialogDescription>
+                      Personnalisez les titres et les données de votre tableau de bord.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <EditDashboardForm 
+                    initialValues={{ products, wigs, pastries, pastryExpenses }} 
+                    onSubmit={handleDashboardSubmit} 
+                  />
+                </DialogContent>
+              </Dialog>
             <ThemeSwitcher />
           </div>
         </div>
@@ -129,7 +155,7 @@ export default function DashboardPage() {
                   <EditStatsForm initialValues={stats} onSubmit={handleStatsSubmit} />
                 </DialogContent>
               </Dialog>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
                 <StatCard 
                   title="Revenus totaux" 
                   value={stats.totalRevenue.value}
@@ -202,20 +228,7 @@ export default function DashboardPage() {
             </div>
         </div>
         <div className="grid grid-cols-1 gap-y-4">
-            <Card className="relative group">
-              <Dialog open={dialogOpen['products']} onOpenChange={(isOpen) => handleOpenDialog('products', isOpen)}>
-                <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Pencil className="mr-2 h-4 w-4" /> Modifier
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-3xl">
-                  <DialogHeader>
-                    <DialogTitle>Modifier les Avoirs - Bijoux & Accessoires</DialogTitle>
-                  </DialogHeader>
-                  <EditProductsForm initialValues={{ products }} onSubmit={(v) => updateData('products', v.products)} />
-                </DialogContent>
-              </Dialog>
+            <Card>
               <CardHeader>
                 <CardTitle className="text-xl">Avoirs en Stock - Bijoux & Accessoires</CardTitle>
                 <CardDescription>
@@ -248,20 +261,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="relative group">
-              <Dialog open={dialogOpen['wigs']} onOpenChange={(isOpen) => handleOpenDialog('wigs', isOpen)}>
-                <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Pencil className="mr-2 h-4 w-4" /> Modifier
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl">
-                  <DialogHeader>
-                    <DialogTitle>Modifier les Avoirs - Perruques</DialogTitle>
-                  </DialogHeader>
-                  <EditWigsForm initialValues={{ wigs }} onSubmit={(v) => updateData('wigs', v.wigs)} />
-                </DialogContent>
-              </Dialog>
+            <Card>
               <CardHeader>
                 <CardTitle  className="text-xl">Avoirs en Stock - Perruques</CardTitle>
                 <CardDescription>
@@ -300,20 +300,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="relative group">
-                <Dialog open={dialogOpen['pastries']} onOpenChange={(isOpen) => handleOpenDialog('pastries', isOpen)}>
-                  <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Pencil className="mr-2 h-4 w-4" /> Modifier
-                      </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <DialogHeader>
-                      <DialogTitle>Modifier la Gestion des Pâtisseries</DialogTitle>
-                    </DialogHeader>
-                    <EditPastriesForm initialValues={{ pastries }} onSubmit={(v) => updateData('pastries', v.pastries)} />
-                  </DialogContent>
-                </Dialog>
+            <Card>
                 <CardHeader>
                   <CardTitle className="text-xl">Gestion des Pâtisseries</CardTitle>
                   <CardDescription>
@@ -378,5 +365,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    
