@@ -30,8 +30,7 @@ export default function HomePage() {
     { href: '/sales', icon: <ShoppingCart />, text: 'Enregistrer une vente' },
     { href: '/customers', icon: <Users />, text: 'Gérer les clients' },
     { href: '/reports', icon: <BarChart3 />, text: 'Voir les rapports' },
-    { href: '/gallery', icon: <GalleryHorizontal />, text: 'Voir la galerie' },
-    { href: '/showcase-manager', icon: <Package />, text: 'Gérer la vitrine' },
+    { href: '/gallery', icon: <GalleryHorizontal />, text: 'Gérer la galerie' },
   ];
 
   if (!appData) {
