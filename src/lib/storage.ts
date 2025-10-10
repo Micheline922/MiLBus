@@ -20,16 +20,37 @@ export function loadData(username: string): AppData {
     try {
         const key = getStorageKey(username);
         const savedData = localStorage.getItem(key);
+        const userData = localStorage.getItem('milbus-user-credentials');
+
+        let combinedData = { ...initialData };
+
         if (savedData) {
-            // Merge saved data with initial data to ensure all keys are present
+            // Merge saved app data
             const parsedData = JSON.parse(savedData);
-            return { ...initialData, ...parsedData };
-        } else {
-            // First time for this user, save initial data
-            saveData(username, initialData);
-            // Return a deep copy
-            return JSON.parse(JSON.stringify(initialData));
+            combinedData = { ...combinedData, ...parsedData };
         }
+        
+        if (userData) {
+            // Merge user-specific info (like business name, currency)
+             const parsedUser = JSON.parse(userData);
+             combinedData.user = {
+                username: parsedUser.storedUsername,
+                businessName: parsedUser.businessName,
+                businessAddress: parsedUser.businessAddress,
+                businessContact: parsedUser.businessContact,
+                businessPhone: parsedUser.businessPhone,
+                profilePicture: parsedUser.profilePicture,
+                currency: parsedUser.currency,
+             }
+        }
+        
+        if (!savedData) {
+             // First time for this user, save initial data
+            saveData(username, combinedData);
+        }
+
+        return combinedData;
+
     } catch (error) {
         console.error("Failed to load data from localStorage", error);
         // Return a deep copy

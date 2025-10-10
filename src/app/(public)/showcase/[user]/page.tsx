@@ -31,7 +31,6 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 function ShowcaseContent() {
     const router = useRouter();
     const params = useParams();
-    const userIdentifier = params.user as string;
     const [items, setItems] = useState<ShowcaseItem[]>([]);
     const [businessName, setBusinessName] = useState("MiLBus");
     const [currency, setCurrency] = useState('FC');
@@ -48,34 +47,23 @@ function ShowcaseContent() {
     const currencySymbol = useMemo(() => (currency === 'USD' ? '$' : 'FC'), [currency]);
 
     useEffect(() => {
-        if (userIdentifier) {
-            try {
-                // In a real app, you'd fetch this, but we use a convention
-                const usernameToShowcase = 'milbus';
-                const data: AppData = loadData(usernameToShowcase);
+        try {
+            // Hardcode the user to 'milbus' to ensure we always load the main showcase
+            const usernameToShowcase = 'milbus'; 
+            const data: AppData = loadData(usernameToShowcase);
 
-                if (data && data.showcase) {
-                    setItems(data.showcase.filter(item => item.published));
-                    
-                    const userCredentials = localStorage.getItem('milbus-user-credentials');
-                    if (userCredentials) {
-                         const parsedUser = JSON.parse(userCredentials);
-                         setBusinessName(parsedUser.businessName || "MiLBus");
-                         setCurrency(parsedUser.currency || 'FC');
-                    }
-
-                } else {
-                    setError("Impossible de charger la vitrine pour cet utilisateur.");
-                }
-
-            } catch (e) {
-                console.error(e);
-                setError("Données de la vitrine corrompues ou introuvables.");
+            if (data && data.showcase) {
+                setItems(data.showcase.filter(item => item.published));
+                setBusinessName(data.user?.businessName || "MiLBus");
+                setCurrency(data.user?.currency || 'FC');
+            } else {
+                setError("Impossible de charger la vitrine pour cet utilisateur.");
             }
-        } else {
-            setError("Aucun identifiant de vitrine spécifié.");
+        } catch (e) {
+            console.error(e);
+            setError("Données de la vitrine corrompues ou introuvables.");
         }
-    }, [userIdentifier]);
+    }, []);
 
     if (error) {
         return <div className="text-center py-10 text-red-500">{error}</div>;

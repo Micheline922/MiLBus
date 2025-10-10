@@ -1,5 +1,15 @@
 
 
+export type UserProfile = {
+    username: string;
+    businessName: string;
+    businessAddress: string;
+    businessContact: string; // email
+    businessPhone: string; // phone
+    profilePicture: string | null;
+    currency: 'FC' | 'USD';
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -102,6 +112,7 @@ export type ShowcaseItem = {
 };
 
 export type AppData = {
+  user?: UserProfile;
   stats: {
     totalRevenue: { value: string; change: string; };
     sales: { value: string; change: string; };
