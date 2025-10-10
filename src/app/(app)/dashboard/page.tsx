@@ -31,6 +31,7 @@ import { exportInventoryToPDF } from '@/lib/inventory-exporter';
 import { useToast } from '@/hooks/use-toast';
 import { useForm, FormProvider } from 'react-hook-form';
 import Link from 'next/link';
+import RecentOrders from '@/components/dashboard/recent-orders';
 
 
 type Stats = {
@@ -247,6 +248,43 @@ export default function DashboardPage() {
             </Card>
         </div>
         <div className="grid grid-cols-1 gap-y-4">
+           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+              <Card className="lg:col-span-4">
+                <CardHeader>
+                  <CardTitle>Vue d'ensemble</CardTitle>
+                </CardHeader>
+                <CardContent className="pl-2">
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart data={monthlySalesData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="name"
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <YAxis
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(value) => `${value}${currency}`}
+                      />
+                      <Tooltip 
+                        cursor={{fill: 'hsl(var(--muted))'}}
+                        contentStyle={{backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))'}}
+                      />
+                      <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+             <div className="lg:col-span-3">
+                <RecentOrders orders={appData.orders} currency={currency} />
+             </div>
+            </div>
+
             <Card>
                 <CardHeader>
                     <div className="flex items-center justify-between">
@@ -301,3 +339,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    
