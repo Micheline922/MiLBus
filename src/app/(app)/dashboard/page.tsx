@@ -4,7 +4,7 @@
 import StatCard from '@/components/dashboard/stat-card';
 import RecentSales from '@/components/dashboard/recent-sales';
 import AiChat from '@/components/dashboard/ai-chat';
-import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp, FileText, Save } from 'lucide-react';
+import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp, FileText, Save, Users, BarChart3, GalleryHorizontal, PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useEffect, useState, useMemo } from 'react';
@@ -31,6 +31,7 @@ import EditInventoryForm from '@/components/dashboard/edit-inventory-form';
 import { exportInventoryToPDF } from '@/lib/inventory-exporter';
 import { useToast } from '@/hooks/use-toast';
 import { useForm, FormProvider } from 'react-hook-form';
+import Link from 'next/link';
 
 
 type Stats = {
@@ -65,6 +66,14 @@ export default function DashboardPage() {
     }
   }, [username, inventoryForm.reset]);
   
+  const quickLinks = [
+    { href: '/products', icon: <PlusCircle />, text: 'Ajouter un produit' },
+    { href: '/sales', icon: <ShoppingCart />, text: 'Enregistrer une vente' },
+    { href: '/customers', icon: <Users />, text: 'Gérer les clients' },
+    { href: '/reports', icon: <BarChart3 />, text: 'Voir les rapports' },
+    { href: '/gallery', icon: <GalleryHorizontal />, text: 'Gérer la galerie' },
+  ];
+
   const monthlySalesData = useMemo(() => {
     if (!appData?.sales) return [];
 
@@ -155,6 +164,19 @@ export default function DashboardPage() {
           <div className="flex items-center space-x-2">
             <ThemeSwitcher />
           </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+             {quickLinks.map(link => (
+                <Link href={link.href} key={link.href} passHref>
+                    <Card className="hover:bg-muted/50 transition-colors h-full">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{link.text}</CardTitle>
+                            <div className="text-muted-foreground">{link.icon}</div>
+                        </CardHeader>
+                    </Card>
+                </Link>
+             ))}
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Save, ImagePlus, Trash2 } from 'lucide-react';
+import { Save, ImagePlus, Trash2, CheckCircle } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function GalleryPage() {
@@ -74,7 +74,7 @@ export default function GalleryPage() {
                 setShowcaseItems(prev => [...(prev || []), ...newItems]);
                 toast({
                     title: `${filesArray.length} image(s) ajoutée(s)`,
-                    description: "N'oubliez pas de sauvegarder la galerie."
+                    description: "N'oubliez pas de rendre la galerie publique."
                 });
             }
         };
@@ -87,16 +87,16 @@ export default function GalleryPage() {
     toast({
         variant: 'destructive',
         title: "Article supprimé",
-        description: "L'article a été retiré. Sauvegardez pour confirmer."
+        description: "L'article a été retiré. Rendez la galerie publique pour confirmer."
     })
   };
 
-  const handleSaveChanges = () => {
+  const handlePublish = () => {
     if (!username || !showcaseItems) return;
     saveData(username, 'showcase', showcaseItems);
     toast({
-        title: "Galerie mise à jour !",
-        description: "Vos modifications ont été enregistrées avec succès.",
+        title: "Galerie rendue publique !",
+        description: "Vos modifications sont maintenant visibles sur la page d'accueil.",
     });
   };
   
@@ -129,9 +129,6 @@ export default function GalleryPage() {
                         accept="image/*"
                         multiple
                     />
-                    <Button onClick={handleSaveChanges}>
-                        <Save className="mr-2 h-4 w-4" /> Sauvegarder la Galerie
-                    </Button>
                 </div>
             </div>
         
@@ -161,7 +158,7 @@ export default function GalleryPage() {
                                         <AlertDialogHeader>
                                             <AlertDialogTitle>Êtes-vous sûr(e) ?</AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                Cette action supprimera l'article de la galerie. Cette action est irréversible après sauvegarde.
+                                                Cette action supprimera l'article de la galerie. Cette action est irréversible après publication.
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
@@ -189,6 +186,12 @@ export default function GalleryPage() {
                         <p>Votre galerie est vide. Ajoutez des images pour commencer.</p>
                     </div>
                 )}
+            </div>
+             <div className="flex justify-center mt-8">
+                <Button size="lg" onClick={handlePublish}>
+                    <CheckCircle className="mr-2 h-5 w-5" />
+                    Rendre la galerie publique
+                </Button>
             </div>
         </div>
     </>
