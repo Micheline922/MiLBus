@@ -37,6 +37,7 @@ function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
     if (pathname.startsWith('/reports')) return 'Rapports';
     if (pathname.startsWith('/invoices')) return 'Factures';
     if (pathname.startsWith('/settings')) return 'Paramètres';
+    if (pathname.startsWith('/about')) return 'À propos de nous';
     if (pathname === '/') return 'Vitrine';
     return 'MiLBus';
   };

@@ -16,7 +16,7 @@ import {
   Settings,
   ShoppingCart,
   Users,
-  Home,
+  Info,
   FileText,
   CreditCard,
   LogOut,
@@ -52,6 +52,7 @@ const navLinks = [
   { href: '/debts', icon: <CreditCard className="h-4 w-4" />, text: 'Dettes' },
   { href: '/reports', icon: <BarChart3 className="h-4 w-4" />, text: 'Rapports' },
   { href: '/invoices', icon: <FileText className="h-4 w-4" />, text: 'Factures' },
+  { href: '/about', icon: <Info className="h-4 w-4" />, text: 'À propos de nous' },
 ];
 
 
