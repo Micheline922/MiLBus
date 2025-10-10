@@ -22,7 +22,7 @@ export function loadData(username: string): AppData {
         const savedData = localStorage.getItem(key);
         const userData = localStorage.getItem('milbus-user-credentials');
 
-        let combinedData = { ...initialData };
+        let combinedData = JSON.parse(JSON.stringify(initialData));
 
         if (savedData) {
             // Merge saved app data

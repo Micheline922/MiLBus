@@ -47,16 +47,16 @@ function ShowcaseContent() {
     const currencySymbol = useMemo(() => (currency === 'USD' ? '$' : 'FC'), [currency]);
 
     useEffect(() => {
-        const usernameToShowcase = params.user as string || 'milbus';
+        const usernameToShowcase = params.user as string;
         if (!usernameToShowcase) {
-            setError("L'utilisateur de la vitrine n'est pas spécifié.");
+            setError("L'utilisateur de la boutique n'est pas spécifié.");
             return;
         }
 
         try {
             const data: AppData = loadData(usernameToShowcase);
-            if (data && data.showcase) {
-                setItems(data.showcase.filter(item => item.published));
+            if (data) {
+                setItems(data.showcase?.filter(item => item.published) || []);
                 setBusinessName(data.user?.businessName || "MiLBus");
                 setCurrency(data.user?.currency || 'FC');
             } else {
@@ -66,7 +66,7 @@ function ShowcaseContent() {
             }
         } catch (e) {
             console.error(e);
-            setError("Données de la vitrine corrompues ou introuvables. L'administrateur doit la configurer.");
+            setError("Données de la boutique corrompues ou introuvables. L'administrateur doit la configurer.");
         }
     }, [params.user]);
 
@@ -85,7 +85,7 @@ function ShowcaseContent() {
                        Bientôt de retour !
                     </h1>
                  </header>
-                <div className="text-center py-10 text-muted-foreground">Aucun produit n'est publié dans la vitrine pour le moment. Revenez bientôt !</div>
+                <div className="text-center py-10 text-muted-foreground">Aucun produit n'est publié dans la boutique pour le moment. Revenez bientôt !</div>
              </div>
         )
     }
@@ -157,7 +157,7 @@ function ShowcaseContent() {
 
 export default function ShowcasePage() {
     return (
-        <Suspense fallback={<div>Chargement de la vitrine...</div>}>
+        <Suspense fallback={<div>Chargement de la boutique...</div>}>
             <ShowcaseContent />
         </Suspense>
     );

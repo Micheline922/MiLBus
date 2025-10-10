@@ -69,6 +69,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const removeItem = (itemId: string) => {
     setItems((prevItems) => prevItems.filter((i) => i.id !== itemId));
     toast({
+        variant: "destructive",
         title: "Produit retiré",
         description: "L'article a été retiré de votre panier.",
     });
@@ -89,6 +90,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const clearCart = () => {
     setItems([]);
      toast({
+        variant: "destructive",
         title: "Panier vidé",
         description: "Tous les articles ont été retirés.",
     });

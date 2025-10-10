@@ -35,8 +35,8 @@ export default function ShowcaseManagerPage() {
   const [tempImageUrls, setTempImageUrls] = useState<Record<string, string>>({});
   
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const url = `${window.location.origin}/showcase/${username || 'milbus'}`;
+    if (typeof window !== 'undefined' && username) {
+      const url = `${window.location.origin}/showcase/${username}`;
       setPublicUrl(url);
     }
   }, [username]);
@@ -92,7 +92,16 @@ export default function ShowcaseManagerPage() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setTempImageUrls(prev => ({...prev, [itemId]: reader.result as string}));
+        const result = reader.result as string;
+        setTempImageUrls(prev => ({...prev, [itemId]: result}));
+        
+        // This is for visual feedback only. We do not save the data URI.
+        setShowcaseItems(prevItems => {
+            if (!prevItems) return null;
+            return prevItems.map(item => 
+                item.id === itemId ? {...item, imageUrl: result } : item
+            );
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -113,7 +122,7 @@ export default function ShowcaseManagerPage() {
 
     saveData(username, 'showcase', itemsToSave);
     toast({
-        title: "Vitrine mise à jour !",
+        title: "Boutique mise à jour !",
         description: "Vos modifications ont été enregistrées.",
     });
     window.open(publicUrl, '_blank');
@@ -123,7 +132,7 @@ export default function ShowcaseManagerPage() {
     navigator.clipboard.writeText(publicUrl).then(() => {
         toast({
             title: "Lien copié !",
-            description: "Le lien public de la vitrine a été copié dans le presse-papiers.",
+            description: "Le lien public de la boutique a été copié dans le presse-papiers.",
         });
     }).catch(err => {
         console.error('Failed to copy: ', err);
@@ -176,7 +185,7 @@ export default function ShowcaseManagerPage() {
 
 
   if (!showcaseItems) {
-    return <div>Chargement de la vitrine...</div>;
+    return <div>Chargement de la boutique...</div>;
   }
   
   const currency = user?.currency === 'USD' ? '$' : 'FC';
@@ -219,7 +228,7 @@ export default function ShowcaseManagerPage() {
         <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Partager votre vitrine</DialogTitle>
+                    <DialogTitle>Partager votre boutique</DialogTitle>
                 </DialogHeader>
                 <SocialShare url={publicUrl} title="Découvrez ma boutique !" />
             </DialogContent>
@@ -228,7 +237,7 @@ export default function ShowcaseManagerPage() {
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
             <div>
-            <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Vitrine</h1>
+            <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Boutique</h1>
             <p className="text-muted-foreground">
                 Choisissez les produits à afficher, puis cliquez sur "Mettre à jour et voir".
             </p>
@@ -272,7 +281,7 @@ export default function ShowcaseManagerPage() {
                 <Card key={item.id}>
                     <CardHeader>
                         <div className='relative w-full h-48 mb-4 group'>
-                            <Image src={tempImageUrls[item.id] || item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                            <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
                             <Button 
                                 variant="outline" 
                                 size="sm" 
@@ -326,5 +335,3 @@ export default function ShowcaseManagerPage() {
     </>
   );
 }
-
-    

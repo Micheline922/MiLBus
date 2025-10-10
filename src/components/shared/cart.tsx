@@ -26,7 +26,8 @@ export default function Cart() {
     const currencySymbol = useMemo(() => (currency === 'USD' ? '$' : 'FC'), [currency]);
 
     useEffect(() => {
-        const usernameToLoad = username || 'milbus';
+        const usernameToLoad = username;
+        if (!usernameToLoad) return;
         try {
             const data = loadData(usernameToLoad);
             if (data.user) {
@@ -82,7 +83,7 @@ export default function Cart() {
                           </span>
                            <span className="line-clamp-1 text-xs text-muted-foreground">
                             {item.price.toFixed(2)} {currencySymbol}
-                          </span>
+                           </span>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2">
