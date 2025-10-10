@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import EditAboutForm from "@/components/dashboard/edit-about-form";
 import EditTestimonialsForm from "@/components/dashboard/edit-testimonials-form";
 import EditSlogansForm from "@/components/dashboard/edit-slogans-form";
+import { useToast } from "@/hooks/use-toast";
 
 type Testimonial = {
   name: string;
@@ -27,6 +28,7 @@ type AboutData = {
 
 export default function AboutPage() {
   const { username } = useAuth();
+  const { toast } = useToast();
   const [aboutData, setAboutData] = useState<AboutData | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [dialogsOpen, setDialogsOpen] = useState({
@@ -47,28 +49,47 @@ export default function AboutPage() {
     }
   }, [username]);
 
-  const handleStorySubmit = (values: { companyStory: string }) => {
+  const handleSaveData = <T extends keyof AboutData>(key: T, value: AboutData[T], dialog: keyof typeof dialogsOpen) => {
     if (!username || !aboutData) return;
-    const updatedData = { ...aboutData, companyStory: values.companyStory };
-    setAboutData(updatedData);
-    saveData(username, 'companyStory', values.companyStory);
-    setDialogsOpen(prev => ({ ...prev, story: false }));
+    try {
+      const updatedData = { ...aboutData, [key]: value };
+      setAboutData(updatedData);
+      saveData(username, key, value);
+      setDialogsOpen(prev => ({ ...prev, [dialog]: false }));
+      toast({
+        title: "Succès !",
+        description: "Vos modifications ont été enregistrées.",
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('quota')) {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de Sauvegarde',
+          description: "Le stockage local est plein. Impossible de sauvegarder les modifications.",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur',
+          description: "Une erreur est survenue lors de la sauvegarde.",
+          duration: 5000,
+        });
+        console.error(error);
+      }
+    }
+  };
+
+  const handleStorySubmit = (values: { companyStory: string }) => {
+    handleSaveData('companyStory', values.companyStory, 'story');
   };
 
   const handleTestimonialsSubmit = (values: { testimonials: Testimonial[] }) => {
-    if (!username || !aboutData) return;
-    const updatedData = { ...aboutData, testimonials: values.testimonials };
-    setAboutData(updatedData);
-    saveData(username, 'testimonials', values.testimonials);
-    setDialogsOpen(prev => ({ ...prev, testimonials: false }));
+    handleSaveData('testimonials', values.testimonials, 'testimonials');
   };
 
   const handleSlogansSubmit = (values: { advertisingPhrases: string[] }) => {
-    if (!username || !aboutData) return;
-    const updatedData = { ...aboutData, advertisingPhrases: values.advertisingPhrases };
-    setAboutData(updatedData);
-    saveData(username, 'advertisingPhrases', values.advertisingPhrases);
-    setDialogsOpen(prev => ({ ...prev, slogans: false }));
+    handleSaveData('advertisingPhrases', values.advertisingPhrases, 'slogans');
   };
   
   if (!aboutData) {
