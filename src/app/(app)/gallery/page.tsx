@@ -175,6 +175,16 @@ export default function GalleryPage() {
     });
   };
 
+  const handleSaveGallery = () => {
+    if (showcaseItems && username) {
+      saveData(username, 'showcase', showcaseItems);
+      toast({
+          title: "Galerie Sauvegardée !",
+          description: "Toutes vos modifications ont été enregistrées avec succès.",
+      });
+    }
+  };
+
   if (!showcaseItems) {
     return <div>Chargement de la galerie...</div>;
   }
@@ -207,7 +217,7 @@ export default function GalleryPage() {
         </div>
         
         <form>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {showcaseItems.map(item => (
                     <div key={item.id} className="w-full">
                         <Card className="flex flex-col h-full">
