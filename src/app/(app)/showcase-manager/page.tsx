@@ -105,17 +105,18 @@ export default function ShowcaseManagerPage() {
   const handleUpdateAndRedirect = () => {
     if (!username || !showcaseItems) return;
     
-    // Create a version of showcaseItems for saving that does NOT include large Base64 images.
-    // It keeps the old imageUrl if it's a `picsum.photos` URL.
+    // Create a version of showcaseItems for saving that does NOT include any image data.
+    // It only saves the text fields and the published status.
+    // The imageUrl remains the placeholder, as it's not meant to be saved.
     const itemsToSave = showcaseItems.map(item => {
         const { imageUrl, ...rest } = item;
-        // Only keep the original URL if it's not a temporary Base64 image
-        const finalImageUrl = tempImageUrls[item.id] ? item.imageUrl : imageUrl;
-        return { 
+        // This ensures we never try to save the potentially large temp image URL.
+        // We only save the placeholder URL that was loaded initially.
+        return {
             ...rest,
-            // If there's a temp image, we're not saving it to localStorage.
-            // We just keep the placeholder. A more advanced solution would be to upload it to a server.
-            imageUrl: finalImageUrl.startsWith('data:image') ? `https://picsum.photos/seed/${item.id}/400/300` : finalImageUrl,
+            imageUrl: item.imageUrl.startsWith('data:image')
+              ? `https://picsum.photos/seed/${item.id}/400/300`
+              : item.imageUrl,
         };
     });
 
