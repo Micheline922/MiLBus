@@ -72,12 +72,25 @@ export default function GalleryPage() {
 
   const saveGallery = (items: ShowcaseItem[]) => {
       if (!username) return;
-      saveData(username, 'showcase', items);
-      toast({
-        title: "Galerie Sauvegardée !",
-        description: "Vos modifications ont été enregistrées.",
-        className: "bg-green-500 text-white",
-    });
+      try {
+        saveData(username, 'showcase', items);
+        toast({
+            title: "Galerie Sauvegardée !",
+            description: "Vos modifications ont été enregistrées.",
+            className: "bg-green-500 text-white",
+        });
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('quota')) {
+             toast({
+                variant: 'destructive',
+                title: 'Erreur de Sauvegarde',
+                description: "Le stockage local est plein. Impossible de sauvegarder les modifications. Essayez de supprimer des images ou de vider le cache.",
+                duration: 5000,
+            });
+        } else {
+            console.error("Failed to save gallery", error);
+        }
+      }
   }
 
   const handleItemChange = (id: string, field: keyof Omit<ShowcaseItem, 'imageUrl'>, value: string | number | boolean) => {
@@ -87,7 +100,7 @@ export default function GalleryPage() {
             item.id === id ? { ...item, [field]: value } : item
         );
         if (username) {
-          saveData(username, 'showcase', newItems);
+          saveGallery(newItems);
         }
         return newItems;
     });
@@ -102,7 +115,7 @@ export default function GalleryPage() {
           if (!prev) return null;
           const newItems = prev.map(item => item.id === itemId ? { ...item, imageUrl: compressedDataUrl } : item);
           if (username) {
-            saveData(username, 'showcase', newItems);
+            saveGallery(newItems);
           }
           return newItems;
         });
@@ -144,7 +157,7 @@ export default function GalleryPage() {
       
       const updatedItems = [...(showcaseItems || []), ...newItems];
       setShowcaseItems(updatedItems);
-      saveData(username, 'showcase', updatedItems);
+      saveGallery(updatedItems);
       
       toast({
         title: `${filesArray.length} image(s) ajoutée(s)`,
@@ -165,7 +178,7 @@ export default function GalleryPage() {
     setShowcaseItems(prev => {
       if (!prev || !username) return null;
       const newItems = prev.filter(item => item.id !== id);
-      saveData(username, 'showcase', newItems);
+      saveGallery(newItems);
       toast({
           variant: 'destructive',
           title: "Article supprimé",
@@ -173,16 +186,6 @@ export default function GalleryPage() {
       });
       return newItems;
     });
-  };
-
-  const handleSaveGallery = () => {
-    if (showcaseItems && username) {
-      saveData(username, 'showcase', showcaseItems);
-      toast({
-          title: "Galerie Sauvegardée !",
-          description: "Toutes vos modifications ont été enregistrées avec succès.",
-      });
-    }
   };
 
   if (!showcaseItems) {
@@ -223,7 +226,7 @@ export default function GalleryPage() {
                         <Card className="flex flex-col h-full">
                             <div className='relative w-full aspect-square mb-4 group'>
                                 <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
-                                <Button type="button" size="sm" variant="secondary" className="absolute top-2 right-2" onClick={() => itemImageFileInputRefs.current[item.id]?.click()}>
+                                <Button type="button" size="sm" variant="secondary" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => itemImageFileInputRefs.current[item.id]?.click()}>
                                     <ImagePlus className="h-4 w-4" />
                                 </Button>
                                 <Input 
@@ -235,7 +238,7 @@ export default function GalleryPage() {
                                 />
                                  <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button type="button" size="sm" variant="destructive" className="absolute bottom-2 right-2">
+                                        <Button type="button" size="sm" variant="destructive" className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </AlertDialogTrigger>
