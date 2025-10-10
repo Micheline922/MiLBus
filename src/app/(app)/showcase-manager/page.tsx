@@ -104,7 +104,7 @@ export default function ShowcaseManagerPage() {
     // Create a 'clean' version of showcase items that does not include large image data
     const itemsToSave = showcaseItems.map(item => {
         const { ...rest } = item;
-        // Ensure imageUrl is a placeholder, not a large data URI
+        // Ensure imageUrl is a placeholder, not a large data URI, to prevent quota errors.
         if (!rest.imageUrl.startsWith('https://')) {
             rest.imageUrl = `https://picsum.photos/seed/${item.id}/400/300`;
         }
@@ -326,3 +326,5 @@ export default function ShowcaseManagerPage() {
     </>
   );
 }
+
+    
