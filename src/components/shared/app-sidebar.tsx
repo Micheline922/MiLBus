@@ -41,6 +41,7 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 }
 
 const navLinks = [
+  { href: '/dashboard', icon: <Home className="h-4 w-4" />, text: 'Accueil' },
   { href: '/dashboard', icon: <LayoutGrid className="h-4 w-4" />, text: 'Tableau de bord' },
   { href: '/orders', icon: <ClipboardList className="h-4 w-4" />, text: 'Commandes' },
   { href: '/sales', icon: <ShoppingCart className="h-4 w-4" />, text: 'Ventes' },
@@ -62,7 +63,10 @@ export default function AppSidebar() {
     router.push('/login');
   };
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => {
+    if (path === '/dashboard' && pathname.startsWith('/dashboard')) return true;
+    return pathname === path;
+  };
 
   return (
     <>
@@ -78,7 +82,7 @@ export default function AppSidebar() {
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
           {navLinks.map(link => (
              <Link
-                key={link.href}
+                key={link.text}
                 href={link.href}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${isActive(link.href) ? 'bg-muted text-primary' : 'text-muted-foreground'}`}
               >
@@ -102,7 +106,7 @@ export default function AppSidebar() {
             </div>
           </div>
           <nav className="grid gap-1">
-              <Link href="/settings" className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${isActive('/settings') ? 'bg-muted text-primary' : 'text-muted-foreground'}`}>
+              <Link href="/settings" className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === '/settings' ? 'bg-muted text-primary' : 'text-muted-foreground'}`}>
                 <Settings className="h-4 w-4" />
                 Paramètres
               </Link>
