@@ -107,7 +107,12 @@ export type ShowcaseItem = {
     name: string;
     price: number;
     imageUrl: string;
-    published: boolean;
+};
+
+export type Testimonial = {
+  name: string;
+  avatar: string;
+  text: string;
 };
 
 export type AppData = {
@@ -127,6 +132,8 @@ export type AppData = {
   debts: Debt[];
   invoices: Invoice[];
   showcase: ShowcaseItem[];
+  testimonials: Testimonial[];
+  advertisingPhrases: string[];
 }
 
 export const initialData: AppData = {
@@ -188,9 +195,33 @@ export const initialData: AppData = {
     { id: 'INV002', orderId: 'o2', customerName: 'Marie Claire', date: '2023-10-27', amount: 25.00, status: 'Payée' },
   ],
   showcase: [
-    { id: 'p1', name: 'Chaînette en or', price: 25.00, imageUrl: 'https://picsum.photos/seed/chainette/400/400', published: true },
-    { id: 'w1', name: 'Perruque Lace Frontal 18 pouces', price: 150.00, imageUrl: 'https://picsum.photos/seed/perruque1/400/400', published: true },
-    { id: 'p2', name: 'Chouchou en satin', price: 5.50, imageUrl: 'https://picsum.photos/seed/satin/400/400', published: false },
+    { id: 'p1', name: 'Chaînette en or', price: 25.00, imageUrl: 'https://picsum.photos/seed/chainette/400/400' },
+    { id: 'w1', name: 'Perruque Lace Frontal 18 pouces', price: 150.00, imageUrl: 'https://picsum.photos/seed/perruque1/400/400' },
+    { id: 'p2', name: 'Chouchou en satin', price: 5.50, imageUrl: 'https://picsum.photos/seed/satin/400/400' },
+  ],
+  testimonials: [
+    {
+      name: "Marie-Claire",
+      avatar: "MC",
+      text: "J'ai acheté une perruque et la qualité est tout simplement incroyable. Le service client était exceptionnel, je recommande vivement MiLBus !",
+    },
+    {
+      name: "Amina Diallo",
+      avatar: "AD",
+      text: "Les accessoires sont magnifiques et uniques. J'ai reçu tellement de compliments sur mes nouvelles boucles d'oreilles. Merci MiLBus !",
+    },
+    {
+      name: "Sophie Dubois",
+      avatar: "SD",
+      text: "Une expérience d'achat parfaite du début à la fin. Les pâtisseries étaient délicieuses et les produits de beauté sont de première qualité.",
+    },
+  ],
+  advertisingPhrases: [
+      "MiLBus : Révélez votre beauté, affirmez votre style.",
+      "L'élégance à portée de main, la qualité à chaque instant.",
+      "Plus qu'une boutique, une promesse de confiance et d'authenticité.",
+      "Votre destination pour la beauté, le style et la gourmandise.",
+      "Chaque article est une pièce de luxe, chaque achat est une expérience."
   ]
 };
 
