@@ -24,7 +24,7 @@ import SocialShare from '@/components/shared/social-share';
 
 
 export default function ShowcaseManagerPage() {
-  const { username } = useAuth();
+  const { user, username } = useAuth();
   const { toast } = useToast();
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[] | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -32,56 +32,53 @@ export default function ShowcaseManagerPage() {
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [publicUrl, setPublicUrl] = useState('');
-
-  // This new state will hold temporary image URLs (Base64) to avoid saving them to localStorage
   const [tempImageUrls, setTempImageUrls] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const url = `${window.location.origin}/showcase/milbus`;
+      const url = `${window.location.origin}/showcase/${username || 'milbus'}`;
       setPublicUrl(url);
     }
-  }, []);
+  }, [username]);
+  
+  const loadShowcaseData = (currentUsername: string) => {
+      const data = loadData(currentUsername);
 
-  const loadShowcaseData = (username: string) => {
-      const data = loadData(username);
-
-      const allProductsFromInventory = [
-        ...data.products.map(p => ({ ...p, price: p.price, stock: p.stock })),
+      const allProductsFromInventory: Partial<Product & Wig & Pastry>[] = [
+        ...data.products,
         ...data.wigs.map(w => ({ ...w, id: w.id, name: w.wigDetails, price: w.sellingPrice, stock: w.remaining })),
         ...data.pastries.map(p => ({ ...p, id: p.id, name: p.name, price: p.unitPrice, stock: p.remaining })),
       ];
-
+      
       const existingShowcaseData = data.showcase || [];
       const existingShowcaseMap = new Map(existingShowcaseData.map(item => [item.id, item]));
 
       const synchronizedShowcaseItems: ShowcaseItem[] = allProductsFromInventory.map(p => {
-        const existingItem = existingShowcaseMap.get(p.id);
-        const originalProduct = p as any;
-        
+        const existingItem = existingShowcaseMap.get(p.id!);
         return {
-          id: p.id,
-          name: existingItem?.name || p.name,
-          price: existingItem?.price ?? originalProduct.price ?? originalProduct.sellingPrice ?? originalProduct.unitPrice,
+          id: p.id!,
+          name: existingItem?.name || p.name!,
+          price: existingItem?.price ?? p.price ?? (p as any).sellingPrice ?? (p as any).unitPrice,
           description: existingItem?.description || `Description pour ${p.name}`,
           imageUrl: existingItem?.imageUrl || `https://picsum.photos/seed/${p.id}/400/300`,
           published: existingItem?.published || false,
         };
       });
       setShowcaseItems(synchronizedShowcaseItems);
-  }
+  };
 
   useEffect(() => {
     if (username) {
       loadShowcaseData(username);
     }
   }, [username]);
+  
 
   const handleOpenDialog = (type: 'add', id: string, isOpen: boolean) => {
     setAddDialogOpen(prev => ({ ...prev, [id]: isOpen }));
   };
 
-  const handleItemChange = (id: string, field: keyof Omit<ShowcaseItem, 'imageUrl'>, value: string | boolean | number) => {
+  const handleItemChange = (id: string, field: keyof ShowcaseItem, value: string | boolean | number) => {
     if (!showcaseItems) return;
     const updatedItems = showcaseItems.map(item =>
       item.id === id ? { ...item, [field]: value } : item
@@ -95,7 +92,6 @@ export default function ShowcaseManagerPage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        // Update the temporary URL for display, but don't change the main state's imageUrl yet
         setTempImageUrls(prev => ({ ...prev, [itemId]: result }));
       };
       reader.readAsDataURL(file);
@@ -105,26 +101,19 @@ export default function ShowcaseManagerPage() {
   const handleUpdateAndRedirect = () => {
     if (!username || !showcaseItems) return;
     
-    // Create a version of showcaseItems for saving that does NOT include any image data.
-    // It only saves the text fields and the published status.
-    // The imageUrl remains the placeholder, as it's not meant to be saved.
     const itemsToSave = showcaseItems.map(item => {
-        const { imageUrl, ...rest } = item;
-        // This ensures we never try to save the potentially large temp image URL.
-        // We only save the placeholder URL that was loaded initially.
-        return {
-            ...rest,
-            imageUrl: item.imageUrl.startsWith('data:image')
-              ? `https://picsum.photos/seed/${item.id}/400/300`
-              : item.imageUrl,
-        };
+      // Create a copy of the item and remove the temporary image data if it exists
+      const { ...rest } = item;
+      // The imageUrl is only the placeholder, as we don't save image data.
+      return rest;
     });
 
+    // We only save the fields that are meant to be persisted, excluding temp image data.
     saveData(username, 'showcase', itemsToSave);
     
     toast({
         title: "Vitrine mise à jour !",
-        description: "Vos modifications ont été enregistrées. Note : les images téléchargées ne sont pas sauvegardées.",
+        description: "Vos modifications ont été enregistrées.",
     });
 
     window.open(publicUrl, '_blank');
@@ -148,7 +137,7 @@ export default function ShowcaseManagerPage() {
 
   const handleAddSuccess = () => {
      if(username) {
-        loadShowcaseData(username); // Reload and sync data
+        loadShowcaseData(username);
      }
   }
 
@@ -189,6 +178,8 @@ export default function ShowcaseManagerPage() {
   if (!showcaseItems) {
     return <div>Chargement de la vitrine...</div>;
   }
+  
+  const currency = user?.currency === 'USD' ? '$' : 'FC';
 
   return (
     <>
@@ -301,7 +292,7 @@ export default function ShowcaseManagerPage() {
                                 />
                             </div>
                             <CardTitle>{item.name}</CardTitle>
-                            <CardDescription>{(item.price ?? 0).toFixed(2)} FC</CardDescription>
+                            <CardDescription>{(item.price ?? 0).toFixed(2)} {currency}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
@@ -338,3 +329,5 @@ export default function ShowcaseManagerPage() {
     </>
   );
 }
+
+    

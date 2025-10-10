@@ -8,7 +8,7 @@ import { ShowcaseItem, AppData } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowLeft, Share2 } from 'lucide-react';
+import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
 import Cart from '@/components/shared/cart';
 import { Separator } from '@/components/ui/separator';
@@ -47,23 +47,26 @@ function ShowcaseContent() {
     const currencySymbol = useMemo(() => (currency === 'USD' ? '$' : 'FC'), [currency]);
 
     useEffect(() => {
-        try {
-            // Hardcode the user to 'milbus' to ensure we always load the main showcase
-            const usernameToShowcase = 'milbus'; 
-            const data: AppData = loadData(usernameToShowcase);
+        const usernameToShowcase = params.user as string || 'milbus';
+        if (!usernameToShowcase) {
+            setError("L'utilisateur de la vitrine n'est pas spécifié.");
+            return;
+        }
 
+        try {
+            const data: AppData = loadData(usernameToShowcase);
             if (data && data.showcase) {
                 setItems(data.showcase.filter(item => item.published));
                 setBusinessName(data.user?.businessName || "MiLBus");
                 setCurrency(data.user?.currency || 'FC');
             } else {
-                setError("Impossible de charger la vitrine pour cet utilisateur.");
+                setError("Impossible de charger les données de la vitrine pour cet utilisateur.");
             }
         } catch (e) {
             console.error(e);
             setError("Données de la vitrine corrompues ou introuvables.");
         }
-    }, []);
+    }, [params.user]);
 
     if (error) {
         return <div className="text-center py-10 text-red-500">{error}</div>;
@@ -157,3 +160,5 @@ export default function ShowcasePage() {
         </Suspense>
     );
 }
+
+    

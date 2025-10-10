@@ -11,12 +11,14 @@ import { Separator } from "../ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
+import { loadData } from "@/lib/storage";
 
 
 export default function Cart() {
-    const { items, removeItem, updateItemQuantity, total, clearCart, currency } = useCart();
+    const { items, removeItem, updateItemQuantity, total, clearCart } = useCart();
     
     const [vendorInfo, setVendorInfo] = useState({ email: '', phone: '' });
+    const [currency, setCurrency] = useState('FC');
     
     const params = useParams();
     const username = params.user as string;
@@ -24,15 +26,18 @@ export default function Cart() {
     const currencySymbol = useMemo(() => (currency === 'USD' ? '$' : 'FC'), [currency]);
 
     useEffect(() => {
-        if (username) {
-            const userCredentials = localStorage.getItem(`${username}-user-credentials`) || localStorage.getItem('milbus-user-credentials');
-            if (userCredentials) {
-                const parsedUser = JSON.parse(userCredentials);
+        const usernameToLoad = username || 'milbus';
+        try {
+            const data = loadData(usernameToLoad);
+            if (data.user) {
                 setVendorInfo({
-                    email: parsedUser.businessContact || '',
-                    phone: parsedUser.businessPhone || ''
+                    email: data.user.businessContact || '',
+                    phone: data.user.businessPhone || ''
                 });
+                setCurrency(data.user.currency || 'FC');
             }
+        } catch (e) {
+            console.error("Failed to load user data for cart");
         }
     }, [username]);
 
@@ -44,14 +49,14 @@ export default function Cart() {
           <ShoppingCart className="h-5 w-5" />
           {items.length > 0 && (
             <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-              {items.length}
+              {items.reduce((acc, item) => acc + item.quantity, 0)}
             </span>
           )}
         </Button>
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="space-y-2.5 pr-6">
-          <SheetTitle>Panier ({items.length})</SheetTitle>
+          <SheetTitle>Panier ({items.reduce((acc, item) => acc + item.quantity, 0)})</SheetTitle>
            <Separator />
         </SheetHeader>
         {items.length > 0 ? (
@@ -158,3 +163,5 @@ export default function Cart() {
     </Sheet>
   );
 }
+
+    

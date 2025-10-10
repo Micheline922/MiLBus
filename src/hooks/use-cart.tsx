@@ -5,6 +5,7 @@ import { ShowcaseItem } from '@/lib/data';
 import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { useToast } from './use-toast';
 import { useParams } from 'next/navigation';
+import { loadData } from '@/lib/storage';
 
 export type CartItem = ShowcaseItem & {
   quantity: number;
@@ -17,7 +18,6 @@ interface CartContextType {
   updateItemQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   total: number;
-  currency: string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -27,20 +27,9 @@ const CART_STORAGE_KEY = 'milbus-cart';
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
-  const [currency, setCurrency] = useState('FC');
   
   const params = useParams();
   const username = params.user as string;
-
-  useEffect(() => {
-    if (username) {
-        const userCredentials = localStorage.getItem(`${username}-user-credentials`) || localStorage.getItem('milbus-user-credentials');
-        if (userCredentials) {
-            const parsedUser = JSON.parse(userCredentials);
-            setCurrency(parsedUser.currency || 'FC');
-        }
-    }
-  }, [username]);
 
   useEffect(() => {
     try {
@@ -114,7 +103,6 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateItemQuantity,
     clearCart,
     total,
-    currency,
   };
 
   return (
@@ -131,3 +119,5 @@ export const useCart = (): CartContextType => {
   }
   return context;
 };
+
+    
