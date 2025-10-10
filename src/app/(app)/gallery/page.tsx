@@ -15,7 +15,7 @@ import { ImagePlus, Trash2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const MAX_IMAGE_SIZE = 800; // Max width/height for compressed images
-const MAX_GALLERY_ITEMS = 15;
+const MAX_GALLERY_ITEMS = 30;
 
 function compressImage(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
