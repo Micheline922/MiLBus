@@ -27,7 +27,6 @@ import ThemeSwitcher from '@/components/settings/theme-switcher';
 import { useAuth } from '@/hooks/use-auth';
 import { AppData, Product, Wig, Pastry, PastryExpense, Sale } from '@/lib/data';
 import { loadData, saveData } from '@/lib/storage';
-import WelcomeTour from '@/components/dashboard/welcome-tour';
 import EditInventoryForm from '@/components/dashboard/edit-inventory-form';
 import { exportInventoryToPDF } from '@/lib/inventory-exporter';
 import { useToast } from '@/hooks/use-toast';
@@ -149,7 +148,6 @@ export default function DashboardPage() {
 
   return (
     <>
-    <WelcomeTour />
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">

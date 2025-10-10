@@ -7,11 +7,15 @@ import { loadData } from '@/lib/storage';
 import { ShowcaseItem } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Pencil } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function GalleryPage() {
   const { user, username } = useAuth();
   const [items, setItems] = useState<ShowcaseItem[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const currencySymbol = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
 
@@ -19,20 +23,19 @@ export default function GalleryPage() {
     if (username) {
       try {
         const data = loadData(username);
-        if (data && data.showcase) {
-          const allItems = data.showcase.map(item => ({
-            ...item,
-            imageUrl: item.imageUrl.includes('picsum.photos') 
-              ? `https://picsum.photos/seed/${item.id}/600/600` 
-              : item.imageUrl
-          }));
-          setItems(allItems);
+        if (data && (data.products || data.wigs || data.pastries)) {
+           const allItemsFromInventory: ShowcaseItem[] = [
+            ...(data.products || []).map(p => ({ ...p, imageUrl: `https://picsum.photos/seed/${p.id}/600/600`, description: '', published: false })),
+            ...(data.wigs || []).map(w => ({ id: w.id, name: w.wigDetails, price: w.sellingPrice, imageUrl: `https://picsum.photos/seed/${w.id}/600/600`, description: '', published: false })),
+            ...(data.pastries || []).map(p => ({ id: p.id, name: p.name, price: p.unitPrice, imageUrl: `https://picsum.photos/seed/${p.id}/600/600`, description: '', published: false })),
+          ];
+          setItems(allItemsFromInventory);
         } else {
           setItems([]);
         }
       } catch (e) {
         console.error(e);
-        setError("Données de la boutique corrompues ou introuvables.");
+        setError("Données de l'inventaire corrompues ou introuvables.");
       }
     }
   }, [username]);
@@ -62,6 +65,14 @@ export default function GalleryPage() {
                 objectFit="cover" 
                 className="transition-transform duration-300 group-hover:scale-105" 
               />
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => router.push('/showcase-manager')}
+              >
+                  <Pencil className="mr-2 h-4 w-4" /> Modifier
+              </Button>
             </div>
             <CardHeader className="p-3">
               <CardTitle className="text-sm truncate font-semibold" title={item.name}>{item.name}</CardTitle>
@@ -75,7 +86,7 @@ export default function GalleryPage() {
        {items.length === 0 && !error && (
         <div className="text-center py-10 text-muted-foreground mt-8">
             <p>Aucun article à afficher dans la galerie.</p>
-            <p className="text-sm">Gérez vos articles dans la section "Marchandises" pour les voir apparaître ici.</p>
+            <p className="text-sm">Ajoutez des articles dans la section "Marchandises" pour les voir apparaître ici.</p>
         </div>
         )}
     </div>

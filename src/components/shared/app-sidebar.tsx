@@ -41,7 +41,7 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 }
 
 const navLinks = [
-  { href: '/dashboard', icon: <Home className="h-4 w-4" />, text: 'Accueil' },
+  { href: '/', icon: <Home className="h-4 w-4" />, text: 'Accueil' },
   { href: '/dashboard', icon: <LayoutGrid className="h-4 w-4" />, text: 'Tableau de bord' },
   { href: '/gallery', icon: <GalleryHorizontal className="h-4 w-4" />, text: 'Galerie' },
   { href: '/orders', icon: <ClipboardList className="h-4 w-4" />, text: 'Commandes' },
@@ -51,6 +51,7 @@ const navLinks = [
   { href: '/debts', icon: <CreditCard className="h-4 w-4" />, text: 'Dettes' },
   { href: '/reports', icon: <BarChart3 className="h-4 w-4" />, text: 'Rapports' },
   { href: '/invoices', icon: <FileText className="h-4 w-4" />, text: 'Factures' },
+  { href: '/showcase-manager', icon: <Package className="h-4 w-4" />, text: 'Gérer la Vitrine' },
 ];
 
 
@@ -65,9 +66,9 @@ export default function AppSidebar() {
   };
 
   const isActive = (path: string) => {
-    // Exact match for all pages, except for dashboard which can be a prefix
-    if (path === '/dashboard') return pathname.startsWith('/dashboard') && pathname.split('/').length <= 2;
-    return pathname === path;
+    if (path === '/') return pathname === '/';
+    if (path === '/dashboard') return pathname === '/dashboard';
+    return pathname.startsWith(path) && path !== '/';
   };
 
   return (
