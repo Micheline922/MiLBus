@@ -67,14 +67,13 @@ export default function AppSidebar() {
 
   const isActive = (path: string) => {
     if (path === '/dashboard') return pathname === '/dashboard';
-    if (path === '/') return pathname === '/';
-    return pathname.startsWith(path) && path !== '/';
+    return pathname.startsWith(path) && path !== '/dashboard';
   };
 
   return (
     <>
       <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
+        <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
            <div className="p-1 bg-primary rounded-md flex items-center justify-center">
               <MilbusLogo className="w-6 h-6 text-primary-foreground" />
             </div>
