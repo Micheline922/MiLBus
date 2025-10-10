@@ -7,33 +7,18 @@ import { loadData, saveData } from '@/lib/storage';
 import { AppData, Product, ShowcaseItem, Wig, Pastry } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Save, ImagePlus, Eye, Copy, QrCode, Share2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import QRCodeDialog from '@/components/dashboard/qr-code-dialog';
-import SocialShare from '@/components/shared/social-share';
-
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 export default function GalleryPage() {
   const { user, username } = useAuth();
   const { toast } = useToast();
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[] | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
-  const [publicUrl, setPublicUrl] = useState('');
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined' && username) {
-      const url = `${window.location.origin}/showcase/${username}`;
-      setPublicUrl(url);
-    }
-  }, [username]);
   
   const loadShowcaseData = (currentUsername: string) => {
       const data = loadData(currentUsername);
@@ -66,7 +51,7 @@ export default function GalleryPage() {
   }, [username]);
   
 
-  const handleItemChange = (id: string, field: keyof ShowcaseItem, value: string | boolean | number) => {
+  const handleItemChange = (id: string, field: keyof Omit<ShowcaseItem, 'imageUrl'>, value: string | number) => {
     if (!showcaseItems) return;
 
     const updatedItems = showcaseItems.map(item =>
@@ -96,10 +81,8 @@ export default function GalleryPage() {
   const handleSaveChanges = () => {
     if (!username || !showcaseItems) return;
     
-    // Create a 'clean' version of showcase items that does not include large image data
     const itemsToSave = showcaseItems.map(item => {
         const { ...rest } = item;
-        // Ensure imageUrl is a placeholder if it's a large data URI, to prevent quota errors.
         if (rest.imageUrl.startsWith('data:image')) {
             rest.imageUrl = `https://picsum.photos/seed/${item.id}/400/300`;
         }
@@ -117,22 +100,6 @@ export default function GalleryPage() {
     }
   };
 
-  const copyPublicUrl = () => {
-    navigator.clipboard.writeText(publicUrl).then(() => {
-        toast({
-            title: "Lien copié !",
-            description: "Le lien public de la boutique a été copié dans le presse-papiers.",
-        });
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-        toast({
-            variant: "destructive",
-            title: "Erreur",
-            description: "Impossible de copier le lien.",
-        });
-    });
-  };
-
   if (!showcaseItems) {
     return <div>Chargement de la galerie...</div>;
   }
@@ -141,82 +108,67 @@ export default function GalleryPage() {
 
   return (
     <>
-        <QRCodeDialog 
-            isOpen={qrCodeDialogOpen} 
-            setIsOpen={setQrCodeDialogOpen} 
-            url={publicUrl} 
-        />
-        
-        <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Partager votre boutique</DialogTitle>
-                </DialogHeader>
-                <SocialShare url={publicUrl} title="Découvrez ma boutique !" />
-            </DialogContent>
-        </Dialog>
-
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between space-y-2">
                 <div>
-                    <h1 className="text-3xl font-headline font-bold tracking-tight">Galerie & Vitrine</h1>
+                    <h1 className="text-3xl font-headline font-bold tracking-tight">Galerie</h1>
                     <p className="text-muted-foreground">
-                        Gérez ici l'apparence et la visibilité de vos produits sur la boutique publique.
+                        Gérez ici l'apparence des produits sur la boutique publique.
                     </p>
                 </div>
                  <div className="flex items-center space-x-2">
-                    <Button variant="outline" onClick={copyPublicUrl}>
-                        <Copy className="mr-2 h-4 w-4" /> Copier le lien
-                    </Button>
-                    <Button variant="outline" onClick={() => setQrCodeDialogOpen(true)}>
-                        <QrCode className="mr-2 h-4 w-4" /> QR Code
-                    </Button>
-                     <Button variant="outline" onClick={() => setShareDialogOpen(true)}>
-                        <Share2 className="mr-2 h-4 w-4" /> Partager
-                    </Button>
-                    <a href={publicUrl} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline"><Eye className="mr-2 h-4 w-4" /> Voir la boutique</Button>
-                    </a>
                     <Button onClick={handleSaveChanges}>
                         <Save className="mr-2 h-4 w-4" /> Sauvegarder la Galerie
                     </Button>
                 </div>
             </div>
         
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {showcaseItems.map(item => (
-                    <Card key={item.id}>
-                        <CardHeader>
-                            <div className='relative w-full h-48 mb-4 group'>
-                                <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
-                                <Button size="sm" variant="secondary" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => fileInputRefs.current[item.id]?.click()}>
-                                    <ImagePlus className="mr-2 h-4 w-4" /> Changer
-                                </Button>
-                                <Input 
-                                    type="file" 
-                                    className="hidden" 
-                                    ref={el => fileInputRefs.current[item.id] = el}
-                                    onChange={(e) => handleImageChange(e, item.id)}
-                                    accept="image/*"
-                                />
+            <Carousel
+                opts={{
+                    align: "start",
+                    loop: true,
+                }}
+                className="w-full"
+            >
+                <CarouselContent>
+                    {showcaseItems.map(item => (
+                        <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
+                            <div className="p-1">
+                                <Card>
+                                    <CardHeader>
+                                        <div className='relative w-full h-64 mb-4 group'>
+                                            <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                                            <Button size="sm" variant="secondary" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => fileInputRefs.current[item.id]?.click()}>
+                                                <ImagePlus className="mr-2 h-4 w-4" /> Changer
+                                            </Button>
+                                            <Input 
+                                                type="file" 
+                                                className="hidden" 
+                                                ref={el => fileInputRefs.current[item.id] = el}
+                                                onChange={(e) => handleImageChange(e, item.id)}
+                                                accept="image/*"
+                                            />
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                         <div className="space-y-2">
+                                            <Label htmlFor={`name-${item.id}`}>Nom du produit</Label>
+                                            <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`price-${item.id}`}>Prix ({currency})</Label>
+                                            <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
+                                        </div>
+                                    </CardContent>
+                                </Card>
                             </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                             <div className="space-y-2">
-                                <Label htmlFor={`name-${item.id}`}>Nom du produit</Label>
-                                <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor={`price-${item.id}`}>Prix ({currency})</Label>
-                                <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden sm:flex" />
+                <CarouselNext className="hidden sm:flex" />
+            </Carousel>
         </div>
     </>
   );
 }
-
-    
