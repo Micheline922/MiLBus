@@ -67,11 +67,11 @@ export default function DashboardPage() {
   }, [username, inventoryForm.reset]);
   
   const quickLinks = [
-    { href: '/products', icon: <PlusCircle />, text: 'Ajouter un produit' },
+    { href: '/products', icon: <Package />, text: 'Gérer les marchandises' },
     { href: '/sales', icon: <ShoppingCart />, text: 'Enregistrer une vente' },
     { href: '/customers', icon: <Users />, text: 'Gérer les clients' },
     { href: '/reports', icon: <BarChart3 />, text: 'Voir les rapports' },
-    { href: '/gallery', icon: <GalleryHorizontal />, text: 'Gérer la galerie' },
+    { href: '/gallery', icon: <GalleryHorizontal />, text: 'Gérer la vitrine' },
   ];
 
   const monthlySalesData = useMemo(() => {
@@ -169,7 +169,7 @@ export default function DashboardPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
              {quickLinks.map(link => (
                 <Link href={link.href} key={link.href} passHref>
-                    <Card className="hover:bg-muted/50 transition-colors h-full">
+                    <Card className="hover:bg-muted/50 transition-colors h-full flex flex-col justify-center">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">{link.text}</CardTitle>
                             <div className="text-muted-foreground">{link.icon}</div>

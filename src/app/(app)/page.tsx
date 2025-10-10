@@ -10,6 +10,7 @@ import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import WelcomeTour from "@/components/dashboard/welcome-tour";
 
 export default function HomePage() {
   const { user, username } = useAuth();
@@ -20,7 +21,7 @@ export default function HomePage() {
   useEffect(() => {
     if (username) {
       const data = loadData(username);
-      setShowcaseItems(data.showcase.filter(item => item.imageUrl && item.name !== "Nouveau Produit"));
+      setShowcaseItems(data.showcase.filter(item => item.published && item.imageUrl && item.name !== "Nouveau Produit"));
     }
   }, [username]);
 
@@ -31,6 +32,7 @@ export default function HomePage() {
 
   return (
     <>
+      <WelcomeTour />
       <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
         <div className="space-y-2">
             <h1 className="text-3xl font-headline font-bold tracking-tight">

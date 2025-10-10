@@ -11,8 +11,9 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ImagePlus, Trash2, CheckCircle } from 'lucide-react';
+import { ImagePlus, Trash2, CheckCircle, Save } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Switch } from '@/components/ui/switch';
 
 const MAX_IMAGE_SIZE = 800; // Max width/height for compressed images
 
@@ -70,7 +71,7 @@ export default function GalleryPage() {
     }
   }, [username]);
 
-  const handleItemChange = (id: string, field: keyof Omit<ShowcaseItem, 'imageUrl'>, value: string | number) => {
+  const handleItemChange = (id: string, field: keyof Omit<ShowcaseItem, 'imageUrl'>, value: string | number | boolean) => {
     setShowcaseItems(prev => {
         if (!prev) return null;
         return prev.map(item =>
@@ -116,6 +117,7 @@ export default function GalleryPage() {
           name: "Nouveau Produit",
           price: 0,
           imageUrl: compressedDataUrl,
+          published: false,
         };
         newItems.push(newItem);
       }
@@ -123,7 +125,7 @@ export default function GalleryPage() {
       setShowcaseItems(prev => [...(prev || []), ...newItems]);
       toast({
         title: `${filesArray.length} image(s) ajoutée(s)`,
-        description: "N'oubliez pas de rendre la galerie publique."
+        description: "N'oubliez pas de sauvegarder la galerie."
       });
 
     } catch (error) {
@@ -141,16 +143,16 @@ export default function GalleryPage() {
     toast({
         variant: 'destructive',
         title: "Article supprimé",
-        description: "L'article a été retiré. Rendez la galerie publique pour confirmer."
+        description: "L'article a été retiré. Sauvegardez pour confirmer."
     })
   };
 
-  const handlePublish = () => {
+  const handleSaveGallery = () => {
     if (!username || !showcaseItems) return;
     saveData(username, 'showcase', showcaseItems);
     toast({
-        title: "Galerie rendue publique !",
-        description: "Vos modifications sont maintenant visibles sur la page d'accueil.",
+        title: "Galerie Sauvegardée !",
+        description: "Vos modifications ont été enregistrées.",
         className: "bg-green-500 text-white",
     });
   };
@@ -167,9 +169,9 @@ export default function GalleryPage() {
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between space-y-2">
                 <div>
-                    <h1 className="text-3xl font-headline font-bold tracking-tight">Galerie</h1>
+                    <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Vitrine</h1>
                     <p className="text-muted-foreground">
-                        Ajoutez, modifiez et organisez les photos de vos produits pour la vitrine publique.
+                        Ajoutez, modifiez et publiez les produits de votre vitrine.
                     </p>
                 </div>
                  <div className="flex items-center space-x-2">
@@ -213,7 +215,7 @@ export default function GalleryPage() {
                                         <AlertDialogHeader>
                                             <AlertDialogTitle>Êtes-vous sûr(e) ?</AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                Cette action supprimera l'article de la galerie. Cette action est irréversible après publication.
+                                                Cette action supprimera l'article de la galerie. Cette action est irréversible après sauvegarde.
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
@@ -232,6 +234,14 @@ export default function GalleryPage() {
                                     <Label htmlFor={`price-${item.id}`}>Prix ({currency})</Label>
                                     <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
                                 </div>
+                                <div className="flex items-center space-x-2 mt-auto pt-2">
+                                  <Switch
+                                    id={`publish-${item.id}`}
+                                    checked={item.published}
+                                    onCheckedChange={checked => handleItemChange(item.id, 'published', checked)}
+                                  />
+                                  <Label htmlFor={`publish-${item.id}`}>Publier</Label>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
@@ -243,9 +253,9 @@ export default function GalleryPage() {
                 )}
             </div>
              <div className="flex justify-center mt-8">
-                <Button size="lg" onClick={handlePublish}>
-                    <CheckCircle className="mr-2 h-5 w-5" />
-                    Rendre la galerie publique
+                <Button size="lg" onClick={handleSaveGallery}>
+                    <Save className="mr-2 h-5 w-5" />
+                    Sauvegarder la Galerie
                 </Button>
             </div>
         </div>
