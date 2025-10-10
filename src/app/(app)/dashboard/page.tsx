@@ -2,7 +2,6 @@
 'use client';
 
 import StatCard from '@/components/dashboard/stat-card';
-import RecentSales from '@/components/dashboard/recent-sales';
 import AiChat from '@/components/dashboard/ai-chat';
 import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp, FileText, Save, Users, BarChart3, GalleryHorizontal, PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -218,24 +217,6 @@ export default function DashboardPage() {
                 />
               </div>
             </Card>
-        </div>
-        <div className="grid grid-cols-1 gap-y-4">
-            <div className='relative group'>
-              <Dialog open={dialogOpen['sales']} onOpenChange={(isOpen) => handleOpenDialog('sales', isOpen)}>
-                <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Pencil className="mr-2 h-4 w-4" /> Modifier
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-3xl">
-                  <DialogHeader>
-                    <DialogTitle>Modifier les Ventes Récentes</DialogTitle>
-                  </DialogHeader>
-                  <EditSalesForm initialValues={{ sales }} onSubmit={(v) => updateData('sales', v.sales)} />
-                </DialogContent>
-              </Dialog>
-              <RecentSales sales={sales} currency={currency} />
-            </div>
         </div>
         <div className="grid grid-cols-1 gap-y-4">
             <Card>
