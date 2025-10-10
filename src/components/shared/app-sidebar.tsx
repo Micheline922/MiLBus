@@ -43,6 +43,7 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 const navLinks = [
   { href: '/dashboard', icon: <Home className="h-4 w-4" />, text: 'Accueil' },
   { href: '/dashboard', icon: <LayoutGrid className="h-4 w-4" />, text: 'Tableau de bord' },
+  { href: '/gallery', icon: <GalleryHorizontal className="h-4 w-4" />, text: 'Galerie' },
   { href: '/orders', icon: <ClipboardList className="h-4 w-4" />, text: 'Commandes' },
   { href: '/sales', icon: <ShoppingCart className="h-4 w-4" />, text: 'Ventes' },
   { href: '/products', icon: <Package className="h-4 w-4" />, text: 'Marchandises' },
@@ -64,7 +65,8 @@ export default function AppSidebar() {
   };
 
   const isActive = (path: string) => {
-    if (path === '/dashboard' && pathname.startsWith('/dashboard')) return true;
+    // Exact match for all pages, except for dashboard which can be a prefix
+    if (path === '/dashboard') return pathname.startsWith('/dashboard') && pathname.split('/').length <= 2;
     return pathname === path;
   };
 
