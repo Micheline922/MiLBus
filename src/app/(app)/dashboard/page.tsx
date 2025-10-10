@@ -219,40 +219,8 @@ export default function DashboardPage() {
               </div>
             </Card>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-           <Card className="col-span-full lg:col-span-4">
-              <CardHeader>
-                <CardTitle>Vue d'ensemble des Ventes</CardTitle>
-                <CardDescription>Évolution de vos revenus mensuels.</CardDescription>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={monthlySalesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="name"
-                      stroke="#888888"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis
-                      stroke="#888888"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => `${value} ${currency}`}
-                    />
-                    <Tooltip 
-                       cursor={{fill: 'hsl(var(--muted))'}}
-                       contentStyle={{backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))'}}
-                    />
-                    <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-            <div className='col-span-full lg:col-span-3 relative group'>
+        <div className="grid grid-cols-1 gap-y-4">
+            <div className='relative group'>
               <Dialog open={dialogOpen['sales']} onOpenChange={(isOpen) => handleOpenDialog('sales', isOpen)}>
                 <DialogTrigger asChild>
                     <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
