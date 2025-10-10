@@ -93,6 +93,8 @@ export default function ShowcaseManagerPage() {
       reader.onloadend = () => {
         const result = reader.result as string;
         setTempImageUrls(prev => ({ ...prev, [itemId]: result }));
+        // IMPORTANT: We update the image URL in the main state as well, but this will be stripped out before saving.
+        handleItemChange(itemId, 'imageUrl', result);
       };
       reader.readAsDataURL(file);
     }
@@ -101,13 +103,19 @@ export default function ShowcaseManagerPage() {
   const handleUpdateAndRedirect = () => {
     if (!username || !showcaseItems) return;
 
-    // Create a "clean" version of items for saving, excluding temporary image URLs.
-    const itemsToSave = showcaseItems.map(item => {
-      const { ...itemToSave } = item;
-      return itemToSave;
-    });
-
     try {
+        // Create a "clean" version of items for saving, excluding large image dataURIs.
+        // It only saves the text fields and the published status.
+        // The imageUrl is reset to the default placeholder to avoid quota errors.
+        const itemsToSave = showcaseItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            description: item.description,
+            published: item.published,
+            imageUrl: `https://picsum.photos/seed/${item.id}/400/300`, // Always save the placeholder URL
+        }));
+
       saveData(username, 'showcase', itemsToSave);
       toast({
           title: "Vitrine mise à jour !",
@@ -274,7 +282,7 @@ export default function ShowcaseManagerPage() {
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {showcaseItems.map(item => {
-                const displayImageUrl = tempImageUrls[item.id] || item.imageUrl;
+                const displayImageUrl = item.imageUrl;
                 return (
                     <Card key={item.id}>
                         <CardHeader>
@@ -334,5 +342,3 @@ export default function ShowcaseManagerPage() {
     </>
   );
 }
-
-    
