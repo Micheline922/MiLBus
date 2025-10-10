@@ -11,9 +11,8 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ImagePlus, Trash2, CheckCircle, Save } from 'lucide-react';
+import { ImagePlus, Trash2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Switch } from '@/components/ui/switch';
 
 const MAX_IMAGE_SIZE = 800; // Max width/height for compressed images
 
@@ -150,7 +149,6 @@ export default function GalleryPage() {
           name: "Nouveau Produit",
           price: 0,
           imageUrl: compressedDataUrl,
-          published: false,
         };
         newItems.push(newItem);
       }

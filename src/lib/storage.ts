@@ -89,8 +89,8 @@ export function saveData<K extends keyof AppData>(
     } catch (error) {
         console.error("Failed to save data to localStorage", error);
          if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-            alert("Erreur : Le stockage local est plein. Impossible de sauvegarder les modifications. Essayez de vider le cache de votre navigateur ou de libérer de l'espace.");
-        }
+            throw new Error('quota');
+         }
     }
 }
 
