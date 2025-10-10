@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -41,8 +42,8 @@ function MilbusLogo(props: React.SVGProps<SVGSVGElement>) {
 }
 
 const navLinks = [
-  { href: '/', icon: <Home className="h-4 w-4" />, text: 'Vitrine' },
   { href: '/dashboard', icon: <LayoutGrid className="h-4 w-4" />, text: 'Tableau de bord' },
+  { href: '/showcase-management', icon: <Home className="h-4 w-4" />, text: 'Vitrine' },
   { href: '/gallery', icon: <GalleryHorizontal className="h-4 w-4" />, text: 'Galerie' },
   { href: '/orders', icon: <ClipboardList className="h-4 w-4" />, text: 'Commandes' },
   { href: '/sales', icon: <ShoppingCart className="h-4 w-4" />, text: 'Ventes' },
@@ -65,7 +66,6 @@ export default function AppSidebar() {
   };
 
   const isActive = (path: string) => {
-    if (path === '/') return pathname === '/';
     if (path === '/dashboard') return pathname === '/dashboard';
     return pathname.startsWith(path) && path !== '/';
   };

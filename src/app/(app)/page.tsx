@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useAuth } from "@/hooks/use-auth";
@@ -15,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import QRCodeDialog from "@/components/dashboard/qr-code-dialog";
 import SocialShare from "@/components/shared/social-share";
 
-export default function HomePage() {
+export default function ShowcaseManagementPage() {
   const { user, username } = useAuth();
   const { toast } = useToast();
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[]>([]);

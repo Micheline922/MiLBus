@@ -1,4 +1,5 @@
 
+
 'use client';
     
 import { Button } from "@/components/ui/button";
@@ -27,13 +28,21 @@ function WelcomePageContent() {
 
     useEffect(() => {
         if (!isLoading && isAuthenticated) {
-            router.replace('/dashboard');
+            // No longer redirecting to dashboard from the root page
+            // router.replace('/dashboard');
         }
     }, [isLoading, isAuthenticated, router]);
     
-    if (isLoading || isAuthenticated) {
+    if (isLoading) {
         return <div className="flex items-center justify-center min-h-screen">
             <p>Loading...</p>
+        </div>
+    }
+
+    if (isAuthenticated) {
+        router.replace('/dashboard');
+        return <div className="flex items-center justify-center min-h-screen">
+            <p>Redirecting to your dashboard...</p>
         </div>
     }
 
