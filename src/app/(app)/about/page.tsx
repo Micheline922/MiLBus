@@ -136,7 +136,7 @@ export default function AboutPage() {
             Slogans & Phrases Publicitaires
           </CardTitle>
           <CardDescription>
-            Utilisez ces phrases pour vos campagnes marketing, vos réseaux sociaux ou votre communication.
+            Des accroches pour définir votre marque.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -197,5 +197,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
-    
