@@ -15,6 +15,7 @@ import { ImagePlus, Trash2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const MAX_IMAGE_SIZE = 800; // Max width/height for compressed images
+const MAX_GALLERY_ITEMS = 15;
 
 function compressImage(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -132,6 +133,17 @@ export default function GalleryPage() {
   const handleAddNewImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || !username) return;
+    
+    const currentItemCount = showcaseItems?.length || 0;
+    if (currentItemCount + files.length > MAX_GALLERY_ITEMS) {
+        toast({
+            variant: 'destructive',
+            title: 'Limite d\'images atteinte',
+            description: `Vous ne pouvez pas avoir plus de ${MAX_GALLERY_ITEMS} images dans votre galerie.`,
+            duration: 5000,
+        });
+        return;
+    }
 
     const newItems: ShowcaseItem[] = [];
     const filesArray = Array.from(files);
@@ -199,7 +211,7 @@ export default function GalleryPage() {
             <div>
                 <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Galerie</h1>
                 <p className="text-muted-foreground">
-                    Ajoutez et modifiez les produits de votre galerie. Chaque modification est sauvegardée automatiquement.
+                    Ajoutez et modifiez les produits de votre galerie (max. {MAX_GALLERY_ITEMS} images). Chaque modification est sauvegardée automatiquement.
                 </p>
             </div>
              <div className="flex items-center space-x-2">
