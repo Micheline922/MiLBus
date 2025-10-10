@@ -32,6 +32,7 @@ export default function ShowcaseManagerPage() {
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [publicUrl, setPublicUrl] = useState('');
+  const [tempImageUrls, setTempImageUrls] = useState<Record<string, string>>({});
   
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -77,16 +78,8 @@ export default function ShowcaseManagerPage() {
     setAddDialogOpen(prev => ({ ...prev, [id]: isOpen }));
   };
 
-  const handleItemChange = (id: string, field: keyof ShowcaseItem, value: string | boolean | number | null) => {
+  const handleItemChange = (id: string, field: keyof ShowcaseItem, value: string | boolean | number) => {
     if (!showcaseItems) return;
-
-    if (field === 'imageUrl' && typeof value === 'string') {
-        const updatedItems = showcaseItems.map(item =>
-            item.id === id ? { ...item, imageUrl: value } : item
-        );
-        setShowcaseItems(updatedItems);
-        return;
-    }
 
     const updatedItems = showcaseItems.map(item =>
       item.id === id ? { ...item, [field]: value } : item
@@ -99,7 +92,7 @@ export default function ShowcaseManagerPage() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        handleItemChange(itemId, 'imageUrl', reader.result as string);
+        setTempImageUrls(prev => ({...prev, [itemId]: reader.result as string}));
       };
       reader.readAsDataURL(file);
     }
@@ -107,7 +100,18 @@ export default function ShowcaseManagerPage() {
 
   const handleUpdateAndRedirect = () => {
     if (!username || !showcaseItems) return;
-    saveData(username, 'showcase', showcaseItems);
+    
+    // Create a 'clean' version of showcase items that does not include large image data
+    const itemsToSave = showcaseItems.map(item => {
+        const { ...rest } = item;
+        // Ensure imageUrl is a placeholder, not a large data URI
+        if (!rest.imageUrl.startsWith('https://')) {
+            rest.imageUrl = `https://picsum.photos/seed/${item.id}/400/300`;
+        }
+        return rest;
+    });
+
+    saveData(username, 'showcase', itemsToSave);
     toast({
         title: "Vitrine mise à jour !",
         description: "Vos modifications ont été enregistrées.",
@@ -268,7 +272,7 @@ export default function ShowcaseManagerPage() {
                 <Card key={item.id}>
                     <CardHeader>
                         <div className='relative w-full h-48 mb-4 group'>
-                            <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                            <Image src={tempImageUrls[item.id] || item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
                             <Button 
                                 variant="outline" 
                                 size="sm" 
