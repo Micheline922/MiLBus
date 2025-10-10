@@ -196,21 +196,6 @@ export default function GalleryPage() {
                         <CardHeader>
                             <div className='relative w-full h-48 mb-4 group'>
                                 <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => fileInputRefs.current[item.id]?.click()}
-                                >
-                                    <ImagePlus className="mr-2 h-4 w-4" /> Modifier
-                                </Button>
-                                <Input 
-                                    type="file"
-                                    ref={el => fileInputRefs.current[item.id] = el}
-                                    onChange={(e) => handleImageChange(e, item.id)}
-                                    className="hidden"
-                                    accept="image/*"
-                                />
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
