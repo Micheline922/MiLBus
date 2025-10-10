@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import EditAboutForm from "@/components/dashboard/edit-about-form";
+import EditTestimonialsForm from "@/components/dashboard/edit-testimonials-form";
+import EditSlogansForm from "@/components/dashboard/edit-slogans-form";
 
 type Testimonial = {
   name: string;
@@ -27,27 +29,46 @@ export default function AboutPage() {
   const { username } = useAuth();
   const [aboutData, setAboutData] = useState<AboutData | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogsOpen, setDialogsOpen] = useState({
+    story: false,
+    testimonials: false,
+    slogans: false,
+  });
 
   useEffect(() => {
     setIsClient(true);
     if (username) {
       const data = loadData(username);
       setAboutData({
-        companyStory: data.companyStory,
+        companyStory: data.companyStory || "Racontez ici l'histoire de votre entreprise...",
         testimonials: data.testimonials,
         advertisingPhrases: data.advertisingPhrases,
       });
     }
   }, [username]);
 
-  const handleAboutSubmit = (values: AboutData) => {
-    if (!username) return;
-    setAboutData(values);
+  const handleStorySubmit = (values: { companyStory: string }) => {
+    if (!username || !aboutData) return;
+    const updatedData = { ...aboutData, companyStory: values.companyStory };
+    setAboutData(updatedData);
     saveData(username, 'companyStory', values.companyStory);
+    setDialogsOpen(prev => ({ ...prev, story: false }));
+  };
+
+  const handleTestimonialsSubmit = (values: { testimonials: Testimonial[] }) => {
+    if (!username || !aboutData) return;
+    const updatedData = { ...aboutData, testimonials: values.testimonials };
+    setAboutData(updatedData);
     saveData(username, 'testimonials', values.testimonials);
+    setDialogsOpen(prev => ({ ...prev, testimonials: false }));
+  };
+
+  const handleSlogansSubmit = (values: { advertisingPhrases: string[] }) => {
+    if (!username || !aboutData) return;
+    const updatedData = { ...aboutData, advertisingPhrases: values.advertisingPhrases };
+    setAboutData(updatedData);
     saveData(username, 'advertisingPhrases', values.advertisingPhrases);
-    setDialogOpen(false);
+    setDialogsOpen(prev => ({ ...prev, slogans: false }));
   };
   
   if (!aboutData) {
@@ -65,22 +86,22 @@ export default function AboutPage() {
             L'histoire, les valeurs et la voix de votre marque.
           </p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-              <Button>
-                <Pencil className="mr-2 h-4 w-4" /> Modifier la page
-              </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Modifier la page "À propos de nous"</DialogTitle>
-            </DialogHeader>
-            <EditAboutForm initialValues={aboutData} onSubmit={handleAboutSubmit} />
-          </DialogContent>
-        </Dialog>
       </div>
 
-      <Card>
+      <Card className="relative group">
+        <Dialog open={dialogsOpen.story} onOpenChange={(isOpen) => setDialogsOpen(p => ({ ...p, story: isOpen }))}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="mr-2 h-4 w-4" /> Modifier
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Modifier l'Histoire de l'Entreprise</DialogTitle>
+                </DialogHeader>
+                <EditAboutForm initialValues={{ companyStory }} onSubmit={handleStorySubmit} />
+            </DialogContent>
+        </Dialog>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BookOpen className="text-primary" />
@@ -95,7 +116,20 @@ export default function AboutPage() {
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="relative group">
+        <Dialog open={dialogsOpen.slogans} onOpenChange={(isOpen) => setDialogsOpen(p => ({ ...p, slogans: isOpen }))}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="mr-2 h-4 w-4" /> Modifier
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Modifier les Slogans</DialogTitle>
+                </DialogHeader>
+                <EditSlogansForm initialValues={{ advertisingPhrases }} onSubmit={handleSlogansSubmit} />
+            </DialogContent>
+        </Dialog>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="text-primary" />
@@ -116,7 +150,20 @@ export default function AboutPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="relative group">
+        <Dialog open={dialogsOpen.testimonials} onOpenChange={(isOpen) => setDialogsOpen(p => ({ ...p, testimonials: isOpen }))}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="mr-2 h-4 w-4" /> Modifier
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                    <DialogTitle>Modifier les Témoignages</DialogTitle>
+                </DialogHeader>
+                <EditTestimonialsForm initialValues={{ testimonials }} onSubmit={handleTestimonialsSubmit} />
+            </DialogContent>
+        </Dialog>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Heart className="text-primary" />
@@ -150,3 +197,5 @@ export default function AboutPage() {
     </div>
   );
 }
+
+    
