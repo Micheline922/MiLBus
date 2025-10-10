@@ -8,14 +8,27 @@ import { AppData, ShowcaseItem } from "@/lib/data";
 import { loadData } from "@/lib/storage";
 import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
+import { Copy, QrCode, Share2, Eye } from "lucide-react";
 import Link from "next/link";
 import WelcomeTour from "@/components/dashboard/welcome-tour";
+import { useToast } from "@/hooks/use-toast";
+import QRCodeDialog from "@/components/dashboard/qr-code-dialog";
+import SocialShare from "@/components/shared/social-share";
 
 export default function HomePage() {
   const { user, username } = useAuth();
+  const { toast } = useToast();
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[]>([]);
+  const [publicUrl, setPublicUrl] = useState('');
+  const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && username) {
+      const url = `${window.location.origin}/showcase/${username}`;
+      setPublicUrl(url);
+    }
+  }, [username]);
+  
   const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
   
   useEffect(() => {
@@ -25,6 +38,13 @@ export default function HomePage() {
     }
   }, [username]);
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(publicUrl);
+    toast({
+      title: "Lien copié !",
+      description: "Le lien vers votre vitrine a été copié dans le presse-papiers.",
+    });
+  };
 
   if (!showcaseItems) {
     return <div>Chargement...</div>;
@@ -33,18 +53,37 @@ export default function HomePage() {
   return (
     <>
       <WelcomeTour />
+      <QRCodeDialog isOpen={isQrDialogOpen} setIsOpen={setIsQrDialogOpen} url={publicUrl} />
+
       <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
-        <div className="space-y-2">
-            <h1 className="text-3xl font-headline font-bold tracking-tight">
-                Bonjour, {user?.businessName || user?.username}!
-            </h1>
-            <p className="text-muted-foreground">
-                Voici les produits actuellement mis en avant dans votre vitrine publique.
-            </p>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-2">
+                <h1 className="text-3xl font-headline font-bold tracking-tight">
+                    Gérer votre Vitrine Publique
+                </h1>
+                <p className="text-muted-foreground">
+                    C'est ici que vous gérez ce que vos clients voient. Partagez votre boutique et prévisualisez vos produits.
+                </p>
+            </div>
+            <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={handleCopyLink}>
+                    <Copy className="mr-2 h-4 w-4" /> Copier le lien
+                </Button>
+                 <Button variant="outline" size="sm" onClick={() => setIsQrDialogOpen(true)}>
+                    <QrCode className="mr-2 h-4 w-4" /> QR Code
+                </Button>
+                <SocialShare url={publicUrl} title={`Découvrez la boutique de ${user?.businessName || 'MiLBus'}`} />
+                 <Button asChild>
+                    <a href={publicUrl} target="_blank" rel="noopener noreferrer">
+                        <Eye className="mr-2 h-4 w-4"/>
+                        Voir la boutique
+                    </a>
+                </Button>
+            </div>
         </div>
         
         {showcaseItems.length > 0 ? (
-          <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {showcaseItems.map(item => (
                   <Card key={item.id} className="overflow-hidden group flex flex-col">
                       <div className="relative w-full aspect-[4/5]">
@@ -60,11 +99,10 @@ export default function HomePage() {
         ) : (
            <Card className="text-center py-20 text-muted-foreground">
               <CardContent>
-                  <p className="mb-4">Votre vitrine est vide pour le moment.</p>
+                  <p className="mb-4">Votre vitrine est vide. Publiez des articles depuis la galerie.</p>
                   <Button asChild>
                     <Link href="/gallery">
-                        <ShoppingCart className="mr-2 h-4 w-4"/>
-                        Commencer à ajouter des produits
+                        Aller à la Galerie
                     </Link>
                   </Button>
               </CardContent>
