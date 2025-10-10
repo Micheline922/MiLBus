@@ -28,21 +28,13 @@ function WelcomePageContent() {
 
     useEffect(() => {
         if (!isLoading && isAuthenticated) {
-            // No longer redirecting to dashboard from the root page
-            // router.replace('/dashboard');
+            router.replace('/dashboard');
         }
     }, [isLoading, isAuthenticated, router]);
     
-    if (isLoading) {
+    if (isLoading || isAuthenticated) {
         return <div className="flex items-center justify-center min-h-screen">
             <p>Loading...</p>
-        </div>
-    }
-
-    if (isAuthenticated) {
-        router.replace('/dashboard');
-        return <div className="flex items-center justify-center min-h-screen">
-            <p>Redirecting to your dashboard...</p>
         </div>
     }
 

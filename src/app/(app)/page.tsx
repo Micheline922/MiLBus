@@ -14,6 +14,7 @@ import WelcomeTour from "@/components/dashboard/welcome-tour";
 import { useToast } from "@/hooks/use-toast";
 import QRCodeDialog from "@/components/dashboard/qr-code-dialog";
 import SocialShare from "@/components/shared/social-share";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const testimonials = [
     {
