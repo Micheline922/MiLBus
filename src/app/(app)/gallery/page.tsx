@@ -11,11 +11,53 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Save, ImagePlus, Trash2, CheckCircle } from 'lucide-react';
+import { ImagePlus, Trash2, CheckCircle } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
+const MAX_IMAGE_SIZE = 800; // Max width/height for compressed images
+
+function compressImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = document.createElement('img');
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let { width, height } = img;
+
+                if (width > height) {
+                    if (width > MAX_IMAGE_SIZE) {
+                        height = Math.round((height * MAX_IMAGE_SIZE) / width);
+                        width = MAX_IMAGE_SIZE;
+                    }
+                } else {
+                    if (height > MAX_IMAGE_SIZE) {
+                        width = Math.round((width * MAX_IMAGE_SIZE) / height);
+                        height = MAX_IMAGE_SIZE;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    return reject(new Error('Could not get canvas context'));
+                }
+                ctx.drawImage(img, 0, 0, width, height);
+                // Get the data-URL with JPEG format and a quality level of 0.8
+                resolve(canvas.toDataURL('image/jpeg', 0.8));
+            };
+            img.onerror = reject;
+            img.src = event.target?.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+
 export default function GalleryPage() {
-  const { user, username } = useAuth();
+  const { username } = useAuth();
   const { toast } = useToast();
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -37,49 +79,61 @@ export default function GalleryPage() {
     });
   };
 
-  const handleItemImageChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: string) => {
+  const handleItemImageChange = async (e: React.ChangeEvent<HTMLInputElement>, itemId: string) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setShowcaseItems(prev => prev ? prev.map(item => item.id === itemId ? { ...item, imageUrl: result } : item) : null);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressedDataUrl = await compressImage(file);
+        setShowcaseItems(prev => prev ? prev.map(item => item.id === itemId ? { ...item, imageUrl: compressedDataUrl } : item) : null);
+      } catch (error) {
+        console.error("Image compression failed:", error);
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de compression',
+          description: "Impossible de compresser l'image. Veuillez réessayer."
+        });
+      }
     }
   };
   
-  const handleAddNewImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAddNewImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     const newItems: ShowcaseItem[] = [];
     const filesArray = Array.from(files);
 
-    let loadedFiles = 0;
-
-    filesArray.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const newItem: ShowcaseItem = {
-                id: `new_${Date.now()}_${index}`,
-                name: "Nouveau Produit",
-                price: 0,
-                imageUrl: reader.result as string,
-            };
-            newItems.push(newItem);
-            loadedFiles++;
-
-            if (loadedFiles === filesArray.length) {
-                setShowcaseItems(prev => [...(prev || []), ...newItems]);
-                toast({
-                    title: `${filesArray.length} image(s) ajoutée(s)`,
-                    description: "N'oubliez pas de rendre la galerie publique."
-                });
-            }
-        };
-        reader.readAsDataURL(file);
+    toast({
+      title: `Compression en cours...`,
+      description: `Compression de ${filesArray.length} image(s). Veuillez patienter.`
     });
+
+    try {
+      for (const [index, file] of filesArray.entries()) {
+        const compressedDataUrl = await compressImage(file);
+        const newItem: ShowcaseItem = {
+          id: `new_${Date.now()}_${index}`,
+          name: "Nouveau Produit",
+          price: 0,
+          imageUrl: compressedDataUrl,
+        };
+        newItems.push(newItem);
+      }
+      
+      setShowcaseItems(prev => [...(prev || []), ...newItems]);
+      toast({
+        title: `${filesArray.length} image(s) ajoutée(s)`,
+        description: "N'oubliez pas de rendre la galerie publique."
+      });
+
+    } catch (error) {
+      console.error("Image compression failed during batch upload:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Erreur de compression',
+        description: "Une erreur est survenue lors de l'ajout des images."
+      });
+    }
   };
 
   const handleDeleteItem = (id: string) => {
@@ -97,6 +151,7 @@ export default function GalleryPage() {
     toast({
         title: "Galerie rendue publique !",
         description: "Vos modifications sont maintenant visibles sur la page d'accueil.",
+        className: "bg-green-500 text-white",
     });
   };
   
@@ -105,7 +160,7 @@ export default function GalleryPage() {
     return <div>Chargement de la galerie...</div>;
   }
 
-  const currency = user?.currency === 'USD' ? '$' : 'FC';
+  const currency = "FC";
 
   return (
     <>
