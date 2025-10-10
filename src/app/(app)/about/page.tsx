@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sparkles, Star, Heart, Pencil } from "lucide-react";
+import { Sparkles, Star, Heart, Pencil, BookOpen } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { loadData, saveData } from "@/lib/storage";
 import { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ type Testimonial = {
 };
 
 type AboutData = {
+  companyStory: string;
   testimonials: Testimonial[];
   advertisingPhrases: string[];
 };
@@ -33,6 +34,7 @@ export default function AboutPage() {
     if (username) {
       const data = loadData(username);
       setAboutData({
+        companyStory: data.companyStory,
         testimonials: data.testimonials,
         advertisingPhrases: data.advertisingPhrases,
       });
@@ -42,6 +44,7 @@ export default function AboutPage() {
   const handleAboutSubmit = (values: AboutData) => {
     if (!username) return;
     setAboutData(values);
+    saveData(username, 'companyStory', values.companyStory);
     saveData(username, 'testimonials', values.testimonials);
     saveData(username, 'advertisingPhrases', values.advertisingPhrases);
     setDialogOpen(false);
@@ -51,7 +54,7 @@ export default function AboutPage() {
     return <div>Chargement...</div>;
   }
 
-  const { testimonials, advertisingPhrases } = aboutData;
+  const { companyStory, testimonials, advertisingPhrases } = aboutData;
 
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8 pt-6">
@@ -76,6 +79,42 @@ export default function AboutPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BookOpen className="text-primary" />
+            Notre Histoire
+          </CardTitle>
+          <CardDescription>
+            La mission et la vision qui animent notre marque.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <p className="text-muted-foreground whitespace-pre-line">{companyStory}</p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="text-primary" />
+            Slogans & Phrases Publicitaires
+          </CardTitle>
+          <CardDescription>
+            Utilisez ces phrases pour vos campagnes marketing, vos réseaux sociaux ou votre communication.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <ul className="space-y-3 list-disc list-inside">
+                {advertisingPhrases.map((phrase, index) => (
+                    <li key={index} className="text-muted-foreground">
+                        <span className="font-medium text-foreground">{phrase}</span>
+                    </li>
+                ))}
+            </ul>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -105,27 +144,6 @@ export default function AboutPage() {
               </CardContent>
             </Card>
           ))}
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="text-primary" />
-            Slogans & Phrases Publicitaires
-          </CardTitle>
-          <CardDescription>
-            Utilisez ces phrases pour vos campagnes marketing, vos réseaux sociaux ou votre communication.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <ul className="space-y-3 list-disc list-inside">
-                {advertisingPhrases.map((phrase, index) => (
-                    <li key={index} className="text-muted-foreground">
-                        <span className="font-medium text-foreground">{phrase}</span>
-                    </li>
-                ))}
-            </ul>
         </CardContent>
       </Card>
 
