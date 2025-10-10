@@ -32,8 +32,7 @@ export default function ShowcaseManagerPage() {
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [publicUrl, setPublicUrl] = useState('');
-  const [tempImageUrls, setTempImageUrls] = useState<Record<string, string>>({});
-
+  
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const url = `${window.location.origin}/showcase/${username || 'milbus'}`;
@@ -78,8 +77,17 @@ export default function ShowcaseManagerPage() {
     setAddDialogOpen(prev => ({ ...prev, [id]: isOpen }));
   };
 
-  const handleItemChange = (id: string, field: keyof ShowcaseItem, value: string | boolean | number) => {
+  const handleItemChange = (id: string, field: keyof ShowcaseItem, value: string | boolean | number | null) => {
     if (!showcaseItems) return;
+
+    if (field === 'imageUrl' && typeof value === 'string') {
+        const updatedItems = showcaseItems.map(item =>
+            item.id === id ? { ...item, imageUrl: value } : item
+        );
+        setShowcaseItems(updatedItems);
+        return;
+    }
+
     const updatedItems = showcaseItems.map(item =>
       item.id === id ? { ...item, [field]: value } : item
     );
@@ -91,8 +99,7 @@ export default function ShowcaseManagerPage() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const result = reader.result as string;
-        setTempImageUrls(prev => ({ ...prev, [itemId]: result }));
+        handleItemChange(itemId, 'imageUrl', reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -100,32 +107,12 @@ export default function ShowcaseManagerPage() {
 
   const handleUpdateAndRedirect = () => {
     if (!username || !showcaseItems) return;
-
-    try {
-        const itemsToSave = showcaseItems.map(item => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            description: item.description,
-            published: item.published,
-            imageUrl: `https://picsum.photos/seed/${item.id}/400/300`,
-        }));
-
-      saveData(username, 'showcase', itemsToSave);
-
-      toast({
-          title: "Vitrine mise à jour !",
-          description: "Vos modifications ont été enregistrées.",
-      });
-      window.open(publicUrl, '_blank');
-    } catch (e: any) {
-        console.error("Failed to save showcase data:", e);
-        toast({
-            variant: "destructive",
-            title: "Erreur de sauvegarde",
-            description: "Impossible de sauvegarder les données. Le stockage local est peut-être plein.",
-        });
-    }
+    saveData(username, 'showcase', showcaseItems);
+    toast({
+        title: "Vitrine mise à jour !",
+        description: "Vos modifications ont été enregistrées.",
+    });
+    window.open(publicUrl, '_blank');
   };
 
   const copyPublicUrl = () => {
@@ -277,62 +264,59 @@ export default function ShowcaseManagerPage() {
         </div>
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {showcaseItems.map(item => {
-                const displayImageUrl = tempImageUrls[item.id] || item.imageUrl;
-                return (
-                    <Card key={item.id}>
-                        <CardHeader>
-                            <div className='relative w-full h-48 mb-4 group'>
-                                <Image src={displayImageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => fileInputRefs.current[item.id]?.click()}
-                                >
-                                    <ImagePlus className="mr-2 h-4 w-4" /> Modifier l'image
-                                </Button>
-                                <Input 
-                                    type="file"
-                                    ref={el => fileInputRefs.current[item.id] = el}
-                                    onChange={(e) => handleImageChange(e, item.id)}
-                                    className="hidden"
-                                    accept="image/*"
-                                />
+            {showcaseItems.map(item => (
+                <Card key={item.id}>
+                    <CardHeader>
+                        <div className='relative w-full h-48 mb-4 group'>
+                            <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => fileInputRefs.current[item.id]?.click()}
+                            >
+                                <ImagePlus className="mr-2 h-4 w-4" /> Modifier l'image
+                            </Button>
+                            <Input 
+                                type="file"
+                                ref={el => fileInputRefs.current[item.id] = el}
+                                onChange={(e) => handleImageChange(e, item.id)}
+                                className="hidden"
+                                accept="image/*"
+                            />
+                        </div>
+                        <CardTitle>{item.name}</CardTitle>
+                        <CardDescription>{(item.price ?? 0).toFixed(2)} {currency}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor={`name-${item.id}`}>Nom du produit</Label>
+                            <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor={`price-${item.id}`}>Prix</Label>
+                            <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor={`description-${item.id}`}>Description</Label>
+                            <Textarea id={`description-${item.id}`} value={item.description} onChange={e => handleItemChange(item.id, 'description', e.target.value)} />
+                        </div>
+                        <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                            <div className="space-y-0.5">
+                                <Label htmlFor={`published-${item.id}`}>Publier</Label>
+                                <p className="text-xs text-muted-foreground">
+                                    Rendre ce produit visible sur la page publique.
+                                </p>
                             </div>
-                            <CardTitle>{item.name}</CardTitle>
-                            <CardDescription>{(item.price ?? 0).toFixed(2)} {currency}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor={`name-${item.id}`}>Nom du produit</Label>
-                                <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor={`price-${item.id}`}>Prix</Label>
-                                <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor={`description-${item.id}`}>Description</Label>
-                                <Textarea id={`description-${item.id}`} value={item.description} onChange={e => handleItemChange(item.id, 'description', e.target.value)} />
-                            </div>
-                            <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                                <div className="space-y-0.5">
-                                    <Label htmlFor={`published-${item.id}`}>Publier</Label>
-                                    <p className="text-xs text-muted-foreground">
-                                        Rendre ce produit visible sur la page publique.
-                                    </p>
-                                </div>
-                                <Switch
-                                    id={`published-${item.id}`}
-                                    checked={item.published}
-                                    onCheckedChange={checked => handleItemChange(item.id, 'published', checked)}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
-                )
-            })}
+                            <Switch
+                                id={`published-${item.id}`}
+                                checked={item.published}
+                                onCheckedChange={checked => handleItemChange(item.id, 'published', checked)}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
         </div>
         </div>
     </>

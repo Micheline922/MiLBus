@@ -58,14 +58,14 @@ export function loadData(username: string): AppData {
     }
 }
 
+export function saveData<K extends keyof AppData>(
+    username: string,
+    key: K,
+    value: AppData[K]
+): void;
 export function saveData(
     username: string,
     data: AppData
-): void;
-export function saveData<K extends keyof AppData>(
-    username:string,
-    key: K,
-    value: AppData[K]
 ): void;
 export function saveData<K extends keyof AppData>(
     username: string,
@@ -84,13 +84,7 @@ export function saveData<K extends keyof AppData>(
             localStorage.setItem(storageKey, JSON.stringify(updatedData));
         } else if (typeof keyOrData === 'object') {
              // Saving the entire AppData object
-            const essentialData = {
-                user: (keyOrData as AppData).user,
-                stats: (keyOrData as AppData).stats,
-                // We only save a small part of the data to avoid quota errors.
-                // The rest is handled by specific key-value saves.
-            };
-            localStorage.setItem(storageKey, JSON.stringify(essentialData));
+            localStorage.setItem(storageKey, JSON.stringify(keyOrData));
         }
     } catch (error) {
         console.error("Failed to save data to localStorage", error);
