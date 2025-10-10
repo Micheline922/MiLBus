@@ -55,8 +55,9 @@ function ShowcaseContent() {
 
         try {
             const data: AppData = loadData(usernameToShowcase);
-            if (data) {
-                setItems(data.showcase || []);
+            if (data && data.showcase) {
+                // Filter for items that have a valid image and name
+                setItems(data.showcase.filter(item => item.imageUrl && item.name !== "Nouveau Produit"));
                 setBusinessName(data.user?.businessName || "MiLBus");
                 setCurrency(data.user?.currency || 'FC');
             } else {
@@ -127,7 +128,7 @@ function ShowcaseContent() {
                             <CardDescription className="font-semibold text-primary">{(item.price ?? 0).toFixed(2)} {currencySymbol}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-3 pt-0 mt-auto">
-                            <Button className="w-full" onClick={() => addItem({ ...item, price: item.price ?? 0, description: '', published: true })}>
+                            <Button className="w-full" onClick={() => addItem({ ...item, price: item.price ?? 0, quantity: 1 })}>
                                 <ShoppingCart className="mr-2 h-4 w-4" /> Ajouter
                             </Button>
                         </CardContent>

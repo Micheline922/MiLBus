@@ -4,95 +4,108 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { loadData, saveData } from '@/lib/storage';
-import { AppData, Product, ShowcaseItem, Wig, Pastry } from '@/lib/data';
+import { ShowcaseItem } from '@/lib/data';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Save, ImagePlus, Eye, Copy, QrCode, Share2 } from 'lucide-react';
+import { Save, ImagePlus, Trash2 } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function GalleryPage() {
   const { user, username } = useAuth();
   const { toast } = useToast();
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[] | null>(null);
-  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  
-  const loadShowcaseData = (currentUsername: string) => {
-      const data = loadData(currentUsername);
-
-      const allProductsFromInventory: Partial<Product & Wig & Pastry>[] = [
-        ...data.products,
-        ...data.wigs.map(w => ({ ...w, id: w.id, name: w.wigDetails, price: w.sellingPrice, stock: w.remaining })),
-        ...data.pastries.map(p => ({ ...p, id: p.id, name: p.name, price: p.unitPrice, stock: p.remaining })),
-      ];
-      
-      const existingShowcaseData = data.showcase || [];
-      const existingShowcaseMap = new Map(existingShowcaseData.map(item => [item.id, item]));
-
-      const synchronizedShowcaseItems: ShowcaseItem[] = allProductsFromInventory.map(p => {
-        const existingItem = existingShowcaseMap.get(p.id!);
-        return {
-          id: p.id!,
-          name: existingItem?.name || p.name!,
-          price: existingItem?.price ?? p.price ?? (p as any).sellingPrice ?? (p as any).unitPrice,
-          imageUrl: existingItem?.imageUrl || `https://picsum.photos/seed/${p.id}/400/300`,
-        };
-      });
-      setShowcaseItems(synchronizedShowcaseItems);
-  };
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const itemImageFileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
     if (username) {
-      loadShowcaseData(username);
+      const data = loadData(username);
+      setShowcaseItems(data.showcase || []);
     }
   }, [username]);
-  
 
   const handleItemChange = (id: string, field: keyof Omit<ShowcaseItem, 'imageUrl'>, value: string | number) => {
-    if (!showcaseItems) return;
-
-    const updatedItems = showcaseItems.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    );
-    setShowcaseItems(updatedItems);
+    setShowcaseItems(prev => {
+        if (!prev) return null;
+        return prev.map(item =>
+            item.id === id ? { ...item, [field]: value } : item
+        );
+    });
   };
-  
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: string) => {
+
+  const handleItemImageChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: string) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        
-        setShowcaseItems(prevItems => {
-            if (!prevItems) return null;
-            return prevItems.map(item => 
-                item.id === itemId ? {...item, imageUrl: result } : item
-            );
-        });
+        setShowcaseItems(prev => prev ? prev.map(item => item.id === itemId ? { ...item, imageUrl: result } : item) : null);
       };
       reader.readAsDataURL(file);
     }
   };
+  
+  const handleAddNewImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newItems: ShowcaseItem[] = [];
+    const filesArray = Array.from(files);
+
+    let loadedFiles = 0;
+
+    filesArray.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const newItem: ShowcaseItem = {
+                id: `new_${Date.now()}_${index}`,
+                name: "Nouveau Produit",
+                price: 0,
+                imageUrl: reader.result as string,
+            };
+            newItems.push(newItem);
+            loadedFiles++;
+
+            if (loadedFiles === filesArray.length) {
+                setShowcaseItems(prev => [...(prev || []), ...newItems]);
+                toast({
+                    title: `${filesArray.length} image(s) ajoutée(s)`,
+                    description: "N'oubliez pas de sauvegarder la galerie."
+                });
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+  };
+
+  const handleDeleteItem = (id: string) => {
+    setShowcaseItems(prev => prev ? prev.filter(item => item.id !== id) : null);
+    toast({
+        variant: 'destructive',
+        title: "Article supprimé",
+        description: "L'article a été retiré. Sauvegardez pour confirmer."
+    })
+  };
 
   const handleSaveChanges = () => {
     if (!username || !showcaseItems) return;
-    
     saveData(username, 'showcase', showcaseItems);
-
     toast({
         title: "Galerie mise à jour !",
         description: "Vos modifications ont été enregistrées avec succès.",
     });
   };
+  
 
   if (!showcaseItems) {
     return <div>Chargement de la galerie...</div>;
   }
-  
+
   const currency = user?.currency === 'USD' ? '$' : 'FC';
 
   return (
@@ -102,10 +115,21 @@ export default function GalleryPage() {
                 <div>
                     <h1 className="text-3xl font-headline font-bold tracking-tight">Galerie</h1>
                     <p className="text-muted-foreground">
-                        Gérez ici l'apparence des produits sur la boutique publique.
+                        Ajoutez, modifiez et organisez les photos de vos produits pour la vitrine publique.
                     </p>
                 </div>
                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        <ImagePlus className="mr-2 h-4 w-4" /> Ajouter des images
+                    </Button>
+                    <Input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleAddNewImages}
+                        className="hidden"
+                        accept="image/*"
+                        multiple
+                    />
                     <Button onClick={handleSaveChanges}>
                         <Save className="mr-2 h-4 w-4" /> Sauvegarder la Galerie
                     </Button>
@@ -115,31 +139,48 @@ export default function GalleryPage() {
             <Carousel
                 opts={{
                     align: "start",
-                    loop: true,
+                    loop: false,
                 }}
                 className="w-full"
             >
                 <CarouselContent>
                     {showcaseItems.map(item => (
-                        <CarouselItem key={item.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                            <div className="p-1">
-                                <Card>
-                                    <CardHeader>
-                                        <div className='relative w-full h-64 mb-4 group'>
-                                            <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
-                                            <Button size="sm" variant="secondary" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => fileInputRefs.current[item.id]?.click()}>
-                                                <ImagePlus className="mr-2 h-4 w-4" /> Changer
-                                            </Button>
-                                            <Input 
-                                                type="file" 
-                                                className="hidden" 
-                                                ref={el => fileInputRefs.current[item.id] = el}
-                                                onChange={(e) => handleImageChange(e, item.id)}
-                                                accept="image/*"
-                                            />
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
+                        <CarouselItem key={item.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                            <div className="p-1 h-full">
+                                <Card className="flex flex-col h-full">
+                                    <div className='relative w-full h-64 mb-4 group'>
+                                        <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                                        <Button size="sm" variant="secondary" className="absolute top-2 right-2" onClick={() => itemImageFileInputRefs.current[item.id]?.click()}>
+                                            <ImagePlus className="h-4 w-4" />
+                                        </Button>
+                                        <Input 
+                                            type="file" 
+                                            className="hidden" 
+                                            ref={el => itemImageFileInputRefs.current[item.id] = el}
+                                            onChange={(e) => handleItemImageChange(e, item.id)}
+                                            accept="image/*"
+                                        />
+                                         <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button size="sm" variant="destructive" className="absolute bottom-2 right-2">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Êtes-vous sûr(e) ?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Cette action supprimera l'article de la galerie. Cette action est irréversible après sauvegarde.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleDeleteItem(item.id)}>Supprimer</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
+                                    <CardContent className="space-y-4 flex-grow flex flex-col">
                                          <div className="space-y-2">
                                             <Label htmlFor={`name-${item.id}`}>Nom du produit</Label>
                                             <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
@@ -153,6 +194,11 @@ export default function GalleryPage() {
                             </div>
                         </CarouselItem>
                     ))}
+                     {showcaseItems.length === 0 && (
+                        <div className="w-full text-center py-20 text-muted-foreground col-span-full">
+                            <p>Votre galerie est vide. Ajoutez des images pour commencer.</p>
+                        </div>
+                    )}
                 </CarouselContent>
                 <CarouselPrevious className="hidden sm:flex" />
                 <CarouselNext className="hidden sm:flex" />
@@ -161,3 +207,4 @@ export default function GalleryPage() {
     </>
   );
 }
+

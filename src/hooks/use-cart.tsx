@@ -5,7 +5,6 @@ import { ShowcaseItem } from '@/lib/data';
 import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { useToast } from './use-toast';
 import { useParams } from 'next/navigation';
-import { loadData } from '@/lib/storage';
 
 export type CartItem = ShowcaseItem & {
   quantity: number;
@@ -13,7 +12,7 @@ export type CartItem = ShowcaseItem & {
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: ShowcaseItem) => void;
+  addItem: (item: CartItem) => void;
   removeItem: (itemId: string) => void;
   updateItemQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
@@ -50,7 +49,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [items]);
 
-  const addItem = (item: ShowcaseItem) => {
+  const addItem = (item: CartItem) => {
     setItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.id === item.id);
       if (existingItem) {
@@ -121,5 +120,3 @@ export const useCart = (): CartContextType => {
   }
   return context;
 };
-
-    
