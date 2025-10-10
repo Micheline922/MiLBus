@@ -70,12 +70,26 @@ export default function GalleryPage() {
     }
   }, [username]);
 
+  const saveGallery = (items: ShowcaseItem[]) => {
+      if (!username) return;
+      saveData(username, 'showcase', items);
+      toast({
+        title: "Galerie Sauvegardée !",
+        description: "Vos modifications ont été enregistrées.",
+        className: "bg-green-500 text-white",
+    });
+  }
+
   const handleItemChange = (id: string, field: keyof Omit<ShowcaseItem, 'imageUrl'>, value: string | number | boolean) => {
     setShowcaseItems(prev => {
         if (!prev) return null;
-        return prev.map(item =>
+        const newItems = prev.map(item =>
             item.id === id ? { ...item, [field]: value } : item
         );
+        if (username) {
+          saveData(username, 'showcase', newItems);
+        }
+        return newItems;
     });
   };
 
@@ -84,7 +98,14 @@ export default function GalleryPage() {
     if (file) {
       try {
         const compressedDataUrl = await compressImage(file);
-        setShowcaseItems(prev => prev ? prev.map(item => item.id === itemId ? { ...item, imageUrl: compressedDataUrl } : item) : null);
+        setShowcaseItems(prev => {
+          if (!prev) return null;
+          const newItems = prev.map(item => item.id === itemId ? { ...item, imageUrl: compressedDataUrl } : item);
+          if (username) {
+            saveData(username, 'showcase', newItems);
+          }
+          return newItems;
+        });
       } catch (error) {
         console.error("Image compression failed:", error);
         toast({
@@ -98,7 +119,7 @@ export default function GalleryPage() {
   
   const handleAddNewImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || !username) return;
 
     const newItems: ShowcaseItem[] = [];
     const filesArray = Array.from(files);
@@ -121,10 +142,13 @@ export default function GalleryPage() {
         newItems.push(newItem);
       }
       
-      setShowcaseItems(prev => [...(prev || []), ...newItems]);
+      const updatedItems = [...(showcaseItems || []), ...newItems];
+      setShowcaseItems(updatedItems);
+      saveData(username, 'showcase', updatedItems);
+      
       toast({
         title: `${filesArray.length} image(s) ajoutée(s)`,
-        description: "N'oubliez pas de sauvegarder la galerie."
+        description: "Vos modifications sont enregistrées automatiquement."
       });
 
     } catch (error) {
@@ -138,25 +162,18 @@ export default function GalleryPage() {
   };
 
   const handleDeleteItem = (id: string) => {
-    setShowcaseItems(prev => prev ? prev.filter(item => item.id !== id) : null);
-    toast({
-        variant: 'destructive',
-        title: "Article supprimé",
-        description: "L'article a été retiré. Sauvegardez pour confirmer."
-    })
-  };
-
-  const handleSaveGallery = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!username || !showcaseItems) return;
-    saveData(username, 'showcase', showcaseItems);
-    toast({
-        title: "Galerie Sauvegardée !",
-        description: "Vos modifications ont été enregistrées.",
-        className: "bg-green-500 text-white",
+    setShowcaseItems(prev => {
+      if (!prev || !username) return null;
+      const newItems = prev.filter(item => item.id !== id);
+      saveData(username, 'showcase', newItems);
+      toast({
+          variant: 'destructive',
+          title: "Article supprimé",
+          description: "L'article a été retiré de la galerie."
+      });
+      return newItems;
     });
   };
-  
 
   if (!showcaseItems) {
     return <div>Chargement de la galerie...</div>;
@@ -171,7 +188,7 @@ export default function GalleryPage() {
             <div>
                 <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Vitrine</h1>
                 <p className="text-muted-foreground">
-                    Ajoutez, modifiez et publiez les produits de votre vitrine.
+                    Ajoutez, modifiez et publiez les produits de votre vitrine. Chaque modification est sauvegardée automatiquement.
                 </p>
             </div>
              <div className="flex items-center space-x-2">
@@ -189,7 +206,7 @@ export default function GalleryPage() {
             </div>
         </div>
         
-        <form onSubmit={handleSaveGallery}>
+        <form>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {showcaseItems.map(item => (
                     <div key={item.id} className="w-full">
@@ -216,7 +233,7 @@ export default function GalleryPage() {
                                         <AlertDialogHeader>
                                             <AlertDialogTitle>Êtes-vous sûr(e) ?</AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                Cette action supprimera l'article de la galerie. Cette action est irréversible après sauvegarde.
+                                                Cette action supprimera l'article de la galerie. Cette action est irréversible.
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
@@ -252,12 +269,6 @@ export default function GalleryPage() {
                         <p>Votre galerie est vide. Ajoutez des images pour commencer.</p>
                     </div>
                 )}
-            </div>
-             <div className="flex justify-center mt-8">
-                <Button size="lg" type="submit">
-                    <Save className="mr-2 h-5 w-5" />
-                    Sauvegarder la Galerie
-                </Button>
             </div>
         </form>
       </div>
