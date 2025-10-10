@@ -45,7 +45,6 @@ function compressImage(file: File): Promise<string> {
                     return reject(new Error('Could not get canvas context'));
                 }
                 ctx.drawImage(img, 0, 0, width, height);
-                // Get the data-URL with JPEG format and a quality level of 0.8
                 resolve(canvas.toDataURL('image/jpeg', 0.8));
             };
             img.onerror = reject;
@@ -147,7 +146,8 @@ export default function GalleryPage() {
     })
   };
 
-  const handleSaveGallery = () => {
+  const handleSaveGallery = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!username || !showcaseItems) return;
     saveData(username, 'showcase', showcaseItems);
     toast({
@@ -166,36 +166,37 @@ export default function GalleryPage() {
 
   return (
     <>
-        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-            <div className="flex items-center justify-between space-y-2">
-                <div>
-                    <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Vitrine</h1>
-                    <p className="text-muted-foreground">
-                        Ajoutez, modifiez et publiez les produits de votre vitrine.
-                    </p>
-                </div>
-                 <div className="flex items-center space-x-2">
-                    <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
-                        <ImagePlus className="mr-2 h-4 w-4" /> Ajouter des images
-                    </Button>
-                    <Input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleAddNewImages}
-                        className="hidden"
-                        accept="image/*"
-                        multiple
-                    />
-                </div>
+      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+            <div>
+                <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Vitrine</h1>
+                <p className="text-muted-foreground">
+                    Ajoutez, modifiez et publiez les produits de votre vitrine.
+                </p>
             </div>
+             <div className="flex items-center space-x-2">
+                <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                    <ImagePlus className="mr-2 h-4 w-4" /> Ajouter des images
+                </Button>
+                <Input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleAddNewImages}
+                    className="hidden"
+                    accept="image/*"
+                    multiple
+                />
+            </div>
+        </div>
         
+        <form onSubmit={handleSaveGallery}>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {showcaseItems.map(item => (
                     <div key={item.id} className="w-full">
                         <Card className="flex flex-col h-full">
                             <div className='relative w-full aspect-square mb-4 group'>
                                 <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
-                                <Button size="sm" variant="secondary" className="absolute top-2 right-2" onClick={() => itemImageFileInputRefs.current[item.id]?.click()}>
+                                <Button type="button" size="sm" variant="secondary" className="absolute top-2 right-2" onClick={() => itemImageFileInputRefs.current[item.id]?.click()}>
                                     <ImagePlus className="h-4 w-4" />
                                 </Button>
                                 <Input 
@@ -207,7 +208,7 @@ export default function GalleryPage() {
                                 />
                                  <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button size="sm" variant="destructive" className="absolute bottom-2 right-2">
+                                        <Button type="button" size="sm" variant="destructive" className="absolute bottom-2 right-2">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </AlertDialogTrigger>
@@ -253,12 +254,13 @@ export default function GalleryPage() {
                 )}
             </div>
              <div className="flex justify-center mt-8">
-                <Button size="lg" onClick={handleSaveGallery}>
+                <Button size="lg" type="submit">
                     <Save className="mr-2 h-5 w-5" />
                     Sauvegarder la Galerie
                 </Button>
             </div>
-        </div>
+        </form>
+      </div>
     </>
   );
 }
