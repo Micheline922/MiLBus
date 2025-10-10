@@ -41,12 +41,38 @@ export default function DebtsPage() {
       setDebts(data.debts);
     }
   }, [username]);
+  
+  const handleSaveData = (key: 'debts', value: Debt[]) => {
+    if (!username) return;
+    try {
+      saveData(username, key, value);
+      return true;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('quota')) {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de Sauvegarde',
+          description: "Le stockage local est plein. Impossible de sauvegarder les modifications.",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur',
+          description: "Une erreur est survenue lors de la sauvegarde.",
+          duration: 5000,
+        });
+        console.error(error);
+      }
+      return false;
+    }
+  };
 
   const handleDebtsSubmit = (values: { debts: Debt[] }) => {
-    if (!username) return;
-    setDebts(values.debts);
-    saveData(username, 'debts', values.debts);
-    setEditDialogOpen(false);
+    if (handleSaveData('debts', values.debts)) {
+        setDebts(values.debts);
+        setEditDialogOpen(false);
+    }
   };
   
   const handleAddDebt = (values: AddDebtFormValues) => {
@@ -58,13 +84,14 @@ export default function DebtsPage() {
     };
 
     const updatedDebts = [...debts, newDebt];
-    setDebts(updatedDebts);
-    saveData(username, 'debts', updatedDebts);
-    setAddDialogOpen(false);
-    toast({
-      title: "Dette ajoutée !",
-      description: `La dette de ${newDebt.debtorName} a été enregistrée.`,
-    });
+    if (handleSaveData('debts', updatedDebts)) {
+      setDebts(updatedDebts);
+      setAddDialogOpen(false);
+      toast({
+        title: "Dette ajoutée !",
+        description: `La dette de ${newDebt.debtorName} a été enregistrée.`,
+      });
+    }
   };
 
   if (!debts) {

@@ -91,13 +91,40 @@ export default function DashboardPage() {
     })).filter(d => d.total > 0);
 
   }, [appData?.sales]);
+  
+  const handleSaveData = (key: keyof AppData, value: any) => {
+    if (!username) return;
+    try {
+      saveData(username, key, value);
+      return true;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('quota')) {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de Sauvegarde',
+          description: "Le stockage local est plein. Impossible de sauvegarder les modifications.",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur',
+          description: "Une erreur est survenue lors de la sauvegarde.",
+          duration: 5000,
+        });
+        console.error(error);
+      }
+      return false;
+    }
+  };
 
   const updateData = <K extends keyof AppData>(key: K, value: AppData[K]) => {
     if (!username || !appData) return;
-    const updatedData = { ...appData, [key]: value };
-    setAppData(updatedData);
-    saveData(username, key, value);
-    setDialogOpen(prev => ({ ...prev, [key]: false }));
+    if (handleSaveData(key, value)) {
+        const updatedData = { ...appData, [key]: value };
+        setAppData(updatedData);
+        setDialogOpen(prev => ({ ...prev, [key]: false }));
+    }
   };
 
   const handleOpenDialog = (id: string, isOpen: boolean) => {
@@ -105,34 +132,35 @@ export default function DashboardPage() {
   };
   
   const handleStatsSubmit = (values: Stats) => {
-    if (!username) return;
-    setStats(values);
-    saveData(username, 'stats', values);
-    handleOpenDialog('stats', false);
+    if (handleSaveData('stats', values)) {
+      setStats(values);
+      handleOpenDialog('stats', false);
+    }
   };
   
   const handleInventorySubmit = (values: { products: Product[], wigs: Wig[], pastries: Pastry[] }) => {
     if (!username || !appData) return;
     
-    const updatedData = { 
-        ...appData, 
-        products: values.products,
-        wigs: values.wigs,
-        pastries: values.pastries,
-    };
+    let success = true;
+    success = handleSaveData('products', values.products) && success;
+    success = handleSaveData('wigs', values.wigs) && success;
+    success = handleSaveData('pastries', values.pastries) && success;
     
-    setAppData(updatedData);
+    if (success) {
+      const updatedData = { 
+          ...appData, 
+          products: values.products,
+          wigs: values.wigs,
+          pastries: values.pastries,
+      };
+      setAppData(updatedData);
+      inventoryForm.reset(values);
 
-    saveData(username, 'products', values.products);
-    saveData(username, 'wigs', values.wigs);
-    saveData(username, 'pastries', values.pastries);
-    
-    inventoryForm.reset(values);
-
-    toast({
-      title: "Inventaire sauvegardé !",
-      description: "Vos modifications ont été enregistrées avec succès.",
-    });
+      toast({
+        title: "Inventaire sauvegardé !",
+        description: "Vos modifications ont été enregistrées avec succès.",
+      });
+    }
   }
   
   const handleExport = () => {

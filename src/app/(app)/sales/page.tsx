@@ -32,12 +32,38 @@ export default function SalesPage() {
       setSales(data.sales);
     }
   }, [username]);
+  
+  const handleSaveData = (key: 'sales', value: Sale[]) => {
+    if (!username) return;
+    try {
+      saveData(username, key, value);
+      return true;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('quota')) {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de Sauvegarde',
+          description: "Le stockage local est plein. Impossible de sauvegarder les modifications.",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur',
+          description: "Une erreur est survenue lors de la sauvegarde.",
+          duration: 5000,
+        });
+        console.error(error);
+      }
+      return false;
+    }
+  };
 
   const handleSalesSubmit = (values: { sales: Sale[] }) => {
-    if (!username) return;
-    setSales(values.sales);
-    saveData(username, 'sales', values.sales);
-    setEditDialogOpen(false);
+    if (handleSaveData('sales', values.sales)) {
+      setSales(values.sales);
+      setEditDialogOpen(false);
+    }
   };
   
   const handleAddSale = (values: AddSaleFormValues) => {
@@ -50,13 +76,14 @@ export default function SalesPage() {
     };
 
     const updatedSales = [...sales, newSale];
-    setSales(updatedSales);
-    saveData(username, 'sales', updatedSales);
-    setAddDialogOpen(false);
-    toast({
-      title: "Vente enregistrée !",
-      description: `La vente de ${newSale.productName} a été ajoutée.`,
-    });
+    if (handleSaveData('sales', updatedSales)) {
+      setSales(updatedSales);
+      setAddDialogOpen(false);
+      toast({
+        title: "Vente enregistrée !",
+        description: `La vente de ${newSale.productName} a été ajoutée.`,
+      });
+    }
   };
 
   const handleExport = () => {

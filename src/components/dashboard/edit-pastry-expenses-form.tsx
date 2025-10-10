@@ -18,6 +18,7 @@ import { Trash2 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { PastryExpense } from '@/lib/data';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   pastryExpenses: z.array(
@@ -39,6 +40,7 @@ type EditPastryExpensesFormProps = {
 };
 
 export default function EditPastryExpensesForm({ initialValues, onSubmit }: EditPastryExpensesFormProps) {
+  const { toast } = useToast();
   const form = useForm<EditPastryExpensesFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues,
@@ -133,5 +135,3 @@ export default function EditPastryExpensesForm({ initialValues, onSubmit }: Edit
     </Form>
   );
 }
-
-    

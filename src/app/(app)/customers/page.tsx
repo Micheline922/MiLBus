@@ -37,11 +37,37 @@ export default function CustomersPage() {
     }
   }, [username]);
   
-  const handleCustomersSubmit = (values: { customers: Customer[] }) => {
+  const handleSaveData = (key: 'customers', value: Customer[]) => {
     if (!username) return;
-    setCustomers(values.customers);
-    saveData(username, 'customers', values.customers);
-    setEditDialogOpen(false);
+    try {
+      saveData(username, key, value);
+      return true;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('quota')) {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de Sauvegarde',
+          description: "Le stockage local est plein. Impossible de sauvegarder les modifications.",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur',
+          description: "Une erreur est survenue lors de la sauvegarde.",
+          duration: 5000,
+        });
+        console.error(error);
+      }
+      return false;
+    }
+  };
+
+  const handleCustomersSubmit = (values: { customers: Customer[] }) => {
+    if (handleSaveData('customers', values.customers)) {
+        setCustomers(values.customers);
+        setEditDialogOpen(false);
+    }
   };
   
   const handleAddCustomer = (newCustomer: Omit<Customer, 'id'>) => {
@@ -49,13 +75,15 @@ export default function CustomersPage() {
     const newId = `c${customers.length + 1}_${Date.now()}`;
     const customerToAdd: Customer = { ...newCustomer, id: newId };
     const updatedCustomers = [...customers, customerToAdd];
-    setCustomers(updatedCustomers);
-    saveData(username, 'customers', updatedCustomers);
-    setAddDialogOpen(false);
-    toast({
-        title: "Client ajouté !",
-        description: `${newCustomer.name} a été ajouté à votre liste de clients.`,
-    });
+    
+    if (handleSaveData('customers', updatedCustomers)) {
+      setCustomers(updatedCustomers);
+      setAddDialogOpen(false);
+      toast({
+          title: "Client ajouté !",
+          description: `${newCustomer.name} a été ajouté à votre liste de clients.`,
+      });
+    }
   };
 
   const handleContactByEmail = (customer: Customer) => {

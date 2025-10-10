@@ -41,11 +41,37 @@ export default function InvoicesPage() {
     }
   }, [user?.username]);
 
-  const handleInvoicesSubmit = (values: { invoices: Invoice[] }) => {
+  const handleSaveData = (key: 'invoices', value: Invoice[]) => {
     if (!user?.username) return;
-    setInvoices(values.invoices);
-    saveData(user.username, 'invoices', values.invoices);
-    setEditDialogOpen(false);
+    try {
+      saveData(user.username, key, value);
+      return true;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('quota')) {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de Sauvegarde',
+          description: "Le stockage local est plein. Impossible de sauvegarder les modifications.",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur',
+          description: "Une erreur est survenue lors de la sauvegarde.",
+          duration: 5000,
+        });
+        console.error(error);
+      }
+      return false;
+    }
+  };
+
+  const handleInvoicesSubmit = (values: { invoices: Invoice[] }) => {
+    if (handleSaveData('invoices', values.invoices)) {
+      setInvoices(values.invoices);
+      setEditDialogOpen(false);
+    }
   };
   
   const handleAddInvoice = (values: AddInvoiceFormValues) => {
@@ -59,13 +85,14 @@ export default function InvoicesPage() {
     };
 
     const updatedInvoices = [...invoices, newInvoice];
-    setInvoices(updatedInvoices);
-    saveData(user.username, 'invoices', updatedInvoices);
-    setAddDialogOpen(false);
-    toast({
-      title: "Facture créée !",
-      description: `La facture pour ${newInvoice.customerName} a été ajoutée.`,
-    });
+    if (handleSaveData('invoices', updatedInvoices)) {
+        setInvoices(updatedInvoices);
+        setAddDialogOpen(false);
+        toast({
+          title: "Facture créée !",
+          description: `La facture pour ${newInvoice.customerName} a été ajoutée.`,
+        });
+    }
   };
 
   const handleDownload = (invoice: Invoice) => {

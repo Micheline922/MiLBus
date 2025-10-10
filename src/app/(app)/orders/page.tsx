@@ -36,12 +36,38 @@ export default function OrdersPage() {
       setOrders(data.orders);
     }
   }, [username]);
+  
+  const handleSaveData = (key: 'orders' | 'invoices', value: any) => {
+    if (!username) return;
+    try {
+      saveData(username, key, value);
+      return true;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('quota')) {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de Sauvegarde',
+          description: "Le stockage local est plein. Impossible de sauvegarder les modifications.",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur',
+          description: "Une erreur est survenue lors de la sauvegarde.",
+          duration: 5000,
+        });
+        console.error(error);
+      }
+      return false;
+    }
+  };
 
   const handleOrdersSubmit = (values: { orders: Order[] }) => {
-    if (!username) return;
-    setOrders(values.orders);
-    saveData(username, 'orders', values.orders);
-    setDialogOpen(false);
+    if (handleSaveData('orders', values.orders)) {
+        setOrders(values.orders);
+        setDialogOpen(false);
+    }
   };
   
   const handleGenerateInvoice = (order: Order) => {
@@ -50,12 +76,13 @@ export default function OrdersPage() {
     const appData = loadData(username);
     const newInvoice = generateInvoiceFromOrder(order, appData.invoices.length);
     const updatedInvoices = [...appData.invoices, newInvoice];
-    saveData(username, 'invoices', updatedInvoices);
     
-    toast({
-        title: "Facture générée !",
-        description: `La facture ${newInvoice.id} a été créée pour la commande de ${order.customerName}.`,
-    });
+    if (handleSaveData('invoices', updatedInvoices)) {
+        toast({
+            title: "Facture générée !",
+            description: `La facture ${newInvoice.id} a été créée pour la commande de ${order.customerName}.`,
+        });
+    }
   };
 
   const handleContactByEmail = (order: Order) => {

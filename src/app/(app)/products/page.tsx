@@ -54,6 +54,32 @@ export default function ProductsPage() {
     }
   }, [username]);
   
+  const handleSaveData = (key: 'products' | 'wigs' | 'pastries', value: any[]) => {
+    if (!username) return;
+    try {
+      saveData(username, key, value);
+      return true;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('quota')) {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de Sauvegarde',
+          description: "Le stockage local est plein. Impossible de sauvegarder les modifications.",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur',
+          description: "Une erreur est survenue lors de la sauvegarde.",
+          duration: 5000,
+        });
+        console.error(error);
+      }
+      return false;
+    }
+  };
+
   const handleOpenDialog = (type: 'add', id: string, isOpen: boolean) => {
     setAddDialogOpen(prev => ({ ...prev, [id]: isOpen }));
   };
@@ -68,28 +94,26 @@ export default function ProductsPage() {
         case 'product':
             storageKey = 'products';
             updatedItems = products!.filter(p => p.id !== deleteAlert.item!.id);
-            setProducts(updatedItems as Product[]);
+            if (handleSaveData(storageKey, updatedItems)) {
+              setProducts(updatedItems as Product[]);
+            }
             break;
         case 'wig':
             storageKey = 'wigs';
             updatedItems = wigs!.filter(w => w.id !== deleteAlert.item!.id);
-            setWigs(updatedItems as Wig[]);
+            if (handleSaveData(storageKey, updatedItems)) {
+              setWigs(updatedItems as Wig[]);
+            }
             break;
         case 'pastry':
             storageKey = 'pastries';
             updatedItems = pastries!.filter(p => p.id !== deleteAlert.item!.id);
-            setPastries(updatedItems as Pastry[]);
+            if (handleSaveData(storageKey, updatedItems)) {
+              setPastries(updatedItems as Pastry[]);
+            }
             break;
     }
-
-    if (updatedItems) {
-      saveData(username, storageKey, updatedItems);
-      toast({
-        title: "Succès",
-        description: "L'élément a été supprimé.",
-      });
-    }
-
+    toast({ title: "Succès", description: "L'élément a été supprimé." });
     setDeleteAlert({ isOpen: false, item: null, type: null });
   };
 
@@ -101,43 +125,51 @@ export default function ProductsPage() {
 
   const handleInventorySubmit = (values: { products: Product[], wigs: Wig[], pastries: Pastry[] }) => {
     if (!username) return;
-    setProducts(values.products);
-    setWigs(values.wigs);
-    setPastries(values.pastries);
-    saveData(username, 'products', values.products);
-    saveData(username, 'wigs', values.wigs);
-    saveData(username, 'pastries', values.pastries);
-    setEditDialogOpen(false);
+    let success = true;
+    success = handleSaveData('products', values.products) && success;
+    success = handleSaveData('wigs', values.wigs) && success;
+    success = handleSaveData('pastries', values.pastries) && success;
+
+    if(success) {
+      setProducts(values.products);
+      setWigs(values.wigs);
+      setPastries(values.pastries);
+      setEditDialogOpen(false);
+      toast({ title: "Succès", description: "Inventaire mis à jour."});
+    }
   };
   
   const handleAddProduct = (newProduct: Omit<Product, 'id' | 'category'>) => {
     if (!username || !products) return;
     const productToAdd: Product = { ...newProduct, id: `p${products.length + 1}_${Date.now()}`, category: 'Bijoux & Accessoires' };
     const updatedProducts = [...products, productToAdd];
-    setProducts(updatedProducts);
-    saveData(username, 'products', updatedProducts);
-    handleOpenDialog('add','products', false);
-     toast({ title: "Succès", description: "Produit ajouté."});
+    if (handleSaveData('products', updatedProducts)) {
+      setProducts(updatedProducts);
+      handleOpenDialog('add','products', false);
+      toast({ title: "Succès", description: "Produit ajouté."});
+    }
   };
   
   const handleAddWig = (newWig: Omit<Wig, 'id'>) => {
     if (!username || !wigs) return;
     const wigToAdd: Wig = { ...newWig, id: `w${wigs.length + 1}_${Date.now()}` };
     const updatedWigs = [...wigs, wigToAdd];
-    setWigs(updatedWigs);
-    saveData(username, 'wigs', updatedWigs);
-    handleOpenDialog('add', 'wigs', false);
-    toast({ title: "Succès", description: "Perruque ajoutée."});
+    if (handleSaveData('wigs', updatedWigs)) {
+      setWigs(updatedWigs);
+      handleOpenDialog('add', 'wigs', false);
+      toast({ title: "Succès", description: "Perruque ajoutée."});
+    }
   };
   
   const handleAddPastry = (newPastry: Omit<Pastry, 'id'>) => {
     if (!username || !pastries) return;
     const pastryToAdd: Pastry = { ...newPastry, id: `pa${pastries.length + 1}_${Date.now()}` };
     const updatedPastries = [...pastries, pastryToAdd];
-    setPastries(updatedPastries);
-    saveData(username, 'pastries', updatedPastries);
-    handleOpenDialog('add', 'pastries', false);
-    toast({ title: "Succès", description: "Pâtisserie ajoutée."});
+    if (handleSaveData('pastries', updatedPastries)) {
+      setPastries(updatedPastries);
+      handleOpenDialog('add', 'pastries', false);
+      toast({ title: "Succès", description: "Pâtisserie ajoutée."});
+    }
   };
   
   const handleExport = () => {
