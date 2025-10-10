@@ -100,15 +100,21 @@ export default function ShowcaseManagerPage() {
 
   const handleUpdateAndRedirect = () => {
     if (!username || !showcaseItems) return;
-    
-    const itemsToSave = showcaseItems.map(item => {
-      // Create a copy of the item and remove the temporary image data if it exists
-      const { ...rest } = item;
-      // The imageUrl is only the placeholder, as we don't save image data.
-      return rest;
-    });
 
-    // We only save the fields that are meant to be persisted, excluding temp image data.
+    // Create a "clean" version of items for saving, excluding temporary image URLs.
+    const itemsToSave = showcaseItems.map(item => {
+        const { ...itemToSave } = item;
+        // This ensures the potentially large temp data URL is not part of the saved object.
+        // We only save the original placeholder URL.
+        const originalItem = loadData(username).showcase.find(i => i.id === item.id) 
+            || { imageUrl: `https://picsum.photos/seed/${item.id}/400/300` };
+            
+        return {
+            ...itemToSave,
+            imageUrl: originalItem.imageUrl
+        };
+    });
+    
     saveData(username, 'showcase', itemsToSave);
     
     toast({
