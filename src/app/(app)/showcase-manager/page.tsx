@@ -103,26 +103,25 @@ export default function ShowcaseManagerPage() {
 
     // Create a "clean" version of items for saving, excluding temporary image URLs.
     const itemsToSave = showcaseItems.map(item => {
-        const { ...itemToSave } = item;
-        // This ensures the potentially large temp data URL is not part of the saved object.
-        // We only save the original placeholder URL.
-        const originalItem = loadData(username).showcase.find(i => i.id === item.id) 
-            || { imageUrl: `https://picsum.photos/seed/${item.id}/400/300` };
-            
-        return {
-            ...itemToSave,
-            imageUrl: originalItem.imageUrl
-        };
-    });
-    
-    saveData(username, 'showcase', itemsToSave);
-    
-    toast({
-        title: "Vitrine mise à jour !",
-        description: "Vos modifications ont été enregistrées.",
+      const { ...itemToSave } = item;
+      return itemToSave;
     });
 
-    window.open(publicUrl, '_blank');
+    try {
+      saveData(username, 'showcase', itemsToSave);
+      toast({
+          title: "Vitrine mise à jour !",
+          description: "Vos modifications ont été enregistrées.",
+      });
+      window.open(publicUrl, '_blank');
+    } catch (e: any) {
+        console.error("Failed to save showcase data:", e);
+        toast({
+            variant: "destructive",
+            title: "Erreur de sauvegarde",
+            description: "Impossible de sauvegarder les données. Le stockage local est peut-être plein.",
+        });
+    }
   };
 
   const copyPublicUrl = () => {

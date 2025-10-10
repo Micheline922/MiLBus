@@ -60,11 +60,13 @@ function ShowcaseContent() {
                 setBusinessName(data.user?.businessName || "MiLBus");
                 setCurrency(data.user?.currency || 'FC');
             } else {
-                setError("Impossible de charger les données de la vitrine pour cet utilisateur.");
+                 setItems([]);
+                 setBusinessName("MiLBus");
+                 setCurrency('FC');
             }
         } catch (e) {
             console.error(e);
-            setError("Données de la vitrine corrompues ou introuvables.");
+            setError("Données de la vitrine corrompues ou introuvables. L'administrateur doit la configurer.");
         }
     }, [params.user]);
 
