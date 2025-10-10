@@ -13,11 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, ImagePlus, Send, Link as LinkIcon, Copy, PlusCircle, QrCode, Share2 } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Eye, ImagePlus, Copy, PlusCircle, QrCode, Share2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AddProductForm from '@/components/dashboard/add-product-form';
 import AddWigForm from '@/components/dashboard/add-wig-form';
 import AddPastryForm from '@/components/dashboard/add-pastry-form';
@@ -28,8 +26,6 @@ import SocialShare from '@/components/shared/social-share';
 export default function ShowcaseManagerPage() {
   const { username } = useAuth();
   const { toast } = useToast();
-  const router = useRouter();
-  const [appData, setAppData] = useState<AppData | null>(null);
   const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[] | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [addDialogOpen, setAddDialogOpen] = useState<Record<string, boolean>>({});
@@ -39,16 +35,16 @@ export default function ShowcaseManagerPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setPublicUrl(`${window.location.origin}/showcase/milbus`);
+      const url = `${window.location.origin}/showcase/milbus`;
+      setPublicUrl(url);
     }
   }, []);
 
   const loadShowcaseData = (username: string) => {
       const data = loadData(username);
-      setAppData(data);
 
-      const allProducts = [
-        ...data.products,
+      const allProductsFromInventory = [
+        ...data.products.map(p => ({ ...p, price: p.price, stock: p.stock })),
         ...data.wigs.map(w => ({ ...w, id: w.id, name: w.wigDetails, price: w.sellingPrice, stock: w.remaining })),
         ...data.pastries.map(p => ({ ...p, id: p.id, name: p.name, price: p.unitPrice, stock: p.remaining })),
       ];
@@ -56,9 +52,10 @@ export default function ShowcaseManagerPage() {
       const existingShowcaseData = data.showcase || [];
       const existingShowcaseMap = new Map(existingShowcaseData.map(item => [item.id, item]));
 
-      const initializedShowcase: ShowcaseItem[] = allProducts.map(p => {
+      const synchronizedShowcaseItems: ShowcaseItem[] = allProductsFromInventory.map(p => {
         const existingItem = existingShowcaseMap.get(p.id);
-        const originalProduct = (p as any);
+        const originalProduct = p as any;
+        
         return {
           id: p.id,
           name: existingItem?.name || p.name,
@@ -68,7 +65,7 @@ export default function ShowcaseManagerPage() {
           published: existingItem?.published || false,
         };
       });
-      setShowcaseItems(initializedShowcase);
+      setShowcaseItems(synchronizedShowcaseItems);
   }
 
   useEffect(() => {
@@ -89,10 +86,6 @@ export default function ShowcaseManagerPage() {
     setShowcaseItems(updatedItems);
   };
   
-  const handlePublishChange = (checked: boolean, itemId: string) => {
-    handleItemChange(itemId, 'published', checked);
-  };
-  
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: string) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -110,7 +103,7 @@ export default function ShowcaseManagerPage() {
     saveData(username, 'showcase', showcaseItems);
     
     toast({
-        title: "Vitrine mise à jour",
+        title: "Vitrine mise à jour !",
         description: "Vos modifications ont été enregistrées.",
     });
 
@@ -133,42 +126,48 @@ export default function ShowcaseManagerPage() {
     });
   };
 
+  const handleAddSuccess = () => {
+     if(username) {
+        loadShowcaseData(username); // Reload and sync data
+     }
+  }
+
   const handleAddProduct = (newProduct: Omit<Product, 'id' | 'category'>) => {
-    if (!username || !appData) return;
-    const products = appData.products;
+    if (!username) return;
+    const data = loadData(username);
+    const products = data.products;
     const productToAdd: Product = { ...newProduct, id: `p${products.length + 1}_${Date.now()}`, category: 'Bijoux & Accessoires' };
-    const updatedProducts = [...products, productToAdd];
-    saveData(username, 'products', updatedProducts);
+    saveData(username, 'products', [...products, productToAdd]);
     handleOpenDialog('add','products', false);
-    loadShowcaseData(username); // Reload data
+    handleAddSuccess();
     toast({ title: "Succès", description: "Produit ajouté."});
   };
   
   const handleAddWig = (newWig: Omit<Wig, 'id'>) => {
-    if (!username || !appData) return;
-    const wigs = appData.wigs;
+    if (!username) return;
+    const data = loadData(username);
+    const wigs = data.wigs;
     const wigToAdd: Wig = { ...newWig, id: `w${wigs.length + 1}_${Date.now()}` };
-    const updatedWigs = [...wigs, wigToAdd];
-    saveData(username, 'wigs', updatedWigs);
+    saveData(username, 'wigs', [...wigs, wigToAdd]);
     handleOpenDialog('add', 'wigs', false);
-    loadShowcaseData(username); // Reload data
+    handleAddSuccess();
     toast({ title: "Succès", description: "Perruque ajoutée."});
   };
   
   const handleAddPastry = (newPastry: Omit<Pastry, 'id'>) => {
-    if (!username || !appData) return;
-    const pastries = appData.pastries;
+    if (!username) return;
+    const data = loadData(username);
+    const pastries = data.pastries;
     const pastryToAdd: Pastry = { ...newPastry, id: `pa${pastries.length + 1}_${Date.now()}` };
-    const updatedPastries = [...pastries, pastryToAdd];
-    saveData(username, 'pastries', updatedPastries);
+    saveData(username, 'pastries', [...pastries, pastryToAdd]);
     handleOpenDialog('add', 'pastries', false);
-    loadShowcaseData(username); // Reload data
+    handleAddSuccess();
     toast({ title: "Succès", description: "Pâtisserie ajoutée."});
   };
 
 
   if (!showcaseItems) {
-    return <div>Chargement...</div>;
+    return <div>Chargement de la vitrine...</div>;
   }
 
   return (
@@ -220,7 +219,7 @@ export default function ShowcaseManagerPage() {
             <div>
             <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Vitrine</h1>
             <p className="text-muted-foreground">
-                Choisissez les produits à afficher, puis cliquez sur "Mettre à jour la vitrine".
+                Choisissez les produits à afficher, puis cliquez sur "Mettre à jour et voir".
             </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -305,7 +304,7 @@ export default function ShowcaseManagerPage() {
                             <Switch
                                 id={`published-${item.id}`}
                                 checked={item.published}
-                                onCheckedChange={checked => handlePublishChange(checked, item.id)}
+                                onCheckedChange={checked => handleItemChange(item.id, 'published', checked)}
                             />
                         </div>
                     </CardContent>

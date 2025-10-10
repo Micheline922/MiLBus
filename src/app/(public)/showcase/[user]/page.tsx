@@ -57,7 +57,7 @@ function ShowcaseContent() {
                 if (data && data.showcase) {
                     setItems(data.showcase.filter(item => item.published));
                     
-                    const userCredentials = localStorage.getItem(`${usernameToShowcase}-user-credentials`) || localStorage.getItem('milbus-user-credentials');
+                    const userCredentials = localStorage.getItem('milbus-user-credentials');
                     if (userCredentials) {
                          const parsedUser = JSON.parse(userCredentials);
                          setBusinessName(parsedUser.businessName || "MiLBus");
@@ -82,7 +82,19 @@ function ShowcaseContent() {
     }
     
     if (items.length === 0 && !error) {
-        return <div className="text-center py-10 text-muted-foreground">Aucun produit publié dans la vitrine pour le moment.</div>;
+        return (
+             <div className="container mx-auto p-4 md:p-8 text-center">
+                 <header className="relative text-center mb-10">
+                    <div className="inline-block bg-primary text-primary-foreground rounded-full p-3 mb-4">
+                        <MilbusLogo className="h-12 w-12" />
+                    </div>
+                    <h1 className="text-4xl font-headline font-bold text-primary mb-2">
+                       Bientôt de retour !
+                    </h1>
+                 </header>
+                <div className="text-center py-10 text-muted-foreground">Aucun produit n'est publié dans la vitrine pour le moment. Revenez bientôt !</div>
+             </div>
+        )
     }
 
     return (
