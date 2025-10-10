@@ -199,9 +199,9 @@ export default function GalleryPage() {
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
             <div>
-                <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Vitrine</h1>
+                <h1 className="text-3xl font-headline font-bold tracking-tight">Gérer la Galerie</h1>
                 <p className="text-muted-foreground">
-                    Ajoutez, modifiez et publiez les produits de votre vitrine. Chaque modification est sauvegardée automatiquement.
+                    Ajoutez et modifiez les produits de votre galerie. Chaque modification est sauvegardée automatiquement.
                 </p>
             </div>
              <div className="flex items-center space-x-2">
@@ -264,14 +264,6 @@ export default function GalleryPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor={`price-${item.id}`}>Prix ({currency})</Label>
                                     <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
-                                </div>
-                                <div className="flex items-center space-x-2 mt-auto pt-2">
-                                  <Switch
-                                    id={`publish-${item.id}`}
-                                    checked={item.published}
-                                    onCheckedChange={checked => handleItemChange(item.id, 'published', checked)}
-                                  />
-                                  <Label htmlFor={`publish-${item.id}`}>Publier</Label>
                                 </div>
                             </CardContent>
                         </Card>
