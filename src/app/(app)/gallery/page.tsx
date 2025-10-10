@@ -166,28 +166,6 @@ export default function GalleryPage() {
                         Gérez ici l'apparence et la visibilité de vos produits sur la boutique publique.
                     </p>
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                    <Button variant="outline" onClick={copyPublicUrl}>
-                        <Copy className="mr-2 h-4 w-4" />
-                        Copier le lien
-                    </Button>
-                     <Button variant="outline" onClick={() => setQrCodeDialogOpen(true)}>
-                        <QrCode className="mr-2 h-4 w-4" />
-                        QR Code
-                    </Button>
-                     <Button variant="outline" onClick={() => setShareDialogOpen(true)}>
-                        <Share2 className="mr-2 h-4 w-4" />
-                        Partager
-                    </Button>
-                    <Button onClick={() => window.open(publicUrl, '_blank')}>
-                        <Eye className="mr-2 h-4 w-4" />
-                        Voir la boutique
-                    </Button>
-                    <Button onClick={handleSaveChanges}>
-                        <Save className="mr-2 h-4 w-4" />
-                        Sauvegarder la Galerie
-                    </Button>
-                </div>
             </div>
         
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
