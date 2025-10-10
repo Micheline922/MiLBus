@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Save, ImagePlus, Trash2 } from 'lucide-react';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function GalleryPage() {
@@ -136,75 +135,62 @@ export default function GalleryPage() {
                 </div>
             </div>
         
-            <Carousel
-                opts={{
-                    align: "start",
-                    loop: false,
-                }}
-                className="w-full"
-            >
-                <CarouselContent>
-                    {showcaseItems.map(item => (
-                        <CarouselItem key={item.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                            <div className="p-1 h-full">
-                                <Card className="flex flex-col h-full">
-                                    <div className='relative w-full h-64 mb-4 group'>
-                                        <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
-                                        <Button size="sm" variant="secondary" className="absolute top-2 right-2" onClick={() => itemImageFileInputRefs.current[item.id]?.click()}>
-                                            <ImagePlus className="h-4 w-4" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {showcaseItems.map(item => (
+                    <div key={item.id} className="w-full">
+                        <Card className="flex flex-col h-full">
+                            <div className='relative w-full aspect-square mb-4 group'>
+                                <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                                <Button size="sm" variant="secondary" className="absolute top-2 right-2" onClick={() => itemImageFileInputRefs.current[item.id]?.click()}>
+                                    <ImagePlus className="h-4 w-4" />
+                                </Button>
+                                <Input 
+                                    type="file" 
+                                    className="hidden" 
+                                    ref={el => itemImageFileInputRefs.current[item.id] = el}
+                                    onChange={(e) => handleItemImageChange(e, item.id)}
+                                    accept="image/*"
+                                />
+                                 <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button size="sm" variant="destructive" className="absolute bottom-2 right-2">
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
-                                        <Input 
-                                            type="file" 
-                                            className="hidden" 
-                                            ref={el => itemImageFileInputRefs.current[item.id] = el}
-                                            onChange={(e) => handleItemImageChange(e, item.id)}
-                                            accept="image/*"
-                                        />
-                                         <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button size="sm" variant="destructive" className="absolute bottom-2 right-2">
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>Êtes-vous sûr(e) ?</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        Cette action supprimera l'article de la galerie. Cette action est irréversible après sauvegarde.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => handleDeleteItem(item.id)}>Supprimer</AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </div>
-                                    <CardContent className="space-y-4 flex-grow flex flex-col">
-                                         <div className="space-y-2">
-                                            <Label htmlFor={`name-${item.id}`}>Nom du produit</Label>
-                                            <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor={`price-${item.id}`}>Prix ({currency})</Label>
-                                            <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Êtes-vous sûr(e) ?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Cette action supprimera l'article de la galerie. Cette action est irréversible après sauvegarde.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleDeleteItem(item.id)}>Supprimer</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
-                        </CarouselItem>
-                    ))}
-                     {showcaseItems.length === 0 && (
-                        <div className="w-full text-center py-20 text-muted-foreground col-span-full">
-                            <p>Votre galerie est vide. Ajoutez des images pour commencer.</p>
-                        </div>
-                    )}
-                </CarouselContent>
-                <CarouselPrevious className="hidden sm:flex" />
-                <CarouselNext className="hidden sm:flex" />
-            </Carousel>
+                            <CardContent className="space-y-4 flex-grow flex flex-col p-3">
+                                 <div className="space-y-2">
+                                    <Label htmlFor={`name-${item.id}`}>Nom du produit</Label>
+                                    <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor={`price-${item.id}`}>Prix ({currency})</Label>
+                                    <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                ))}
+                 {showcaseItems.length === 0 && (
+                    <div className="w-full text-center py-20 text-muted-foreground col-span-full">
+                        <p>Votre galerie est vide. Ajoutez des images pour commencer.</p>
+                    </div>
+                )}
+            </div>
         </div>
     </>
   );
 }
-
