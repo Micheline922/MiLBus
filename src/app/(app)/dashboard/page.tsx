@@ -263,9 +263,8 @@ export default function DashboardPage() {
                 <PastryExpensesTable expenses={pastryExpenses} currency={currency} />
             </div>
             
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4">
               <AiChat />
-              <WeeklyAiAnalysis />
             </div>
 
         </div>
