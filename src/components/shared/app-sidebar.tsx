@@ -49,7 +49,6 @@ const navLinks = [
   { href: '/debts', icon: <CreditCard className="h-4 w-4" />, text: 'Dettes' },
   { href: '/reports', icon: <BarChart3 className="h-4 w-4" />, text: 'Rapports' },
   { href: '/invoices', icon: <FileText className="h-4 w-4" />, text: 'Factures' },
-  { href: '/showcase-manager', icon: <GalleryHorizontal className="h-4 w-4" />, text: 'Gérer la Vitrine' },
 ];
 
 
