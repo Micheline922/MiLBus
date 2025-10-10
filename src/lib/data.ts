@@ -132,7 +132,6 @@ export type AppData = {
   debts: Debt[];
   invoices: Invoice[];
   showcase: ShowcaseItem[];
-  companyStory: string;
   testimonials: Testimonial[];
   advertisingPhrases: string[];
 }
@@ -200,7 +199,6 @@ export const initialData: AppData = {
     { id: 'w1', name: 'Perruque Lace Frontal 18 pouces', price: 150.00, imageUrl: 'https://picsum.photos/seed/perruque1/400/400' },
     { id: 'p2', name: 'Chouchou en satin', price: 5.50, imageUrl: 'https://picsum.photos/seed/satin/400/400' },
   ],
-  companyStory: "MiLBus est une maison de beauté et de style où chaque produit est une promesse de qualité. Fondée avec la passion de révéler l'élégance naturelle, nous proposons une sélection exquise de bijoux, accessoires, perruques et même de délicieuses pâtisseries. Notre mission est de vous offrir plus qu'une simple boutique, mais une expérience de confiance et d'authenticité.",
   testimonials: [
     {
       name: "Marie-Claire",

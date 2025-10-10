@@ -20,7 +20,6 @@ import { Textarea } from '../ui/textarea';
 import { Separator } from '../ui/separator';
 
 const formSchema = z.object({
-  companyStory: z.string().min(1, "La présentation de l'entreprise est requise."),
   testimonials: z.array(
     z.object({
       name: z.string().min(1, 'Le nom est requis'),
@@ -38,7 +37,7 @@ const formSchema = z.object({
 type EditAboutFormValues = z.infer<typeof formSchema>;
 
 type EditAboutFormProps = {
-  initialValues: { companyStory: string; testimonials: any[], advertisingPhrases: string[] };
+  initialValues: { testimonials: any[], advertisingPhrases: string[] };
   onSubmit: (values: any) => void;
 };
 
@@ -46,7 +45,6 @@ export default function EditAboutForm({ initialValues, onSubmit }: EditAboutForm
   const form = useForm<EditAboutFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-        companyStory: initialValues.companyStory,
         testimonials: initialValues.testimonials,
         advertisingPhrases: initialValues.advertisingPhrases.map(p => ({ value: p })),
     },
@@ -64,7 +62,6 @@ export default function EditAboutForm({ initialValues, onSubmit }: EditAboutForm
 
   const handleFormSubmit = (values: EditAboutFormValues) => {
     onSubmit({
-        companyStory: values.companyStory,
         testimonials: values.testimonials,
         advertisingPhrases: values.advertisingPhrases.map(p => p.value),
     });
@@ -74,23 +71,6 @@ export default function EditAboutForm({ initialValues, onSubmit }: EditAboutForm
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6 flex flex-col h-[70vh]">
         <ScrollArea className="flex-1 pr-4">
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Notre Histoire</h3>
-            <FormField
-              control={form.control}
-              name="companyStory"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Présentation de l'entreprise</FormLabel>
-                  <FormControl><Textarea {...field} rows={5} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <Separator className="my-6" />
-
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Témoignages</h3>
             {testimonialFields.map((field, index) => (

@@ -3,14 +3,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sparkles, Star, Heart, Pencil, Building, User } from "lucide-react";
+import { Sparkles, Star, Heart, Pencil } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { loadData, saveData } from "@/lib/storage";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import EditAboutForm from "@/components/dashboard/edit-about-form";
-import LogoGenerator from "@/components/dashboard/logo-generator";
 
 type Testimonial = {
   name: string;
@@ -19,7 +18,6 @@ type Testimonial = {
 };
 
 type AboutData = {
-  companyStory: string;
   testimonials: Testimonial[];
   advertisingPhrases: string[];
 };
@@ -35,7 +33,6 @@ export default function AboutPage() {
     if (username) {
       const data = loadData(username);
       setAboutData({
-        companyStory: data.companyStory,
         testimonials: data.testimonials,
         advertisingPhrases: data.advertisingPhrases,
       });
@@ -45,7 +42,6 @@ export default function AboutPage() {
   const handleAboutSubmit = (values: AboutData) => {
     if (!username) return;
     setAboutData(values);
-    saveData(username, 'companyStory', values.companyStory);
     saveData(username, 'testimonials', values.testimonials);
     saveData(username, 'advertisingPhrases', values.advertisingPhrases);
     setDialogOpen(false);
@@ -55,7 +51,7 @@ export default function AboutPage() {
     return <div>Chargement...</div>;
   }
 
-  const { companyStory, testimonials, advertisingPhrases } = aboutData;
+  const { testimonials, advertisingPhrases } = aboutData;
 
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8 pt-6">
@@ -81,22 +77,6 @@ export default function AboutPage() {
         </Dialog>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building className="text-primary" />
-            Notre Histoire
-          </CardTitle>
-          <CardDescription>
-            La présentation de votre entreprise et un outil pour générer votre logo.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <p className="text-muted-foreground whitespace-pre-line">{companyStory}</p>
-          <LogoGenerator description={companyStory} />
-        </CardContent>
-      </Card>
-      
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

@@ -5,7 +5,6 @@ import { analyzeSalesDataForRestock, AnalyzeSalesDataForRestockOutput } from '@/
 import { getSalesTrendInsights, GetSalesTrendInsightsOutput } from '@/ai/flows/get-sales-trend-insights';
 import { getWeeklySalesSummary, GetWeeklySalesSummaryOutput } from '@/ai/flows/get-weekly-sales-summary';
 import { menuSuggester, MenuSuggesterOutput } from '@/ai/flows/menu-suggester-flow';
-import { generateLogo, GenerateLogoOutput } from '@/ai/flows/generate-logo-flow';
 
 type AiInsightResult = {
     data?: AnalyzeSalesDataForRestockOutput;
@@ -74,25 +73,4 @@ export async function getMonthlySalesAnalysis(salesData: string): Promise<SalesT
         console.error('Sales Trend Error:', e);
         return { error: 'Une erreur est survenue lors de l\'analyse des tendances de ventes.' };
     }
-}
-
-type GenerateLogoResult = {
-    data?: GenerateLogoOutput;
-    error?: string;
-}
-
-export async function generateLogoAction(description: string): Promise<GenerateLogoResult> {
-  if (!description.trim()) {
-    return { error: 'Veuillez fournir une description pour générer le logo.' };
-  }
-  try {
-    const result = await generateLogo({ description });
-    return { data: result };
-  } catch (e) {
-    console.error('Logo Generation Error:', e);
-    if (e instanceof Error) {
-        return { error: `La génération du logo a échoué : ${e.message}` };
-    }
-    return { error: 'Une erreur inconnue est survenue lors de la génération du logo.' };
-  }
 }
