@@ -7,7 +7,6 @@ import { DollarSign, Home, Package, Pencil, ShoppingCart, TrendingUp, FileText, 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useEffect, useState, useMemo } from 'react';
-import WeeklyAiAnalysis from '@/components/dashboard/weekly-ai-analysis';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -24,7 +23,7 @@ import PastryExpensesTable from '@/components/dashboard/pastry-expenses-table';
 import EditPastryExpensesForm from '@/components/dashboard/edit-pastry-expenses-form';
 import ThemeSwitcher from '@/components/settings/theme-switcher';
 import { useAuth } from '@/hooks/use-auth';
-import { AppData, Product, Wig, Pastry, PastryExpense, Sale } from '@/lib/data';
+import { AppData, Product, Wig, Pastry, PastryExpense, Sale, Order } from '@/lib/data';
 import { loadData, saveData } from '@/lib/storage';
 import EditInventoryForm from '@/components/dashboard/edit-inventory-form';
 import { exportInventoryToPDF } from '@/lib/inventory-exporter';
@@ -32,6 +31,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useForm, FormProvider } from 'react-hook-form';
 import Link from 'next/link';
 import RecentOrders from '@/components/dashboard/recent-orders';
+import EditOrdersForm from '@/components/dashboard/edit-orders-form';
 
 
 type Stats = {
@@ -163,6 +163,14 @@ export default function DashboardPage() {
       });
     }
   }
+
+  const handleSalesSubmit = (values: { sales: Sale[] }) => {
+    updateData('sales', values.sales);
+  };
+  
+  const handleOrdersSubmit = (values: { orders: Order[] }) => {
+    updateData('orders', values.orders);
+  };
   
   const handleExport = () => {
     if (!appData || !user) return;
@@ -249,7 +257,20 @@ export default function DashboardPage() {
         </div>
         <div className="grid grid-cols-1 gap-y-4">
            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="lg:col-span-4">
+              <Card className="lg:col-span-4 relative group">
+                 <Dialog open={dialogOpen['sales']} onOpenChange={(isOpen) => handleOpenDialog('sales', isOpen)}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Pencil className="mr-2 h-4 w-4" /> Modifier
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl">
+                      <DialogHeader>
+                        <DialogTitle>Modifier l'Historique des Ventes</DialogTitle>
+                      </DialogHeader>
+                      <EditSalesForm initialValues={{ sales: appData.sales }} onSubmit={handleSalesSubmit} />
+                    </DialogContent>
+                  </Dialog>
                 <CardHeader>
                   <CardTitle>Vue d'ensemble</CardTitle>
                 </CardHeader>
@@ -280,7 +301,23 @@ export default function DashboardPage() {
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
-             <div className="lg:col-span-3">
+             <div className="lg:col-span-3 relative group">
+                 <Dialog open={dialogOpen['orders']} onOpenChange={(isOpen) => handleOpenDialog('orders', isOpen)}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Pencil className="mr-2 h-4 w-4" /> Modifier
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl">
+                      <DialogHeader>
+                        <DialogTitle>Modifier les Commandes</DialogTitle>
+                        <DialogDescription>
+                          Mettez à jour les détails des commandes de vos clients.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <EditOrdersForm initialValues={{ orders: appData.orders }} onSubmit={handleOrdersSubmit} />
+                    </DialogContent>
+                  </Dialog>
                 <RecentOrders orders={appData.orders} currency={currency} />
              </div>
             </div>
