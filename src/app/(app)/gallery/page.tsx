@@ -53,9 +53,7 @@ export default function GalleryPage() {
           id: p.id!,
           name: existingItem?.name || p.name!,
           price: existingItem?.price ?? p.price ?? (p as any).sellingPrice ?? (p as any).unitPrice,
-          description: existingItem?.description || `Description pour ${p.name}`,
           imageUrl: existingItem?.imageUrl || `https://picsum.photos/seed/${p.id}/400/300`,
-          published: existingItem?.published || false,
         };
       });
       setShowcaseItems(synchronizedShowcaseItems);
@@ -166,6 +164,23 @@ export default function GalleryPage() {
                         Gérez ici l'apparence et la visibilité de vos produits sur la boutique publique.
                     </p>
                 </div>
+                 <div className="flex items-center space-x-2">
+                    <Button variant="outline" onClick={copyPublicUrl}>
+                        <Copy className="mr-2 h-4 w-4" /> Copier le lien
+                    </Button>
+                    <Button variant="outline" onClick={() => setQrCodeDialogOpen(true)}>
+                        <QrCode className="mr-2 h-4 w-4" /> QR Code
+                    </Button>
+                     <Button variant="outline" onClick={() => setShareDialogOpen(true)}>
+                        <Share2 className="mr-2 h-4 w-4" /> Partager
+                    </Button>
+                    <a href={publicUrl} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline"><Eye className="mr-2 h-4 w-4" /> Voir la boutique</Button>
+                    </a>
+                    <Button onClick={handleSaveChanges}>
+                        <Save className="mr-2 h-4 w-4" /> Sauvegarder la Galerie
+                    </Button>
+                </div>
             </div>
         
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -174,6 +189,16 @@ export default function GalleryPage() {
                         <CardHeader>
                             <div className='relative w-full h-48 mb-4 group'>
                                 <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                                <Button size="sm" variant="secondary" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => fileInputRefs.current[item.id]?.click()}>
+                                    <ImagePlus className="mr-2 h-4 w-4" /> Changer
+                                </Button>
+                                <Input 
+                                    type="file" 
+                                    className="hidden" 
+                                    ref={el => fileInputRefs.current[item.id] = el}
+                                    onChange={(e) => handleImageChange(e, item.id)}
+                                    accept="image/*"
+                                />
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -182,25 +207,8 @@ export default function GalleryPage() {
                                 <Input id={`name-${item.id}`} value={item.name} onChange={e => handleItemChange(item.id, 'name', e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor={`price-${item.id}`}>Prix</Label>
+                                <Label htmlFor={`price-${item.id}`}>Prix ({currency})</Label>
                                 <Input id={`price-${item.id}`} type="number" value={item.price} onChange={e => handleItemChange(item.id, 'price', e.target.valueAsNumber || 0)} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor={`description-${item.id}`}>Description</Label>
-                                <Textarea id={`description-${item.id}`} value={item.description} onChange={e => handleItemChange(item.id, 'description', e.target.value)} />
-                            </div>
-                            <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                                <div className="space-y-0.5">
-                                    <Label htmlFor={`published-${item.id}`}>Publier sur la boutique</Label>
-                                    <p className="text-xs text-muted-foreground">
-                                        Rendre ce produit visible par les clients.
-                                    </p>
-                                </div>
-                                <Switch
-                                    id={`published-${item.id}`}
-                                    checked={item.published}
-                                    onCheckedChange={checked => handleItemChange(item.id, 'published', checked)}
-                                />
                             </div>
                         </CardContent>
                     </Card>
@@ -210,3 +218,5 @@ export default function GalleryPage() {
     </>
   );
 }
+
+    
