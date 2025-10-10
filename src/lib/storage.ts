@@ -84,9 +84,18 @@ export function saveData<K extends keyof AppData>(
             localStorage.setItem(storageKey, JSON.stringify(updatedData));
         } else if (typeof keyOrData === 'object') {
              // Saving the entire AppData object
-            localStorage.setItem(storageKey, JSON.stringify(keyOrData));
+            const essentialData = {
+                user: (keyOrData as AppData).user,
+                stats: (keyOrData as AppData).stats,
+                // We only save a small part of the data to avoid quota errors.
+                // The rest is handled by specific key-value saves.
+            };
+            localStorage.setItem(storageKey, JSON.stringify(essentialData));
         }
     } catch (error) {
         console.error("Failed to save data to localStorage", error);
+         if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+            alert("Erreur : Le stockage local est plein. Impossible de sauvegarder les modifications. Essayez de vider le cache de votre navigateur ou de libérer de l'espace.");
+        }
     }
 }
