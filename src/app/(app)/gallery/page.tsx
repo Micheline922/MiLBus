@@ -81,23 +81,12 @@ export default function GalleryPage() {
   const handleSaveChanges = () => {
     if (!username || !showcaseItems) return;
     
-    const itemsToSave = showcaseItems.map(item => {
-        const { ...rest } = item;
-        if (rest.imageUrl.startsWith('data:image')) {
-            rest.imageUrl = `https://picsum.photos/seed/${item.id}/400/300`;
-        }
-        return rest;
-    });
+    saveData(username, 'showcase', showcaseItems);
 
-    try {
-      saveData(username, 'showcase', itemsToSave);
-      toast({
-          title: "Galerie mise à jour !",
-          description: "Vos modifications ont été enregistrées avec succès.",
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    toast({
+        title: "Galerie mise à jour !",
+        description: "Vos modifications ont été enregistrées avec succès.",
+    });
   };
 
   if (!showcaseItems) {
@@ -132,7 +121,7 @@ export default function GalleryPage() {
             >
                 <CarouselContent>
                     {showcaseItems.map(item => (
-                        <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
+                        <CarouselItem key={item.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
                             <div className="p-1">
                                 <Card>
                                     <CardHeader>
