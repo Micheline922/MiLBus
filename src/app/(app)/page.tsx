@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useAuth } from "@/hooks/use-auth";
@@ -9,17 +8,41 @@ import { AppData, ShowcaseItem } from "@/lib/data";
 import { loadData } from "@/lib/storage";
 import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
-import { Copy, QrCode, Share2, Eye } from "lucide-react";
+import { Copy, QrCode, Share2, Eye, Star, Quote } from "lucide-react";
 import Link from "next/link";
 import WelcomeTour from "@/components/dashboard/welcome-tour";
 import { useToast } from "@/hooks/use-toast";
 import QRCodeDialog from "@/components/dashboard/qr-code-dialog";
 import SocialShare from "@/components/shared/social-share";
 
+const testimonials = [
+    {
+        name: "Marie-Claire K.",
+        quote: "La qualité des perruques est incroyable ! Je reçois tellement de compliments. Le service client est également au top. Je recommande à 100%.",
+        avatar: "https://picsum.photos/seed/marie-claire/100/100"
+    },
+    {
+        name: "Amina D.",
+        quote: "Les bijoux sont magnifiques et uniques. J'ai trouvé le cadeau parfait pour ma sœur. La livraison a été rapide et soignée.",
+        avatar: "https://picsum.photos/seed/amina/100/100"
+    },
+    {
+        name: "Sophie M.",
+        quote: "Les pâtisseries sont un pur délice ! Les gâteaux sont aussi beaux que bons. Idéal pour toutes les occasions spéciales.",
+        avatar: "https://picsum.photos/seed/sophie/100/100"
+    }
+];
+
+const slogans = [
+    "MiLBus - L'élégance qui vous ressemble.",
+    "Révélez votre beauté, affirmez votre style.",
+    "La qualité au service de votre splendeur.",
+    "Plus qu'un produit, une promesse de confiance."
+]
+
 export default function ShowcaseManagementPage() {
   const { user, username } = useAuth();
   const { toast } = useToast();
-  const [showcaseItems, setShowcaseItems] = useState<ShowcaseItem[]>([]);
   const [publicUrl, setPublicUrl] = useState('');
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
 
@@ -30,27 +53,6 @@ export default function ShowcaseManagementPage() {
     }
   }, [username]);
   
-  const currency = useMemo(() => (user?.currency === 'USD' ? '$' : 'FC'), [user?.currency]);
-  
-  useEffect(() => {
-    if (username) {
-      const data = loadData(username);
-      setShowcaseItems(data.showcase.filter(item => item.published && item.imageUrl && item.name !== "Nouveau Produit"));
-    }
-  }, [username]);
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(publicUrl);
-    toast({
-      title: "Lien copié !",
-      description: "Le lien vers votre vitrine a été copié dans le presse-papiers.",
-    });
-  };
-
-  if (!showcaseItems) {
-    return <div>Chargement...</div>;
-  }
-
   return (
     <>
       <WelcomeTour />
@@ -60,14 +62,17 @@ export default function ShowcaseManagementPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-2">
                 <h1 className="text-3xl font-headline font-bold tracking-tight">
-                    Gérer votre Vitrine Publique
+                    Votre Espace Publicitaire
                 </h1>
                 <p className="text-muted-foreground">
-                    C'est ici que vous gérez ce que vos clients voient. Partagez votre boutique et prévisualisez vos produits.
+                    Gérez et partagez votre boutique. Inspirez-vous pour votre communication.
                 </p>
             </div>
-            <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleCopyLink}>
+            <div className="flex items-center gap-2 flex-wrap">
+                <Button variant="outline" size="sm" onClick={() => {
+                    navigator.clipboard.writeText(publicUrl);
+                    toast({ title: "Lien copié !", description: "Le lien vers votre vitrine a été copié." });
+                }}>
                     <Copy className="mr-2 h-4 w-4" /> Copier le lien
                 </Button>
                  <Button variant="outline" size="sm" onClick={() => setIsQrDialogOpen(true)}>
@@ -83,32 +88,45 @@ export default function ShowcaseManagementPage() {
             </div>
         </div>
         
-        {showcaseItems.length > 0 ? (
-          <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {showcaseItems.map(item => (
-                  <Card key={item.id} className="overflow-hidden group flex flex-col">
-                      <div className="relative w-full aspect-[4/5]">
-                         <Image src={item.imageUrl} alt={item.name} layout="fill" objectFit="cover" className="transition-transform duration-300 group-hover:scale-105" />
-                      </div>
-                      <CardHeader className="p-3">
-                          <CardTitle className="text-base truncate">{item.name}</CardTitle>
-                          <CardDescription className="font-semibold text-primary">{(item.price ?? 0).toFixed(2)} {currency}</CardDescription>
-                      </CardHeader>
-                  </Card>
-              ))}
-          </div>
-        ) : (
-           <Card className="text-center py-20 text-muted-foreground">
-              <CardContent>
-                  <p className="mb-4">Votre vitrine est vide. Publiez des articles depuis la galerie.</p>
-                  <Button asChild>
-                    <Link href="/gallery">
-                        Aller à la Galerie
-                    </Link>
-                  </Button>
-              </CardContent>
-           </Card>
-        )}
+        <div className="grid gap-8 md:grid-cols-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Slogans Publicitaires</CardTitle>
+                    <CardDescription>Inspirez-vous de ces accroches pour vos publications.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {slogans.map((slogan, index) => (
+                        <div key={index} className="flex items-center gap-4">
+                            <Quote className="h-6 w-6 text-primary" />
+                            <p className="font-medium text-lg italic">"{slogan}"</p>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader>
+                    <CardTitle>Témoignages Clients</CardTitle>
+                    <CardDescription>La satisfaction de vos clients est votre meilleure publicité.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                   {testimonials.map((testimonial, index) => (
+                       <div key={index} className="flex items-start gap-4">
+                           <Avatar>
+                               <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
+                               <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                           </Avatar>
+                           <div>
+                               <p className="font-semibold">{testimonial.name}</p>
+                               <div className="flex items-center gap-0.5 text-yellow-500">
+                                   {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
+                               </div>
+                               <p className="text-sm text-muted-foreground mt-1">"{testimonial.quote}"</p>
+                           </div>
+                       </div>
+                   ))}
+                </CardContent>
+            </Card>
+        </div>
 
       </div>
     </>

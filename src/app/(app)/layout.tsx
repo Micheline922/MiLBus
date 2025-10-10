@@ -10,13 +10,14 @@ import {
 } from '@/components/ui/sheet';
 import { useAuth } from '@/hooks/use-auth';
 import { Menu } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -24,6 +25,22 @@ function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
       router.replace('/login');
     }
   }, [isLoading, isAuthenticated, router]);
+  
+  const getPageTitle = () => {
+    if (pathname.startsWith('/dashboard')) return user?.businessName || 'Tableau de bord';
+    if (pathname.startsWith('/gallery')) return 'Galerie';
+    if (pathname.startsWith('/orders')) return 'Commandes';
+    if (pathname.startsWith('/sales')) return 'Ventes';
+    if (pathname.startsWith('/products')) return 'Marchandises';
+    if (pathname.startsWith('/customers')) return 'Clients';
+    if (pathname.startsWith('/debts')) return 'Dettes';
+    if (pathname.startsWith('/reports')) return 'Rapports';
+    if (pathname.startsWith('/invoices')) return 'Factures';
+    if (pathname.startsWith('/settings')) return 'Paramètres';
+    if (pathname === '/') return 'Vitrine';
+    return 'MiLBus';
+  };
+
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -53,9 +70,9 @@ function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
                <AppSidebar />
             </SheetContent>
           </Sheet>
-           <h1 className="font-headline text-lg">MiLBus</h1>
+           <h1 className="font-headline text-lg">{getPageTitle()}</h1>
         </header>
-        <main className="flex-1 flex flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-auto">
+        <main className="flex-1 flex flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-auto relative">
           {children}
           <Chatbot />
         </main>
